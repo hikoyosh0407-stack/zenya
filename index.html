@@ -252,6 +252,21 @@ label.f:first-child{margin-top:0}
 
   <button class="btn pri wide" id="btnLock" style="margin-top:4px">この作戦で出撃する</button>
   <div class="tiny" style="text-align:center;margin-top:8px" id="lockNote"></div>
+
+  <h2 class="sec">カレンダーに送る</h2>
+  <div class="card">
+    <button class="btn wide sm" id="btnIcs">📅 この日の予定をまとめて送る（.ics）</button>
+    <div class="tiny" style="margin:8px 0 12px">共有シートが出たら「カレンダー」を選ぶ。Googleアカウントを iPhone のカレンダーに追加していれば、そのままGoogleカレンダーに入る。</div>
+    <div class="tiny" style="margin-bottom:6px">1件ずつGoogleカレンダーで開く：</div>
+    <div class="chips" id="gcalChips"></div>
+    <label class="f">対象カレンダーID（任意・空ならメイン）</label>
+    <input type="text" id="calSrc" placeholder="例：2edrmd0h7dsqbann8qab8nmioc@group.calendar.google.com">
+    <div class="row" style="margin-top:12px">
+      <span class="tiny">🏢 任務（仕事）も送る</span><span class="sp"></span>
+      <button class="chip" id="calWork">オフ</button>
+    </div>
+    <button class="btn wide sm" id="btnPlanTx" style="margin-top:12px">📋 作戦をテキストでコピー</button>
+  </div>
 </section>
 
 <!-- ========== 自分 ========== -->
@@ -472,7 +487,7 @@ function defState(){return{
  exp:0, stats:{body:0,mind:0,keep:0,life:0,heart:0},
  days:{}, templates:JSON.parse(JSON.stringify(TPL_DEFAULT)), titles:[],
  rewards:['コーヒーを1杯、丁寧に淹れる','15分だけ昼寝する','由良の海の写真を見返す','好きな動画を1本だけ観る'],
- settings:{wake:'05:30',sleep:'22:30',fixed:540}
+ settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''}
 };}
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))||defState();}catch(e){S=defState();}
  const d=defState(); for(const k in d) if(S[k]===undefined) S[k]=d[k];
@@ -692,6 +707,7 @@ function renderPlan(){
  document.getElementById('lockNote').textContent=d.locked
   ?(d.madeAt?d.madeAt.slice(0,16).replace('T',' ')+' に確定':'')
   :'前の晩に確定させると＋20EXP。1日は前夜に決まる。';
+ renderCal();
 }
 function applyTpl(id){
  const t=S.templates.find(x=>x.id===id);if(!t)return;
@@ -802,6 +818,63 @@ function copyTx(t,msg){
  function fb(){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy');toast(msg);}catch(e){toast('コピーできませんでした');}ta.remove();}}
 
+/* ============ カレンダー連携 ============ */
+function icsEsc(x){return(x||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
+function fold(l){const enc=window.TextEncoder?new TextEncoder():null;if(!enc)return l;
+ let o=[],cur='',n=0;
+ for(const ch of l){const b=enc.encode(ch).length;
+  if(n+b>72){o.push(cur);cur=' '+ch;n=1+b;}else{cur+=ch;n+=b;}}
+ o.push(cur);return o.join('\r\n');}
+function utcStamp(k,mins){const d=dObj(k);d.setMinutes(d.getMinutes()+mins);
+ return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');}
+function boxDesc(b){return[b.lo?'最低：'+b.lo:'',b.hi?'最高：'+b.hi:'',b.ifthen?'if-then：'+b.ifthen:''].filter(Boolean).join('\n');}
+function calBoxes(){const d=getDay(curPlanKey,true);sortBoxes(d.plan);
+ return d.plan.filter(b=>S.settings.calWork||b.cat!=='work');}
+function buildIcs(){
+ const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+ let t='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//zenya//jinsei-rpg//JA\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n';
+ calBoxes().forEach(b=>{const st=hm(b.s),ds=boxDesc(b);
+  t+='BEGIN:VEVENT\r\nUID:'+b.id+'-'+curPlanKey+'@zenya\r\nDTSTAMP:'+stamp+'\r\n'
+   +'DTSTART:'+utcStamp(curPlanKey,st)+'\r\nDTEND:'+utcStamp(curPlanKey,st+b.m)+'\r\n'
+   +fold('SUMMARY:'+icsEsc(CATS[b.cat].i+' '+b.t))+'\r\n'
+   +(ds?fold('DESCRIPTION:'+icsEsc(ds))+'\r\n':'')
+   +'BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:'+icsEsc(b.t)+'\r\nTRIGGER:-PT5M\r\nEND:VALARM\r\n'
+   +'END:VEVENT\r\n';});
+ return t+'END:VCALENDAR\r\n';}
+async function sendIcs(){
+ const bs=calBoxes();if(!bs.length){toast('送るボックスがない');return;}
+ const txt=buildIcs(),name='zenya-'+curPlanKey+'.ics';
+ try{const f=new File([txt],name,{type:'text/calendar'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'ゼンヤ '+curPlanKey});return;}
+ }catch(e){if(e&&e.name==='AbortError')return;}
+ try{const url=URL.createObjectURL(new Blob([txt],{type:'text/calendar'}));
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);toast(bs.length+'件を .ics に書き出した');
+ }catch(e){copyTx(txt,'共有できないのでテキストをコピーした');}}
+function gcalUrl(b){const st=hm(b.s);
+ let u='https://calendar.google.com/calendar/render?action=TEMPLATE'
+  +'&text='+encodeURIComponent(CATS[b.cat].i+' '+b.t)
+  +'&dates='+utcStamp(curPlanKey,st)+'/'+utcStamp(curPlanKey,st+b.m)
+  +'&details='+encodeURIComponent(boxDesc(b));
+ if(S.settings.calSrc)u+='&src='+encodeURIComponent(S.settings.calSrc.trim());
+ return u;}
+function planText(){
+ const d=getDay(curPlanKey,true);sortBoxes(d.plan);
+ let t=curPlanKey+'（'+WD[dObj(curPlanKey).getDay()]+'）の作戦\n';
+ d.plan.forEach(b=>{const st=hm(b.s);
+  t+='\n'+b.s+'-'+mh(st+b.m)+' '+CATS[b.cat].i+' '+b.t+'（'+b.m+'分）';
+  const ds=boxDesc(b).replace(/\n/g,' ／ ');if(ds)t+='\n  '+ds;});
+ if(d.pre)t+='\n\n事前検死：'+d.pre+(d.preThen?'\n→ '+d.preThen:'');
+ return t;}
+function renderCal(){
+ const bs=calBoxes();
+ document.getElementById('gcalChips').innerHTML=bs.length
+  ?bs.map(b=>'<a class="chip" target="_blank" rel="noopener" href="'+esc(gcalUrl(b))+'">'+CATS[b.cat].i+' '+esc(b.t)+'</a>').join('')
+  :'<span class="tiny">ボックスがない</span>';
+ document.getElementById('calSrc').value=S.settings.calSrc||'';
+ const w=document.getElementById('calWork');
+ w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
+
 /* ============ シート ============ */
 function openSheet(id){curSheet=id;document.getElementById('mask').classList.add('on');
  document.getElementById(id).classList.add('on');}
@@ -909,6 +982,10 @@ document.getElementById('btnRev').onclick=()=>{
 document.getElementById('btnRewards').onclick=()=>{
  S.rewards=document.getElementById('rewardsBox').value.split('\n').map(s=>s.trim()).filter(Boolean);
  save();toast('ごほうび箱を更新した');};
+document.getElementById('btnIcs').onclick=sendIcs;
+document.getElementById('btnPlanTx').onclick=()=>copyTx(planText(),'作戦をコピーした');
+document.getElementById('calWork').onclick=()=>{S.settings.calWork=!S.settings.calWork;save();renderCal();};
+document.getElementById('calSrc').onblur=()=>{S.settings.calSrc=document.getElementById('calSrc').value.trim();save();renderCal();};
 document.getElementById('btnExport').onclick=()=>copyTx(buildMd(),'コピーした。Obsidianに貼るだけ');
 document.getElementById('btnObsidian').onclick=()=>{
  const u='obsidian://new?vault='+encodeURIComponent('うるトトの思考')
