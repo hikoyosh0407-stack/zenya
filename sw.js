@@ -1,4 +1,4 @@
-const CACHE='zenya-v6';
+const CACHE='zenya-v7';
 const ASSETS=['./','./index.html','./manifest.json','./icon.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));

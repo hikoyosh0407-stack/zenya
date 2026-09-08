@@ -689,8 +689,10 @@ const FOODS_DEFAULT=[
  {n:'キャベツ盛',p:4,f:1,c:10,kcal:68},
  {n:'くるみ',p:2.7,f:9.8,c:2.6,kcal:106},
  {n:'バナナ',p:1,f:1,c:23,kcal:86},
- {n:'定番セット（昼まで一式）',p:121,f:32,c:56,kcal:1000}
+ {n:'定番セット（昼まで一式）',p:121,f:32,c:56,kcal:1000},
+ {n:'塩昆布おにぎり（ご飯150g）',p:5,f:0.5,c:58,kcal:244,seed:2}
 ];
+const FOOD_SEED=2;
 const TPL_DEFAULT=[
  {id:'wd',name:'平日',boxes:[
   {s:'05:30',m:20,t:'起床の儀',cat:'habit',lo:'体重と体脂肪率を測る',hi:'測る＋ビジョンボードを見る',ifthen:'もし二度寝しそうなら、まず立って体重計に乗るだけ'},
@@ -729,12 +731,18 @@ function defState(){return{
  rewards:['コーヒーを1杯、丁寧に淹れる','15分だけ昼寝する','由良の海の写真を見返す','好きな動画を1本だけ観る'],
  settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''},
  targets:{kcal:1779,p:145,f:43,c:202},
- meals:{}, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
+ meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
  body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]}
 };}
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))||defState();}catch(e){S=defState();}
+ const seen=S.foodSeed||1;   // 既定値マージより先に読む（上書きされるため）
  const d=defState(); for(const k in d) if(S[k]===undefined) S[k]=d[k];
- if(!S.settings.fixed&&S.settings.fixed!==0) S.settings=d.settings;}
+ if(!S.settings.fixed&&S.settings.fixed!==0) S.settings=d.settings;
+ // 後から追加した既定食品だけを取り込む（消した古い品は復活させない）
+ if(seen<FOOD_SEED){
+  FOODS_DEFAULT.filter(f=>(f.seed||1)>seen).forEach(f=>{
+   if(!S.foods.some(x=>x.n===f.n))S.foods.push(Object.assign({id:uid()},f));});
+  S.foodSeed=FOOD_SEED;save();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('保存できませんでした');}}
 
 /* ============ helpers ============ */
