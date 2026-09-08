@@ -208,6 +208,34 @@ label.f:first-child{margin-top:0}
   border:1px solid var(--line);margin-bottom:6px}
 .fchip .n1{font-size:13.5px;font-weight:600}
 .fchip .n2{font-size:11px;color:var(--tx3);margin-top:2px;font-variant-numeric:tabular-nums}
+/* pitari: 飲酒・21日ボード */
+.verdict{border-radius:13px;padding:13px 14px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.dry{background:#16211a;border-color:#33502f}
+.verdict.free{background:#251d12;border-color:#5a4526}
+.verdict.party{background:#241c2c;border-color:#3d3050}
+.verdict .lb{font-size:17px;font-weight:700}
+.verdict .say{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.55}
+.b21{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:7px}
+.b21 .c{aspect-ratio:1;border-radius:7px;background:#12151d;border:1px solid #202634;position:relative;
+  display:grid;place-items:center;font-size:10px;color:var(--tx3)}
+.b21 .c.done{background:rgba(217,164,65,.18);border-color:#6b5a2a;color:var(--gold2)}
+.b21 .c.missed{opacity:.35}
+.b21 .c.today{box-shadow:0 0 0 2px #4a9ee0}
+.b21 .c .dr{position:absolute;right:1px;bottom:0;font-size:9px}
+.wk{font-size:10px;color:var(--tx3);margin-top:9px;letter-spacing:1px}
+.lockbox{text-align:center;padding:18px 12px;font-size:12.5px;color:var(--tx2);line-height:1.7}
+.qbtn{display:block;width:100%;text-align:left;padding:13px 14px;border-radius:11px;background:var(--panel2);
+  border:1px solid var(--line);margin-bottom:8px;font-size:14px}
+.qbtn.ok{background:#16211a;border-color:#33502f}
+.qbtn.ng{background:#231a1a;border-color:#553a3a}
+.dcell{aspect-ratio:1;border-radius:7px;border:1px solid #202634;display:grid;place-items:center;
+  font-size:10px;background:#12151d;color:var(--tx3);position:relative}
+.dcell.dry{background:#16211a;border-color:#2f4a2c}
+.dcell.free{background:#251d12;border-color:#4a3a20}
+.dcell.party{background:#241c2c;border-color:#3d3050}
+.dcell.kept:after{content:"💧";position:absolute;right:1px;bottom:0;font-size:9px}
+.dcell.drank:after{content:"🍺";position:absolute;right:1px;bottom:0;font-size:9px}
+.dcell.today{box-shadow:0 0 0 2px #4a9ee0}
 /* sheet */
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:80;display:none;backdrop-filter:blur(2px)}
 .mask.on{display:block}
@@ -319,6 +347,8 @@ label.f:first-child{margin-top:0}
     <button class="btn sm" id="mealNext">›</button>
   </div>
 
+  <div class="card" id="dryToday" style="padding:0;border:none;background:none;margin-bottom:12px"></div>
+
   <div class="card">
     <div class="kcalbar"><i id="kcalFill"></i><div class="lb" id="kcalLb">-</div></div>
     <div class="lanes3" id="lanes"></div>
@@ -337,10 +367,15 @@ label.f:first-child{margin-top:0}
     <div class="tiny" style="margin-top:8px">◯最低＝1食でも記録した。◎最高＝合計が目標kcal以内、かつタンパク質が目標の9割以上。<br>超過しても減点はしない。溢れた事実を出すだけ。</div>
   </div>
 
+  <h2 class="sec">21日ボード</h2>
+  <div class="card" id="board21"></div>
+  <div class="card" id="wgraph"></div>
+
   <h2 class="sec">設定</h2>
   <div class="chips" style="margin-bottom:20px">
     <button class="chip" id="btnTarget">🎯 目標値とマスタ</button>
-    <a class="chip" href="https://hikoyosh0407-stack.github.io/pitari/" target="_blank">🍽 ピタリを開く</a>
+    <button class="chip" id="btnDrySet">🍶 解禁曜日と開始日</button>
+    <button class="chip" id="btnImportPitari">📥 ピタリから取り込む</button>
   </div>
 </section>
 
@@ -392,6 +427,18 @@ label.f:first-child{margin-top:0}
   <h2 class="sec">冒険の指標</h2>
   <div class="mgrid" id="metrics"></div>
 
+  <h2 class="sec">休肝日カレンダー</h2>
+  <div class="card">
+    <div class="row" style="margin-bottom:9px">
+      <button class="btn sm" id="dcPrev">‹</button>
+      <div class="sp" style="text-align:center"><b id="dcLabel">-</b></div>
+      <button class="btn sm" id="dcNext">›</button>
+    </div>
+    <div class="grid7" id="dryCal"></div>
+    <div class="tiny" style="margin-top:9px">日付をタップすると飲み会として登録／解除できる（＝先に決めておく）。<br>💧守った ／ 🍺飲んだ。解禁日は量を測らないし、連続も切らさない。</div>
+    <div class="mgrid" id="dryMetrics" style="margin-top:11px"></div>
+  </div>
+
   <h2 class="sec">今日の振り返り</h2>
   <div class="card">
     <textarea id="revNote" placeholder="効いた設計・崩れた原因・明日への一手を1〜3行で"></textarea>
@@ -412,7 +459,7 @@ label.f:first-child{margin-top:0}
 <nav>
   <button data-v="today" class="on"><span>⚔️</span>今日</button>
   <button data-v="plan"><span>🌙</span>作戦</button>
-  <button data-v="meal"><span>🍽</span>食事</button>
+  <button data-v="meal"><span>⚖️</span>からだ</button>
   <button data-v="char"><span>🧙</span>自分</button>
   <button data-v="log"><span>📜</span>記録</button>
 </nav>
@@ -480,6 +527,38 @@ label.f:first-child{margin-top:0}
     <button class="chip" id="mfSave">オン</button>
   </div>
   <button class="btn pri wide" id="btnFreeAdd" style="margin-top:14px">この内容で追加</button>
+</div>
+
+<!-- 今日を記録するシート -->
+<div class="sheet" id="sheetRecord">
+  <div class="grab"></div>
+  <h3 id="recTitle">今日を記録する</h3>
+  <div class="f2">
+    <div><label class="f">体重（kg・任意）</label><input type="number" id="recW" step="0.1" inputmode="decimal" placeholder="例 68.4"></div>
+    <div><label class="f">体脂肪率（%・任意）</label><input type="number" id="recF" step="0.1" inputmode="decimal" placeholder="例 18.4"></div>
+  </div>
+  <div id="recDrink"></div>
+  <button class="btn pri wide" id="btnSaveRecord" style="margin-top:16px">記録する</button>
+</div>
+
+<!-- 禁酒設定シート -->
+<div class="sheet" id="sheetDry">
+  <div class="grab"></div>
+  <h3>🍶 飲酒の事前コミットメント</h3>
+  <div class="tiny">毎日「今日は飲まないぞ」と決意するのをやめて、<b>曜日で先に決める</b>。当日のあなたは判断しない。</div>
+  <label class="f">解禁曜日（ここ以外は休肝日）</label>
+  <div class="chips" id="dowChips"></div>
+  <label class="f">21日ボードの開始日</label>
+  <input type="date" id="drySt">
+  <button class="btn pri wide" id="btnSaveDry" style="margin-top:16px">保存</button>
+</div>
+
+<!-- 知識カード クイズシート -->
+<div class="sheet" id="sheetQuiz">
+  <div class="grab"></div>
+  <div style="font-size:10.5px;letter-spacing:2px;color:var(--gold);font-weight:700">知識カード</div>
+  <h3 id="qzTitle" style="margin-top:6px">-</h3>
+  <div id="qzBody"></div>
 </div>
 
 <!-- 目標値・マスタシート -->
@@ -559,6 +638,35 @@ const KNOW=[
  ['評価するのは、本人の管理下にある「行動」だけ。結果を褒めると、停滞期に自己否定が起きる。','04_output/ピタリ_ダイエットゲーム仕様書.md'],
  ['壮大な意味：今日の1ボックスが、ラスボス（70歳でも海で遊べる自分）にどう繋がるかを言えるか。','04_output/ゲーミフィケーション.md ⑧ストーリーと壮大な世界観']
 ];
+const CARDS=[
+ {id:1,need:{k:'week',n:1},t:'食べても減るカロリー',
+  q:'同じ100kcalを摂るなら、体脂肪になりにくいのは？',a:['白米 100kcal','鶏むね肉 100kcal'],ok:1,
+  body:'タンパク質は消化・吸収そのものに約30%のエネルギーを使う（食事誘発性熱産生／DIT）。糖質は約6%、脂質は約4%。同じ100kcalでも、体に残る量が違う。'},
+ {id:2,need:{k:'week',n:2},t:'停滞は体の正常反応',
+  q:'2週間きっちり記録した。なのに体重が動かない。これは？',a:['失敗している','体が正しく働いている'],ok:1,
+  body:'摂取が減ると、体は恒常性（ホメオスタシス）で代謝を節約モードに切り替え、生命を守ろうとする。停滞は体が正常に機能している証拠であって、行動が間違っている証拠ではない。あなたの管理下にあるのは記録という行動だけ。'},
+ {id:3,need:{k:'week',n:3},t:'見えたものは、変わる',
+  q:'「記録するだけ」で体重が減ることがある。なぜ？',a:['記録する行為に消費カロリーがあるから','見えるようになると行動が変わるから'],ok:1,
+  body:'セルフモニタリング効果。無意識だった選択が意識に上がるだけで、人は自然に選び方を変える。だから最初の21日は「生活を変えない」でよかった。'},
+ {id:4,need:{k:'dry',n:3},t:'枠外から入ってくる200kcal',
+  q:'アルコール1gのカロリーは？',a:['4kcal','7kcal'],ok:1,
+  body:'7kcal/g は脂質(9)に次ぐ高さ。しかも栄養にならない「エンプティカロリー」で、PFCの枠の外側から入ってくる。ビール500mlで約200kcal。今日の枠を静かに侵食する。'},
+ {id:5,need:{k:'dry',n:7},t:'トレした日ほど、飲まない',
+  q:'筋トレ後に飲酒すると、体の中で何が起きる？',a:['回復が早まる','筋タンパク合成が落ちる'],ok:1,
+  body:'運動後の飲酒は筋タンパク合成を2〜4割ほど抑制するという報告がある。プロテインを一緒に摂っても完全には防げない。トレした日の飲酒は、その日のトレの一部を捨てているのと同じ。'},
+ {id:6,need:{k:'dry',n:14},t:'肝臓の優先順位',
+  q:'飲んでいる間、脂肪はどうなる？',a:['通常どおり燃える','燃焼が後回しになる'],ok:1,
+  body:'肝臓はアルコールを毒物として最優先で分解する。その間、脂肪酸の酸化（脂肪燃焼）は後回しにされる。飲んだ分のカロリーだけでなく、その夜の代謝の優先順位ごと入れ替わる。'},
+ {id:7,need:{k:'dry',n:21},t:'寝つきと、眠りの質は別',
+  q:'寝酒は睡眠にどう働く？',a:['深く眠れる','後半の睡眠が崩れる'],ok:1,
+  body:'寝つきは早くなるが、アルコールが分解される後半でREM睡眠が減り、中途覚醒が増える。睡眠は筋の回復と食欲ホルモンの調整を担うので、翌日の食欲まで変わってくる。'},
+ {id:8,need:{k:'party',n:1},t:'決めない日をつくる',
+  q:'毎日「今日は飲まないぞ」と決意するのと、曜日で先に決めておくのは？',a:['決意のほうが強い','先に決めておくほうが強い'],ok:1,
+  body:'意志力は消耗する資源で、毎回の判断がそれを削る。飲む日を先にカレンダーで決めてしまえば、当日は「決める」必要がない。これが事前コミットメント。飲み会を登録するのは、逃げではなく設計。'}
+];
+const VERDICT={dry:{lb:'休肝日',say:'決めるのは、あなたではなくカレンダーです。',ic:'💧'},
+ free:{lb:'解禁日',say:'先に決めた日です。罪悪感なしでどうぞ。',ic:'🍺'},
+ party:{lb:'解禁日（飲み会）',say:'登録済みの日です。今日は数えません。',ic:'🎉'}};
 const TITLES=[
  {id:'wake', ic:'🌅',n:'目覚めた者',d:'はじめてクエストを達成した',f:s=>s.k.done>=1},
  {id:'eve',  ic:'🌙',n:'先読みの戦士',d:'前夜に作戦を立てた日 7日',f:s=>s.k.eve>=7},
@@ -568,7 +676,9 @@ const TITLES=[
  {id:'sage', ic:'📖',n:'賢者の卵',d:'学びクエスト 30回',f:s=>s.k.cat.learn>=30},
  {id:'zero', ic:'🛡',n:'ゼロ撲滅',d:'ゼロの日なしで14日連続',f:s=>s.k.noZeroMax>=14},
  {id:'sec',  ic:'🧬',n:'セカンドネイチャー',d:'通算66日、1つ以上を実行',f:s=>s.k.activeDays>=66},
- {id:'sea',  ic:'🌊',n:'海への航路',d:'Lv10 に到達',f:s=>s.k.lv>=10}
+ {id:'sea',  ic:'🌊',n:'海への航路',d:'Lv10 に到達',f:s=>s.k.lv>=10},
+ {id:'b21',  ic:'📋',n:'21日を積んだ者',d:'21日ボードを記録で埋めた',f:s=>logged21()>=21},
+ {id:'dry21',ic:'💧',n:'水の守り手',d:'休肝日を通算21回守った',f:s=>keptDryTotal()>=21}
 ];
 const FOODS_DEFAULT=[
  {n:'昼食プロテイン（チョコ）',p:25,f:0,c:6,kcal:120},
@@ -619,7 +729,8 @@ function defState(){return{
  rewards:['コーヒーを1杯、丁寧に淹れる','15分だけ昼寝する','由良の海の写真を見返す','好きな動画を1本だけ観る'],
  settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''},
  targets:{kcal:1779,p:145,f:43,c:202},
- meals:{}, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f))
+ meals:{}, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
+ body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]}
 };}
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))||defState();}catch(e){S=defState();}
  const d=defState(); for(const k in d) if(S[k]===undefined) S[k]=d[k];
@@ -893,8 +1004,17 @@ function renderChar(){
    +'<div class="nm">'+t.n+'</div><div class="tiny">'+t.d+'</div></div></div>';}).join('');
 
  document.getElementById('rewardsBox').value=S.rewards.join('\n');
- document.getElementById('knowList').innerHTML=KNOW.map(k=>
-  '<div class="know"><div class="q">'+esc(k[0])+'</div><div class="s">— '+esc(k[1])+'</div></div>').join('');
+ const need={week:'21日ボードの記録',dry:'休肝日を守った回数',party:'飲み会の事前登録'};
+ document.getElementById('knowList').innerHTML=
+  '<div class="tiny" style="margin-bottom:9px">🃏 知識カード '+B().cards.length+' / '+CARDS.length+'（条件を満たすとクイズで手に入る）</div>'
+  +CARDS.map(c=>{const got=hasCard(c.id);
+   return got
+    ?'<div class="know"><div class="q"><b>'+esc(c.t)+'</b><br>'+esc(c.body)+'</div>'
+      +'<div class="s">— ピタリ 知識カード '+c.id+'</div></div>'
+    :'<div class="know" style="border-left-color:#2a3040;opacity:.55"><div class="q">🔒 ????'
+      +'</div><div class="s">'+need[c.need.k]+' '+cardProgress(c.need)+' / '+c.need.n+'</div></div>';}).join('')
+  +'<div style="height:10px"></div>'
+  +KNOW.map(k=>'<div class="know"><div class="q">'+esc(k[0])+'</div><div class="s">— '+esc(k[1])+'</div></div>').join('');
 }
 
 /* ============ 記録 ============ */
@@ -927,6 +1047,7 @@ function renderLog(){
   [avgCond(last14,'hp')||'—','平均HP（14日）'],
   [avgCond(last14,'mp')||'—','平均MP（14日）']
  ].map(m=>'<div class="metric"><div class="n">'+m[0]+'</div><div class="l">'+m[1]+'</div></div>').join('');
+ renderDryCal();
  const d=S.days[today];
  document.getElementById('revNote').value=d?(d.rev||''):'';
 }
@@ -954,6 +1075,18 @@ function buildMd(){
  Object.keys(S.meals||{}).sort().slice(-14).forEach(k=>{const m=mealTotal(k);if(!mealsOf(k).length)return;
   const j=judgeMeal(k);
   t+='| '+k+' | '+Math.round(m.kcal)+' / '+S.targets.kcal+' | '+r1(m.p)+' | '+r1(m.f)+' | '+r1(m.c)+' | '+(j.hi?'◎':'◯')+' |\n';});
+ const bb=B();
+ t+='\n## からだ（ピタリ統合）\n\n';
+ t+='- 21日ボード：'+logged21()+' / 21日（開始 '+bb.startDate+'）\n';
+ t+='- 休肝日を守った回数：'+keptDryTotal()+' ／ 連続 '+dryStreak()+'日\n';
+ t+='- 解禁曜日：'+bb.freeDows.map(i=>WD[i]).join('・')+' ／ 事前登録した飲み会 '+partyCount()+'件\n';
+ t+='- 知識カード：'+bb.cards.length+' / '+CARDS.length+'枚\n\n';
+ const wk=Object.keys(bb.days).sort().filter(k=>typeof bb.days[k].w==='number').slice(-14);
+ if(wk.length){t+='| 日付 | 体重 | 体脂肪率 | 飲酒 |\n|---|---|---|---|\n';
+  wk.forEach(k=>{const r=bb.days[k];
+   t+='| '+k+' | '+r.w+'kg | '+(typeof r.fat==='number'?r.fat+'%':'—')+' | '
+    +(r.drink==='kept'?'💧守った':r.drink==='drank'?'🍺飲んだ':'解禁日')+' |\n';});
+  t+='\n';}
  t+='\n## 直近の振り返り\n\n';
  Object.keys(S.days).sort().slice(-14).reverse().forEach(k=>{const d=S.days[k];
   if(d&&d.rev)t+='### '+k+'\n'+d.rev+'\n\n';
@@ -964,6 +1097,202 @@ function copyTx(t,msg){
  else fb();
  function fb(){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy');toast(msg);}catch(e){toast('コピーできませんでした');}ta.remove();}}
+
+/* ============ からだ（飲酒・21日ボード・体重）— ピタリより統合 ============ */
+function B(){if(!S.body)S.body={startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]};return S.body;}
+function bDay(k,create){const b=B();if(!b.days[k]&&create)b.days[k]={};return b.days[k];}
+function dayType(k){const b=B();if(b.parties[k])return 'party';
+ return b.freeDows.includes(dObj(k).getDay())?'free':'dry';}
+function dayNo21(k){return Math.round((dObj(k)-dObj(B().startDate))/86400000)+1;}
+function logged21(){const b=B();let n=0;
+ for(let i=0;i<21;i++){const r=b.days[addD(b.startDate,i)];if(r&&r.logged)n++;}return n;}
+function keptDryTotal(){const b=B();return Object.values(b.days).filter(d=>d.logged&&d.drink==='kept').length;}
+function partyCount(){return Object.keys(B().parties).length;}
+function dryStreak(){const b=B();let n=0;
+ for(let k=dkey();k>=b.startDate;k=addD(k,-1)){
+  if(dayType(k)!=='dry')continue;
+  const r=b.days[k];
+  if(!r||!r.logged){if(k===dkey())continue;break;}
+  if(r.drink==='kept')n++;else break;}
+ return n;}
+function monthDry(base){const d0=dObj(base),y=d0.getFullYear(),m=d0.getMonth();
+ let total=0,kept=0;const last=new Date(y,m+1,0).getDate();
+ for(let i=1;i<=last;i++){const k=dkey(new Date(y,m,i));
+  if(k>dkey()||k<B().startDate)continue;
+  if(dayType(k)!=='dry')continue;
+  const r=B().days[k];if(!r||!r.logged)continue;
+  total++;if(r.drink==='kept')kept++;}
+ return{total,kept};}
+function cardProgress(need){
+ if(need.k==='week')return Math.floor(logged21()/7);
+ if(need.k==='dry')return keptDryTotal();
+ if(need.k==='party')return partyCount();
+ return 0;}
+function hasCard(id){return B().cards.includes(id);}
+function pendingCard(){return CARDS.find(c=>!hasCard(c.id)&&cardProgress(c.need)>=c.need.n);}
+function checkCards(){const c=pendingCard();if(c)openQuiz(c);}
+
+function renderDryToday(){
+ const k=curMealKey||dkey(),ty=dayType(k),v=VERDICT[ty],r=bDay(k),n=dayNo21(k);
+ const done=r&&r.logged;
+ document.getElementById('dryToday').innerHTML=
+  '<div class="verdict '+ty+'"><div class="row"><span style="font-size:22px">'+v.ic+'</span>'
+  +'<div style="margin-left:9px"><div class="lb">今日は '+v.lb+'</div><div class="say">'+v.say+'</div></div></div>'
+  +(done?'<div class="tiny" style="margin-top:9px">記録済み'
+     +(r.drink==='kept'?'・💧守った':r.drink==='drank'?'・🍺飲んだ':'')
+     +(typeof r.w==='number'?'・'+r.w+'kg':'')+(typeof r.fat==='number'?'・'+r.fat+'%':'')+'</div>':'')
+  +'<button class="btn '+(done?'sm':'pri')+' wide" style="margin-top:11px" onclick="openRecord()">'
+  +(done?'✓ 記録済み（直す）':'今日を記録する')+'</button></div>';}
+
+function renderBoard21(){
+ const b=B(),t=dkey();let h='';
+ for(let w=0;w<3;w++){
+  h+='<div class="wk">第'+(w+1)+'週</div><div class="b21">';
+  for(let i=0;i<7;i++){const idx=w*7+i,k=addD(b.startDate,idx),r=b.days[k];
+   let c='c';if(r&&r.logged)c+=' done';else if(k<t)c+=' missed';
+   if(k===t)c+=' today';
+   const dr=r&&r.logged?(r.drink==='kept'?'💧':r.drink==='drank'?'🍺':''):'';
+   h+='<div class="'+c+'">'+(idx+1)+(dr?'<span class="dr">'+dr+'</span>':'')+'</div>';}
+  h+='</div>';}
+ const lg=logged21();
+ document.getElementById('board21').innerHTML=
+  '<div class="row"><b style="font-size:14px">'+lg+' / 21日</b><span class="sp"></span>'
+  +'<span class="tiny">記録できた日をぬりつぶす</span></div>'+h
+  +'<div class="tiny" style="margin-top:8px">1日抜けても連続記録はリセットされない。空きマスは後から埋められる。</div>';
+ renderWGraph();}
+
+function renderWGraph(){
+ const b=B(),el=document.getElementById('wgraph');
+ if(logged21()<21){
+  el.innerHTML='<div class="lockbox">🔒 体重グラフは Day21 に開封します<br>'
+   +'いま評価するのは「記録したかどうか」だけ。<br>体重はあなたの管理外です。<br>'
+   +'<span class="tiny">あと '+(21-logged21())+' 日分</span></div>';return;}
+ const pts=[];
+ for(let i=0;i<21;i++){const r=b.days[addD(b.startDate,i)];
+  if(r&&typeof r.w==='number')pts.push({i:i,w:r.w,f:r.fat});}
+ if(pts.length<2){el.innerHTML='<div class="lockbox">体重の記録が2日分に満たないため、グラフを描けません。</div>';return;}
+ const ws=pts.map(p=>p.w),mn=Math.min(...ws)-0.5,mx=Math.max(...ws)+0.5;
+ const W=320,H=110,P=8;
+ const x=i=>P+(i/20)*(W-P*2), y=w=>P+(1-(w-mn)/(mx-mn))*(H-P*2);
+ const path=pts.map((p,k)=>(k?'L':'M')+x(p.i).toFixed(1)+','+y(p.w).toFixed(1)).join('');
+ const dots=pts.map(p=>'<circle cx="'+x(p.i).toFixed(1)+'" cy="'+y(p.w).toFixed(1)+'" r="2.5" fill="#d9a441"/>').join('');
+ const dl=(ws[ws.length-1]-ws[0]).toFixed(1);
+ const fs=pts.filter(p=>typeof p.f==='number');
+ el.innerHTML='<div style="font-weight:700;font-size:14px">🎉 開封：体重の21日間</div>'
+  +'<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;margin-top:8px"><path d="'+path
+  +'" fill="none" stroke="#d9a441" stroke-width="2" stroke-linejoin="round"/>'+dots+'</svg>'
+  +'<div class="tiny" style="margin-top:6px">初日 '+ws[0]+'kg → 最新 '+ws[ws.length-1]+'kg（'+(dl>0?'+':'')+dl+'kg）。'
+  +(fs.length>=2?'体脂肪率は '+fs[0].f+'% → '+fs[fs.length-1].f+'%。':'')
+  +'<br>この21日であなたが積んだのは、この線ではなく記録という行動そのもの。</div>';}
+
+function openRecord(){
+ const k=curMealKey||dkey(),ty=dayType(k),r=bDay(k)||{};
+ document.getElementById('recTitle').textContent=labelD(k)+' を記録する';
+ document.getElementById('recW').value=(typeof r.w==='number')?r.w:'';
+ document.getElementById('recF').value=(typeof r.fat==='number')?r.fat:'';
+ window._recDrink=r.drink||null;
+ document.getElementById('recDrink').innerHTML=(ty==='dry')
+  ?'<label class="f">今日は休肝日。お酒は？</label>'
+   +'<button class="qbtn" id="dk1" onclick="pickDrink(\'kept\')">💧 飲まなかった'
+   +'<div class="tiny">計画どおり ＋10EXP</div></button>'
+   +'<button class="qbtn" id="dk2" onclick="pickDrink(\'drank\')">🍺 飲んだ'
+   +'<div class="tiny">記録するだけ。責めない</div></button>'
+  :'<div class="warnbox ok" style="margin-top:14px"><span>🍺</span><span>今日は解禁日。'
+   +'飲んだ量は記録も評価もしない。測りはじめた瞬間、解禁日が「監視付きの休暇」になるから。</span></div>';
+ if(ty==='dry')setTimeout(()=>paintDrink(),0);
+ openSheet('sheetRecord');}
+function pickDrink(v){window._recDrink=v;paintDrink();}
+function paintDrink(){
+ const a=document.getElementById('dk1'),b2=document.getElementById('dk2');
+ if(!a)return;
+ a.className='qbtn'+(window._recDrink==='kept'?' ok':'');
+ b2.className='qbtn'+(window._recDrink==='drank'?' ng':'');}
+function saveRecord(){
+ const k=curMealKey||dkey(),ty=dayType(k),r=bDay(k,true);
+ const w=parseFloat(document.getElementById('recW').value);
+ const f=parseFloat(document.getElementById('recF').value);
+ const first=!r.logged;
+ r.logged=true;
+ if(!isNaN(w))r.w=w; if(!isNaN(f))r.fat=f;
+ r.drink=(ty==='dry')?window._recDrink:null;
+ if(first){addXp(5,'habit');}
+ if(r.drink==='kept'&&!r.dryXp){r.dryXp=true;addXp(10,'habit');}
+ if(r.drink!=='kept'&&r.dryXp){r.dryXp=false;addXp(-10,'habit');}
+ save();closeSheet();renderAll();
+ toast(r.drink==='kept'?'記録した。今日はきれいに守れている 💧'
+  :r.drink==='drank'?'記録した。明日はまた休肝日':'記録した'+(first?' ＋5 EXP':''));
+ setTimeout(checkCards,600);}
+
+function openQuiz(c){
+ window._quiz=c;
+ document.getElementById('qzTitle').textContent=c.t;
+ document.getElementById('qzBody').innerHTML='<div style="font-size:14px;line-height:1.6">'+esc(c.q)+'</div>'
+  +'<div style="margin-top:12px">'+c.a.map((x,i)=>
+   '<button class="qbtn" onclick="answerQuiz('+i+')">'+esc(x)+'</button>').join('')+'</div>';
+ openSheet('sheetQuiz');}
+function answerQuiz(i){
+ const c=window._quiz;if(!c)return;
+ const right=i===c.ok;
+ document.getElementById('qzBody').innerHTML=
+  '<div class="qbtn '+(right?'ok':'ng')+'">'+(right?'⭕️ 正解':'❌ こちらでした：'+esc(c.a[c.ok]))+'</div>'
+  +'<div style="font-size:13.5px;line-height:1.75;margin-top:12px">'+esc(c.body)+'</div>'
+  +'<button class="btn pri wide" style="margin-top:16px" onclick="closeQuiz()">カードを手に入れる ＋10EXP</button>';}
+function closeQuiz(){
+ const c=window._quiz;
+ if(c&&!hasCard(c.id)){B().cards.push(c.id);addXp(10,'learn');}
+ window._quiz=null;save();closeSheet();renderAll();toast('知識カードを手に入れた ＋10 EXP');
+ setTimeout(checkCards,600);}
+
+let dcBase=null;
+function renderDryCal(){
+ if(!dcBase)dcBase=dkey();
+ const d0=dObj(dcBase),y=d0.getFullYear(),m=d0.getMonth();
+ document.getElementById('dcLabel').textContent=y+'年'+(m+1)+'月';
+ const first=new Date(y,m,1),off=(first.getDay()+6)%7,last=new Date(y,m+1,0).getDate();
+ let h='';
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let i=1;i<=last;i++){const k=dkey(new Date(y,m,i)),ty=dayType(k),r=B().days[k];
+  let c='dcell '+ty;
+  if(r&&r.logged&&r.drink)c+=' '+r.drink;
+  if(k===dkey())c+=' today';
+  h+='<div class="'+c+'" onclick="toggleParty(\''+k+'\')">'+i+'</div>';}
+ document.getElementById('dryCal').innerHTML=h;
+ const st=monthDry(dcBase);
+ document.getElementById('dryMetrics').innerHTML=[
+  [st.total?Math.round(st.kept/st.total*100)+'%':'—','今月の休肝日 達成率'],
+  [dryStreak(),'連続休肝日']
+ ].map(x=>'<div class="metric"><div class="n">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('');}
+function toggleParty(k){
+ const b=B();
+ if(b.parties[k]){delete b.parties[k];toast(labelD(k)+' の飲み会を取り消した');}
+ else{if(b.freeDows.includes(dObj(k).getDay())){toast('もともと解禁曜日');return;}
+  b.parties[k]=true;toast(labelD(k)+' を飲み会として登録した');}
+ save();renderDryCal();renderAll();setTimeout(checkCards,400);}
+
+function importPitari(){
+ const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json';
+ inp.onchange=()=>{const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{applyPitari(JSON.parse(rd.result));}catch(e){toast('読み込めなかった');}};
+  rd.readAsText(f);};
+ inp.click();}
+function applyPitari(d){
+ if(!d||!d.startDate)throw new Error('bad');
+ const b=B();
+ b.startDate=d.startDate;
+ if(Array.isArray(d.freeDows))b.freeDows=d.freeDows;
+ if(d.parties)b.parties=Object.assign({},d.parties);
+ if(Array.isArray(d.cards))b.cards=d.cards.slice();
+ let n=0;
+ Object.entries(d.days||{}).forEach(([k,r])=>{
+  const t=bDay(k,true);
+  t.logged=!!r.logged;
+  if(typeof r.weight==='number')t.w=r.weight;
+  if(r.drink)t.drink=r.drink;
+  if(r.drink==='kept')t.dryXp=true;
+  n++;});
+ save();renderAll();
+ alert('ピタリから取り込みました。\n記録 '+n+'日分 ／ カード '+b.cards.length+'枚 ／ 開始日 '+b.startDate);}
 
 /* ============ コンディション（HP/MP） ============ */
 const HPLB=[['🥴','ボロボロ'],['😮‍💨','だるい'],['😐','ふつう'],['🙂','いい'],['💪','絶好調']];
@@ -1055,6 +1384,7 @@ function renderMeal(){
   '<div class="row"><span style="font-size:22px">'+(j.hi?'◎':j.lo?'◯':'⬜️')+'</span>'
   +'<div style="margin-left:9px"><div style="font-weight:700;font-size:14px">'+j.msg+'</div>'
   +'<div class="tiny">'+j.detail+'</div></div></div>';
+ renderDryToday();renderBoard21();
  document.getElementById('btnCloseMeal').textContent=
   (S.days[k]&&(S.days[k].plan||[]).some(b=>b.cat==='meal'&&b.st!=='todo'))?'🍽 締め直す':'🍽 今日の食事を締める';
 }
@@ -1156,10 +1486,13 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-function openSheet(id){curSheet=id;document.getElementById('mask').classList.add('on');
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz'];
+function openSheet(id){
+ SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
+ curSheet=id;document.getElementById('mask').classList.add('on');
  document.getElementById(id).classList.add('on');}
 function closeSheet(){document.getElementById('mask').classList.remove('on');
- ['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget'].forEach(i=>document.getElementById(i).classList.remove('on'));curSheet=null;}
+ SHEETS.forEach(i=>{const e=document.getElementById(i);if(e)e.classList.remove('on');});curSheet=null;}
 function openBox(i){
  const d=getDay(curPlanKey,true);editIdx=i;
  const b=i===null?{s:mh(Math.round((nowMin()+30)/15)*15),m:30,t:'',cat:'habit',lo:'',hi:'',ifthen:''}:d.plan[i];
@@ -1286,6 +1619,23 @@ document.getElementById('btnFreeAdd').onclick=()=>{
  if(mfSaveMaster)S.foods.push(Object.assign({id:uid()},f));
  addMeal(f,true);closeSheet();};
 document.getElementById('btnCloseMeal').onclick=closeMeal;
+document.getElementById('btnSaveRecord').onclick=saveRecord;
+document.getElementById('btnImportPitari').onclick=importPitari;
+document.getElementById('dcPrev').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()-1);dcBase=dkey(d);renderDryCal();};
+document.getElementById('dcNext').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()+1);dcBase=dkey(d);renderDryCal();};
+document.getElementById('btnDrySet').onclick=()=>{
+ const b=B();
+ document.getElementById('drySt').value=b.startDate;
+ document.getElementById('dowChips').innerHTML=['日','月','火','水','木','金','土'].map((n,i)=>
+  '<button class="chip'+(b.freeDows.includes(i)?' on':'')+'" data-d="'+i+'">'+n+'</button>').join('');
+ document.getElementById('dowChips').querySelectorAll('button').forEach(el=>el.onclick=()=>{
+  const i=+el.dataset.d,b2=B();
+  if(b2.freeDows.includes(i))b2.freeDows=b2.freeDows.filter(x=>x!==i);else b2.freeDows.push(i);
+  el.classList.toggle('on');});
+ openSheet('sheetDry');};
+document.getElementById('btnSaveDry').onclick=()=>{
+ const v=document.getElementById('drySt').value;if(v)B().startDate=v;
+ save();closeSheet();renderAll();toast('飲酒の設計を更新した');};
 document.getElementById('btnTarget').onclick=()=>{
  document.getElementById('tK').value=S.targets.kcal;document.getElementById('tP').value=S.targets.p;
  document.getElementById('tF').value=S.targets.f;document.getElementById('tC').value=S.targets.c;
