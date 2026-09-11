@@ -383,6 +383,7 @@ label.f:first-child{margin-top:0}
 <section class="view" id="v-char">
   <div class="bosscard" id="bossLast"></div>
   <div class="bosscard" id="bossMid" style="background:linear-gradient(150deg,#2c1c1c,#1c1313);border-color:#5a3030"></div>
+  <div class="bosscard" id="bossStudy" style="background:linear-gradient(150deg,#16232c,#121a20);border-color:#2f5060"></div>
   <button class="btn wide sm" id="btnBoss">👹 ボスを設定しなおす</button>
 
   <h2 class="sec">ステータス</h2>
@@ -412,7 +413,20 @@ label.f:first-child{margin-top:0}
     <a class="chip" href="https://hikoyosh0407-stack.github.io/jissen-app/" target="_blank">🧠 実践5</a>
     <a class="chip" href="https://hikoyosh0407-stack.github.io/habit-chain/" target="_blank">🔗 ハビットチェーン</a>
     <a class="chip" href="https://hikoyosh0407-stack.github.io/pitari/" target="_blank">🍽 ピタリ</a>
+    <a class="chip" href="obsidian://open?vault=%E3%81%86%E3%82%8B%E3%83%88%E3%83%88%E3%81%AE%E6%80%9D%E8%80%83&file=02_Research%2FBansho%2F00_%E6%9D%BF%E6%9B%B8MOC">📚 板書MOC</a>
   </div>
+</section>
+
+<!-- ========== 学び（板書） ========== -->
+<section class="view" id="v-learn">
+  <div id="lnToday"></div>
+  <div id="lnWeek"></div>
+  <div id="lnAgain"></div>
+  <div id="lnShelf"></div>
+  <div id="lnGoal"></div>
+  <div id="lnVow"></div>
+  <div id="lnMiles"></div>
+  <div style="height:20px"></div>
 </section>
 
 <!-- ========== 記録 ========== -->
@@ -449,7 +463,8 @@ label.f:first-child{margin-top:0}
   <div class="card">
     <button class="btn wide sm" id="btnExport">📝 冒険ログをコピー（Obsidian用）</button>
     <button class="btn wide sm" id="btnObsidian" style="margin-top:8px">📥 Obsidianに送る</button>
-    <button class="btn wide sm" id="btnBackup" style="margin-top:8px">💾 バックアップ（JSONをコピー）</button>
+    <button class="btn wide sm" id="btnBansho" style="margin-top:8px">📚 板書ログをObsidianに送る</button>
+  <button class="btn wide sm" id="btnBackup" style="margin-top:8px">💾 バックアップ（JSONをコピー）</button>
     <button class="btn wide sm" id="btnRestore" style="margin-top:8px">♻️ 復元（JSONを貼り付け）</button>
   </div>
   <div style="height:20px"></div>
@@ -460,6 +475,7 @@ label.f:first-child{margin-top:0}
   <button data-v="today" class="on"><span>⚔️</span>今日</button>
   <button data-v="plan"><span>🌙</span>作戦</button>
   <button data-v="meal"><span>⚖️</span>からだ</button>
+  <button data-v="learn"><span>📚</span>学び</button>
   <button data-v="char"><span>🧙</span>自分</button>
   <button data-v="log"><span>📜</span>記録</button>
 </nav>
@@ -619,6 +635,7 @@ const CATS={
  life :{n:'生活',i:'🏠',c:'#5fbf7f',st:'life'},
  rest :{n:'回復',i:'😴',c:'#9a7fd0',st:'heart'},
  meal :{n:'食事',i:'🍽',c:'#e8a13a',st:'body'},
+ bansho:{n:'板書',i:'📚',c:'#7fc4c4',st:'mind'},
  cheat:{n:'サボり枠',i:'🎁',c:'#e08ab0',st:'heart'}
 };
 const STATS={body:{n:'体',c:'var(--body)'},mind:{n:'知',c:'var(--mind)'},keep:{n:'継',c:'var(--keep)'},life:{n:'活',c:'var(--life)'},heart:{n:'心',c:'var(--heart)'}};
@@ -636,7 +653,14 @@ const KNOW=[
  ['前進と達成感：プログレスバーと達成シンボルは、進んでいる事実を目に見せるためにある。','D-Lab 人生をゲーム化しようぜ（ゲームテク6・8）'],
  ['罰は使わない。できなかった事実を静かに見せるだけでフィードバックとして十分に機能する。','04_output/ピタリ_ダイエットゲーム仕様書.md'],
  ['評価するのは、本人の管理下にある「行動」だけ。結果を褒めると、停滞期に自己否定が起きる。','04_output/ピタリ_ダイエットゲーム仕様書.md'],
- ['壮大な意味：今日の1ボックスが、ラスボス（70歳でも海で遊べる自分）にどう繋がるかを言えるか。','04_output/ゲーミフィケーション.md ⑧ストーリーと壮大な世界観']
+ ['壮大な意味：今日の1ボックスが、ラスボス（70歳でも海で遊べる自分）にどう繋がるかを言えるか。','04_output/ゲーミフィケーション.md ⑧ストーリーと壮大な世界観'],
+ ['板書は、黒板に書く行為そのものが本体。残るのは写真1枚と要点3行だけでいい。','02_Research/Bansho/板書_運用ガイド.md（2026-09-07）'],
+ ['書きっぱなしにしない。7日後に白紙から再現できて、はじめて「学んだ」。','02_Research/Bansho/板書_運用ガイド.md'],
+ ['1分で誰かに話せたら卒業。話せないなら理解していない。相手は子どもでいい。','02_Research/Bansho/板書_運用ガイド.md'],
+ ['数えられて・身体を動かして・その場で終わることは続く。判断／自制／言語化が要ることは続かない。だから勉強を筋トレと同じ形にする。','Permanent Notes／学びの設計（ずっと勉強していたい・41歳からの29年）'],
+ ['集めるのをやめて、書いて話す。溜まったのは勉強ではなく、勉強の材料だった。','Permanent Notes／学びの設計'],
+ ['出口を発信ではなく子どもに置く。教えられる期間は、あと10年もない。','Permanent Notes／学びの設計'],
+ ['続かない時の自分は「新しい仕組みを作る」。だから板書が10枚たまるまで、7つ目を作らない。','Permanent Notes／学びの設計']
 ];
 const CARDS=[
  {id:1,need:{k:'week',n:1},t:'食べても減るカロリー',
@@ -667,6 +691,45 @@ const CARDS=[
 const VERDICT={dry:{lb:'休肝日',say:'決めるのは、あなたではなくカレンダーです。',ic:'💧'},
  free:{lb:'解禁日',say:'先に決めた日です。罪悪感なしでどうぞ。',ic:'🍺'},
  party:{lb:'解禁日（飲み会）',say:'登録済みの日です。今日は数えません。',ic:'🎉'}};
+/* ============ 板書（学び） ============ */
+const LANES={
+ teach  :{n:'教える',    i:'🧒',c:'#e0a44a',src:'中学英語・数学（駿太郎・彩加の先回り）'},
+ takken :{n:'宅建',      i:'🏛️',c:'#4a9ee0',src:'宅建 単元マップ'},
+ relearn:{n:'学び直し',  i:'🌍',c:'#5fbf7f',src:'中学理科・社会を中1から'},
+ read   :{n:'Dラボ・読書',i:'📚',c:'#9a7fd0',src:'02_Research の既存ノート'},
+ sum    :{n:'週まとめ',  i:'🗂️',c:'#d9a441',src:'今週の板書を1枚に圧縮'},
+ again  :{n:'再演',      i:'🔁',c:'#e0574a',src:'7日前の板書を白紙から'}
+};
+/* 曜日→レーン（0=日）。板書_運用ガイドの時間割そのまま */
+const DOW_LANE=['again','teach','takken','relearn','takken','read','sum'];
+/* 2026年9月の日付表（9月学習計画）。[レーン, テーマ, 飛ばしてよい枠] */
+const SEP_PLAN={
+ '2026-09-07':['teach','助動詞（can / will / must / should の距離感）'],
+ '2026-09-08':['takken','宅建業とは（「業」に当たる取引・免許不要の者）'],
+ '2026-09-10':['takken','免許の基準（欠格事由）'],
+ '2026-09-14':['teach','文型（There is / SVOO）'],
+ '2026-09-15':['takken','免許の申請と変更・廃業の届出'],
+ '2026-09-17':['takken','宅建士の登録と取引士証（登録の基準・移転）'],
+ '2026-09-21':['teach','不定詞と動名詞（どっちを取る動詞か）'],
+ '2026-09-22':['takken','専任の宅建士の設置（5人に1人・事務所と案内所）'],
+ '2026-09-24':['takken','事務所の備付け（標識・帳簿・従業者名簿・報酬額の掲示）',1],
+ '2026-09-28':['teach','総ざらい1枚（4週分を1枚に圧縮して駿太郎に見せる）'],
+ '2026-09-29':['takken','営業保証金（供託・還付・取戻し）']
+};
+const QUEUE={
+ takken:['宅建業とは（「業」に当たる取引・免許不要の者）','免許の基準（欠格事由）','免許の申請と変更・廃業の届出','宅建士の登録と取引士証（登録の基準・移転）','専任の宅建士の設置（5人に1人・事務所と案内所）','事務所の備付け（標識・帳簿・従業者名簿・報酬額の掲示）','営業保証金（供託・還付・取戻し）','保証協会と弁済業務保証金（営業保証金との対比表を1枚に）','媒介契約の3類型（一般・専任・専属専任の比較表）','広告の規制（誇大広告・未完成物件・取引態様の明示）','重要事項説明（35条）① 物件そのものについて','重要事項説明（35条）② 取引条件について','重要事項説明（35条）③ 貸借のとき／区分所有のとき','37条書面と35条書面の違い（何をいつ誰に）','8種制限① クーリング・オフ','8種制限② 手付金等の保全措置','8種制限③ 手付の額・損害賠償額の予定','8種制限④ 自己の所有に属しない物件・担保責任の特約','報酬額の制限（計算問題。毎年1問出る得点源）','業務上の規制（守秘義務・不当な勧誘・断定的判断の提供）','監督処分と罰則','住宅瑕疵担保履行法','都市計画法① 区域区分と用途地域','都市計画法② 都市計画の内容（地区計画・都市施設・市街地開発事業）','都市計画法③ 開発許可の要否（面積要件と例外）','都市計画法④ 開発許可の手続と工事完了後の建築制限','建築基準法① 単体規定と集団規定の区別','建築基準法② 道路制限（接道義務・2項道路・道路内の建築制限）','建築基準法③ 用途制限（表の読み方）','建築基準法④ 建蔽率・容積率（前面道路による容積率の制限）','建築基準法⑤ 高さ制限・斜線制限・日影規制','建築基準法⑥ 防火地域・準防火地域','盛土規制法（旧宅造法）','土地区画整理法（仮換地・換地処分・保留地）','農地法（3条・4条・5条の比較表を1枚に）','国土利用計画法（事後届出の面積要件）','意思表示（詐欺・強迫・錯誤・虚偽表示）','制限行為能力者','代理（無権代理・表見代理）','時効（取得時効・消滅時効）','物権変動と対抗要件（民法177条・二重譲渡）','共有と相隣関係','抵当権（物上代位・法定地上権）','保証と連帯債務','債務不履行・解除・危険負担','契約不適合責任','賃貸借（民法の原則）','借地借家法① 借地（取れる1問）','借地借家法② 借家（取れる1問）','区分所有法（取れる1問）','不動産登記法（取れる1問）','相続（法定相続分・遺言・遺留分）','不動産取得税','固定資産税（取得税との比較表を1枚に）','印紙税','登録免許税','所得税（譲渡所得の特例）・贈与税','地価公示法','不動産鑑定評価基準','景品表示法（不当表示）・住宅金融支援機構','土地・建物（常識問題。土木職の得点源。ここは軽く）'],
+ teach:['be動詞と一般動詞の使い分け（文の骨格）','三単現の s（なぜ s が付くのか）','時制の地図（現在・過去・未来・進行形を1枚に）','助動詞（can / will / must / should の距離感）','不定詞と動名詞（どっちを取る動詞か）','接続詞（and / but / that / when / if）','比較（原級・比較級・最上級）','受動態（する→されるの書き換え）','現在完了（3用法を1枚に）','関係代名詞（2つの文をつなぐ）','正負の数（数直線で見る）','文字と式（なぜ文字を使うのか）','一次方程式（天秤のモデル）','比例・反比例（表・式・グラフの三点セット）','連立方程式（2本の直線の交点）','一次関数（変化の割合＝傾き）','図形の合同と証明（証明の書き方の型）','確率（数え上げの技術）','展開と因数分解','平方根','二次方程式（解の公式はどこから来るか）','二次関数 y=ax²','相似（縮尺＝測量の原理）','三平方の定理','円周角の定理'],
+ relearn:[],read:[],sum:[]
+};
+const UND={seed:{ic:'🌱',n:'まだ',d:7,c:'#8a8f9c'},mid:{ic:'🔁',n:'あやふや',d:30,c:'#d9a441'},done:{ic:'✅',n:'説明できた',d:0,c:'#5fbf7f'}};
+/* 点検欄（学びの設計 §9） */
+const MILES=[
+ {d:'2026-09-30',t:'9月は14コマ中 何枚書けたか。10枚未満なら10月もレーンを増やさない'},
+ {d:'2026-12-31',t:'板書は何枚たまったか／新しい仕組みを作らずにいられたか／体脂肪率は何%か'},
+ {d:'2027-04-01',t:'駿太郎が中学へ。教えるレーンの中身を中学の内容に切り替えたか'},
+ {d:'2027-07-01',t:'⚠️ 宅建の申込（例年7月上旬〜末）。ここを逃すと1年待ち'},
+ {d:'2027-10-17',t:'宅建 本番'}
+];
 const TITLES=[
  {id:'wake', ic:'🌅',n:'目覚めた者',d:'はじめてクエストを達成した',f:s=>s.k.done>=1},
  {id:'eve',  ic:'🌙',n:'先読みの戦士',d:'前夜に作戦を立てた日 7日',f:s=>s.k.eve>=7},
@@ -678,7 +741,11 @@ const TITLES=[
  {id:'sec',  ic:'🧬',n:'セカンドネイチャー',d:'通算66日、1つ以上を実行',f:s=>s.k.activeDays>=66},
  {id:'sea',  ic:'🌊',n:'海への航路',d:'Lv10 に到達',f:s=>s.k.lv>=10},
  {id:'b21',  ic:'📋',n:'21日を積んだ者',d:'21日ボードを記録で埋めた',f:s=>logged21()>=21},
- {id:'dry21',ic:'💧',n:'水の守り手',d:'休肝日を通算21回守った',f:s=>keptDryTotal()>=21}
+ {id:'dry21',ic:'💧',n:'水の守り手',d:'休肝日を通算21回守った',f:s=>keptDryTotal()>=21},
+ {id:'ban1', ic:'📚',n:'板を出した者',d:'板書を1枚書いた',f:s=>BN().boards.length>=1},
+ {id:'ban10',ic:'🧑‍🏫',n:'自分の先生',d:'板書 通算10枚',f:s=>BN().boards.length>=10},
+ {id:'grad5',ic:'🗣️',n:'1分で話せる人',d:'板書を5枚 卒業した（白紙再現＋1分で説明）',f:s=>BN().boards.filter(b=>b.und==='done').length>=5},
+ {id:'wk4',  ic:'🎓',n:'週4枚の主',d:'週4枚を 4週 達成した',f:s=>goodWeeks()>=4}
 ];
 const FOODS_DEFAULT=[
  {n:'昼食プロテイン（チョコ）',p:25,f:0,c:6,kcal:120},
@@ -732,7 +799,11 @@ function defState(){return{
  settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''},
  targets:{kcal:1779,p:145,f:43,c:202},
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
- body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]}
+ body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]},
+ bansho:{boards:[],ptr:{takken:0,teach:0,relearn:0,read:0,sum:0},openDows:[0,1,2,4],
+  goal:{n:'宅建 合格（36点で通す）',date:'2027-10-17',apply:'2027-07-01'},
+  vow:{n:'板書が10枚たまるまで、新しいアプリ・仕組みを作らない',need:10,on:true},
+  miles:{}}
 };}
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))||defState();}catch(e){S=defState();}
  const seen=S.foodSeed||1;   // 既定値マージより先に読む（上書きされるため）
@@ -990,6 +1061,11 @@ function renderChar(){
  document.getElementById('bossMid').innerHTML='<div class="k" style="color:#e0a0a0">👺 小ボス</div><div class="v">'+esc(S.boss.mid.n)+'</div>'
   +'<div class="tiny" style="margin-top:8px">達成基準：'+esc(S.boss.mid.cri||'（未設定）')+due+'</div>';
 
+ const G=BN().goal;
+ document.getElementById('bossStudy').innerHTML='<div class="k" style="color:#8fc4dd">👺 小ボス2</div><div class="v">'+esc(G.n)+'</div>'
+  +'<div class="tiny" style="margin-top:8px">'+G.date+' 本番まで '+daysTo(G.date)+'日　／　申込まで '+daysTo(G.apply)+'日<br>'
+  +'板書 '+BN().boards.length+'枚（✅卒業 '+gradCount()+'）</div>';
+
  const keys=Object.keys(STATS), vals=keys.map(k=>S.stats[k]||0), mx=Math.max(50,...vals);
  const cx=80,cy=82,R=54;
  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
@@ -1094,6 +1170,15 @@ function buildMd(){
   wk.forEach(k=>{const r=bb.days[k];
    t+='| '+k+' | '+r.w+'kg | '+(typeof r.fat==='number'?r.fat+'%':'—')+' | '
     +(r.drink==='kept'?'💧守った':r.drink==='drank'?'🍺飲んだ':'解禁日')+' |\n';});
+  t+='\n';}
+ const bn=BN();
+ t+='\n## 板書（学び）\n\n';
+ t+='- 通算 '+bn.boards.length+'枚 ／ ✅卒業 '+gradCount()+' ／ 週4枚を達成した週 '+goodWeeks()+'\n';
+ t+='- 宅建 本番まで '+daysTo(bn.goal.date)+'日（申込まで '+daysTo(bn.goal.apply)+'日）\n';
+ t+='- 誓い：'+bn.vow.n+'（'+bn.boards.length+' / '+(bn.vow.need||10)+'）\n\n';
+ if(bn.boards.length){t+='| 日付 | レーン | テーマ | 形 | 理解度 |\n|---|---|---|---|---|\n';
+  bn.boards.slice().sort((x,y)=>x.date<y.date?1:-1).slice(0,14).forEach(b=>{const g=laneOf(b.lane),u=UND[b.und]||UND.seed;
+   t+='| '+b.date+' | '+g.n+' | '+b.theme+' | '+(b.mode==='full'?'◯':'△')+' | '+u.ic+u.n+' |\n';});
   t+='\n';}
  t+='\n## 直近の振り返り\n\n';
  Object.keys(S.days).sort().slice(-14).reverse().forEach(k=>{const d=S.days[k];
@@ -1534,6 +1619,244 @@ function renderMac(){
  document.getElementById('macBox').innerHTML='<label class="f">MACチェック</label>'
   +items.map(x=>'<div class="tiny" style="display:flex;gap:7px;padding:3px 0"><span>'+(x[2]?'✅':'⬜️')+'</span><span><b style="color:var(--tx2)">'+x[0]+'</b> — '+x[1]+'</span></div>').join('');}
 
+/* ============ 板書（学び） ============ */
+function BN(){
+ if(!S.bansho)S.bansho=defState().bansho;
+ const d=defState().bansho;for(const k in d)if(S.bansho[k]===undefined)S.bansho[k]=d[k];
+ return S.bansho;}
+function banshoOf(k){return BN().boards.find(b=>b.date===k);}
+function monOf(k){const off=(dObj(k).getDay()+6)%7;return addD(k,-off);}
+function weekCells(base){const mon=monOf(base),a=[];for(let i=0;i<7;i++){const k=addD(mon,i);a.push({k:k,b:banshoOf(k)});}return a;}
+function weekCount(base){return weekCells(base).filter(c=>c.b).length;}
+function goodWeeks(){const w={};BN().boards.forEach(b=>{const m=monOf(b.date);w[m]=(w[m]||0)+1;});
+ return Object.values(w).filter(n=>n>=4).length;}
+function gradCount(){return BN().boards.filter(b=>b.und==='done').length;}
+function dueBoards(k){k=k||dkey();
+ return BN().boards.filter(b=>b.next&&b.next<=k&&b.und!=='done').sort((a,b)=>a.next<b.next?-1:1);}
+function daysTo(d){return Math.round((dObj(d)-dObj(dkey()))/86400000);}
+function laneOf(id){return LANES[id]||{n:'板書',i:'📚',c:'#7fc4c4',src:''};}
+
+function todayLesson(k){
+ k=k||dkey();const bn=BN(),dow=dObj(k).getDay();
+ if(SEP_PLAN[k])return{lane:SEP_PLAN[k][0],theme:SEP_PLAN[k][1],skip:!!SEP_PLAN[k][2],src:'9月学習計画'};
+ if(!bn.openDows.includes(dow))return{lane:null,theme:'',rest:true,src:''};
+ const lane=DOW_LANE[dow];
+ if(lane==='again')return{lane:'again',theme:'7日前の板書を、白紙からもう一度書く',src:'再演デー'};
+ const q=QUEUE[lane]||[],i=bn.ptr[lane]||0;
+ return{lane:lane,theme:q[i]||'（キューが空。板書ネタバンクから1つ選ぶ）',src:laneOf(lane).src};}
+
+/* 板書を1枚記録する。mode: 'full'=板1枚＋写真 / 'line'=1行板書 */
+function recBoard(mode){
+ const k=dkey(),bn=BN();
+ if(banshoOf(k)){toast('今日はもう記録してある');return;}
+ const t=todayLesson(k);
+ if(t.lane==='again'){toast('今日は再演デー。下の「再演」から選ぶ');return;}
+ if(t.rest&&!confirm('今日はレーンが開いていない日。それでも1枚書いた？'))return;
+ const lane=t.lane||'takken';
+ const theme=(t.rest?(prompt('何の板書を書いた？','')||'').trim():t.theme);
+ if(!theme){toast('テーマがないと棚に置けない');return;}
+ bn.boards.push({id:uid(),date:k,lane:lane,theme:theme,mode:mode,und:'seed',next:addD(k,7),rev:0});
+ const q=QUEUE[lane]||[],idx=q.indexOf(theme);
+ if(idx>=0&&idx>=(bn.ptr[lane]||0))bn.ptr[lane]=idx+1;
+ closeBansho(mode);
+ save();renderAll();
+ toast(mode==='full'?'◎ 板1枚 ＋16 EXP':'◯ 1行板書 ＋10 EXP');}
+
+/* 今日の作戦にある📚板書クエストを自動で判定する（食事と同じ仕組み） */
+function closeBansho(mode){
+ const k=dkey(),d=getDay(k,true);
+ let b=d.plan.find(x=>x.cat==='bansho');
+ if(!b){b={id:uid(),s:'20:30',m:15,t:'板書 1コマ',cat:'bansho',
+   lo:'テーマ名と核心の1文だけ書く（1行板書）',hi:'板1枚を書いて写真を撮る',
+   ifthen:'もし時間がなければ、1行板書だけ書いて△で数える',st:'todo',xp:0};
+  d.plan.push(b);sortBoxes(d.plan);}
+ const want=mode==='full'?'hi':'lo';
+ if(b.st==='lo'||b.st==='hi')addXp(-(b.xp||0),b.cat);
+ b.st=want;b.xp=want==='hi'?16:10;addXp(b.xp,b.cat);}
+
+function undoBoard(id){
+ const bn=BN(),i=bn.boards.findIndex(b=>b.id===id);if(i<0)return;
+ if(!confirm('この板書を取り消す？'))return;
+ const b=bn.boards[i];
+ if(b.date===dkey()){const d=S.days[b.date];
+  const q=d&&d.plan.find(x=>x.cat==='bansho');
+  if(q&&(q.st==='lo'||q.st==='hi')){addXp(-(q.xp||0),q.cat);q.st='todo';q.xp=0;}}
+ const lane=b.lane,pv=(bn.ptr[lane]||0);
+ if(pv>0&&(QUEUE[lane]||[])[pv-1]===b.theme)bn.ptr[lane]=pv-1;
+ bn.boards.splice(i,1);save();renderAll();toast('取り消した');}
+
+/* 再演：白紙から書いてから押す */
+function reviewBoard(id,lv){
+ const b=BN().boards.find(x=>x.id===id);if(!b)return;
+ const k=dkey();
+ b.und=lv;b.rev=(b.rev||0)+1;b.lastRev=k;
+ b.next=lv==='done'?null:addD(k,UND[lv].d);
+ if(lv==='done')b.grad=k;
+ addXp(8,'bansho');save();renderAll();
+ toast(lv==='done'?'✅ 卒業。＋8 EXP':UND[lv].ic+' '+addD(k,UND[lv].d)+'に予約。＋8 EXP');}
+
+/* 今日の作戦に15分の板書ボックスを置く */
+function putBanshoBox(){
+ const k=dkey(),d=getDay(k,true);
+ if(d.plan.find(x=>x.cat==='bansho')){toast('もう置いてある');switchView('today');return;}
+ d.plan.push({id:uid(),s:mh(Math.round((nowMin()+30)/15)*15),m:15,t:'板書 1コマ',cat:'bansho',
+  lo:'テーマ名と核心の1文だけ書く（1行板書）',hi:'板1枚を書いて写真を撮る',
+  ifthen:'もし時間がなければ、1行板書だけ書いて△で数える',st:'todo',xp:0});
+ sortBoxes(d.plan);save();renderAll();toast('今日の作戦に置いた');}
+
+function toggleLane(dow){
+ const bn=BN(),i=bn.openDows.indexOf(dow);
+ if(i<0)bn.openDows.push(dow);else bn.openDows.splice(i,1);
+ save();renderLearn();}
+function toggleMile(d){
+ const bn=BN();if(!bn.miles[d])bn.miles[d]={};
+ bn.miles[d].done=!bn.miles[d].done;save();renderLearn();}
+
+/* ---- 描画 ---- */
+function renderLearn(){
+ const k=dkey(),bn=BN(),t=todayLesson(k),got=banshoOf(k),n=bn.boards.length;
+ const L=laneOf(t.lane);
+
+ /* 今日の1コマ */
+ let h='<h2 class="sec">今日の1コマ</h2><div class="card">';
+ if(got){
+  const g=laneOf(got.lane);
+  h+='<div class="row"><span style="font-size:20px">'+g.i+'</span><div class="sp" style="margin-left:8px">'
+   +'<div style="font-weight:700;line-height:1.45">'+esc(got.theme)+'</div>'
+   +'<div class="tiny">'+g.n+'レーン ／ '+(got.mode==='full'?'◯ 板1枚':'△ 1行板書')+' ／ 再演 '+(got.next||'—')+'</div></div></div>'
+   +'<div class="warnbox ok" style="margin-top:11px"><span>✅</span><span>今日はもう書いた。<b>ここで終わってよい。</b>次にやることは7日後の再演だけ。</span></div>'
+   +'<button class="btn sm wide" style="margin-top:9px" onclick="undoBoard(\''+got.id+'\')">取り消す</button>';
+ }else if(t.rest){
+  h+='<div class="tiny" style="line-height:1.7">今日は<b>レーンが開いていない日</b>。板書はやらない日として設計してある。<br>それでも書いたときだけ、下のボタンで記録する。</div>'
+   +'<div class="acts" style="margin-top:11px">'
+   +'<button onclick="recBoard(\'full\')">◎ 書いた</button>'
+   +'<button onclick="recBoard(\'line\')">△ 1行だけ</button></div>';
+ }else if(t.lane==='again'){
+  const du=dueBoards(k);
+  h+='<div class="row"><span style="font-size:20px">🔁</span><div class="sp" style="margin-left:8px">'
+   +'<div style="font-weight:700">再演デー</div><div class="tiny">'+(du.length?du.length+'枚が再演待ち':'まだ再演する板書がない')+'</div></div></div>'
+   +'<div class="tiny" style="margin-top:9px;line-height:1.7">新しい単元は進めない。<b>ノートを見ずに、白紙にもう一度書く。</b>書けなかった所だけ赤で足す。</div>';
+ }else{
+  h+='<div class="row"><span style="font-size:20px">'+L.i+'</span><div class="sp" style="margin-left:8px">'
+   +'<div class="tiny">'+L.n+'レーン ／ '+esc(t.src||'')+'</div>'
+   +'<div style="font-weight:700;font-size:15px;line-height:1.5;margin-top:3px">'+esc(t.theme)+'</div></div></div>';
+  if(t.skip)h+='<div class="warnbox" style="margin-top:11px"><span>🕊</span><span>ここは<b>最初から飛ばしてよい枠</b>。飛ばしても今月の予定どおり。</span></div>';
+  h+='<div class="tiny" style="margin-top:11px;line-height:1.7">15分。きれいさは要らない。<b>図を1つ描く。</b>書けたら写真を撮って、要点3行だけ残す。</div>'
+   +'<div class="acts" style="margin-top:11px">'
+   +'<button onclick="recBoard(\'full\')">◎ 板1枚＋写真</button>'
+   +'<button onclick="recBoard(\'line\')">△ 1行板書</button>'
+   +'<button onclick="switchView(\'plan\')">今日はやらない</button></div>'
+   +'<button class="btn sm wide" style="margin-top:8px" onclick="putBanshoBox()">＋ 今日の作戦に15分を置く</button>';
+ }
+ h+='</div>';
+ document.getElementById('lnToday').innerHTML=h;
+
+ /* 週トラッカー */
+ const cells=weekCells(k),wc=weekCount(k);
+ let w='<h2 class="sec">今週　'+wc+' / 4 枚　'+(wc>=4?'<span style="color:#a9dfb0">合格</span>':'')+'</h2><div class="card">'
+  +'<div class="grid7">'+cells.map(c=>{
+   const isT=c.k===dkey(),lane=c.b?laneOf(c.b.lane):null;
+   const bg=c.b?(c.b.mode==='full'?'rgba(127,196,196,.30)':'rgba(127,196,196,.12)'):'#161a24';
+   return '<div class="gcell" title="'+(c.b?esc(c.b.theme):'')+'" style="background:'+bg+';'
+    +(c.b?'color:#bfe6e6;font-weight:700;border-color:#3f6d6d;':'')
+    +(isT?'box-shadow:0 0 0 2px #4a9ee0;':'')+'">'+(c.b?(c.b.mode==='full'?'◯':'△'):WD[dObj(c.k).getDay()])+'</div>';}).join('')
+  +'</div>'
+  +'<div class="sb" style="height:6px;border-radius:3px;background:#252a38;margin-top:11px;overflow:hidden">'
+  +'<i style="display:block;height:100%;width:'+Math.min(100,wc/4*100)+'%;background:#7fc4c4"></i></div>'
+  +'<div class="tiny" style="margin-top:9px">週7枚を狙わない。<b>4枚で勝ち。</b>土日のどちらかは飛んでいい。◯＝板1枚／△＝1行板書。</div>'
+  +'<div class="chips" style="margin-top:11px">'+[1,2,3,4,5,6,0].map(d=>
+    '<button class="chip'+(bn.openDows.includes(d)?' on':'')+'" onclick="toggleLane('+d+')">'
+    +WD[d]+' '+laneOf(DOW_LANE[d]).i+'</button>').join('')+'</div>'
+  +'<div class="tiny" style="margin-top:7px">開けているレーン。<b>10月に開けるのは1つだけ</b>（3つ同時に開けない）。</div>'
+  +'</div>';
+ document.getElementById('lnWeek').innerHTML=w;
+
+ /* 再演 */
+ const du=dueBoards(k);
+ let a='<h2 class="sec">再演　'+(du.length?du.length+'枚':'なし')+'</h2>';
+ if(!n){a+='<div class="card"><div class="tiny">1枚目を書くと、7日後にここへ戻ってくる。</div></div>';}
+ else if(!du.length){const nx=bn.boards.filter(b=>b.next).sort((x,y)=>x.next<y.next?-1:1)[0];
+  a+='<div class="card"><div class="tiny">'+(nx?'いまは再演待ちなし。次の予約は '+nx.next+'。':'全部✅卒業した。次の1枚を書こう。')+'</div></div>';}
+ else{a+=du.map(b=>{const g=laneOf(b.lane);
+   return '<div class="card"><div class="tiny">'+g.i+' '+g.n+' ／ '+b.date+'に書いた ／ 予約 '+b.next+'</div>'
+    +'<div style="font-weight:700;margin-top:4px;line-height:1.45">'+esc(b.theme)+'</div>'
+    +'<div class="tiny" style="margin-top:8px">ノートを見ずに白紙へ。書いてから押す。</div>'
+    +'<div class="acts" style="margin-top:9px">'
+    +'<button onclick="reviewBoard(\''+b.id+'\',\'seed\')">🌱 まだ</button>'
+    +'<button onclick="reviewBoard(\''+b.id+'\',\'mid\')">🔁 あやふや</button>'
+    +'<button onclick="reviewBoard(\''+b.id+'\',\'done\')">✅ 話せた</button>'
+    +'</div></div>';}).join('');}
+ document.getElementById('lnAgain').innerHTML=a;
+
+ /* 棚 */
+ let sh='';
+ if(n){
+  const byU={seed:0,mid:0,done:0};bn.boards.forEach(b=>byU[b.und]=(byU[b.und]||0)+1);
+  sh='<h2 class="sec">板書の棚　'+n+'枚</h2>'
+   +'<div class="mgrid">'
+   +[[n,'通算 枚数'],[gradCount(),'✅ 卒業（1分で話せた）'],[byU.mid,'🔁 あやふや'],[goodWeeks(),'週4枚を達成した週']]
+     .map(m=>'<div class="metric"><div class="n">'+m[0]+'</div><div class="l">'+m[1]+'</div></div>').join('')
+   +'</div><div style="height:9px"></div>'
+   +bn.boards.slice().sort((x,y)=>x.date<y.date?1:-1).slice(0,20).map(b=>{const g=laneOf(b.lane),u=UND[b.und]||UND.seed;
+    return '<div class="know" style="border-left-color:'+g.c+'"><div class="q">'+esc(b.theme)+'</div>'
+     +'<div class="s">'+g.i+' '+g.n+' ／ '+b.date+' ／ '+(b.mode==='full'?'◯板1枚':'△1行')+' ／ '+u.ic+u.n
+     +(b.next?' ／ 次 '+b.next:'')+'</div></div>';}).join('');
+ }
+ document.getElementById('lnShelf').innerHTML=sh;
+
+ /* 宅建 */
+ const G=bn.goal,dl=daysTo(G.date),ap=daysTo(G.apply);
+ document.getElementById('lnGoal').innerHTML='<h2 class="sec">👺 小ボス2：'+esc(G.n)+'</h2><div class="card">'
+  +'<div class="mgrid">'
+  +'<div class="metric"><div class="n">'+dl+'</div><div class="l">本番まで（'+G.date+'）</div></div>'
+  +'<div class="metric"><div class="n">'+ap+'</div><div class="l">申込まで（'+G.apply+'ごろ）</div></div></div>'
+  +(ap<=60?'<div class="warnbox" style="margin-top:11px"><span>⚠️</span><span><b>申込を逃すと1年待ち。</b>例年7月上旬〜末。ここだけは絶対に落とさない。</span></div>':'')
+  +'<div class="tiny" style="margin-top:11px;line-height:1.7">36点で通す設計。<b>業法18／法令6／権利7／税その他5。</b><br>'
+  +'法令上の制限（都計法・建基法・盛土規制法）は<b>道路と開発の実務そのもの</b>＝最大のアドバンテージ。<br>'
+  +'権利関係は深追いしない。迷ったら業法に戻る。</div></div>';
+
+ /* 誓い */
+ const need=bn.vow.need||10,ok=n>=need;
+ document.getElementById('lnVow').innerHTML='<h2 class="sec">誓い</h2><div class="card">'
+  +'<div style="font-weight:700;line-height:1.5">'+(ok?'🔓 ':'🔒 ')+esc(bn.vow.n)+'</div>'
+  +'<div class="sb" style="height:6px;border-radius:3px;background:#252a38;margin-top:11px;overflow:hidden">'
+  +'<i style="display:block;height:100%;width:'+Math.min(100,n/need*100)+'%;background:'+(ok?'#5fbf7f':'#d9a441')+'"></i></div>'
+  +'<div class="tiny" style="margin-top:8px">'+n+' / '+need+' 枚'
+  +(ok?'　—　解禁。ただし作る前に、それは板書の代わりになっていないか一度考える。'
+      :'　—　続かない時の自分は「新しい仕組みを作る」。作るのは、書いてからでいい。')+'</div></div>';
+
+ /* 点検欄 */
+ document.getElementById('lnMiles').innerHTML='<h2 class="sec">点検欄</h2>'
+  +MILES.map(m=>{const st=(bn.miles[m.d]||{}),dd=daysTo(m.d),soon=dd>=0&&dd<=45;
+   return '<div class="card" style="padding:12px;'+(soon?'border-color:#5a4a2a;':'')+'" onclick="toggleMile(\''+m.d+'\')">'
+    +'<div class="row"><span>'+(st.done?'✅':'⬜️')+'</span><div class="sp" style="margin-left:8px">'
+    +'<div class="tiny">'+m.d+'　'+(dd>=0?'あと'+dd+'日':'過ぎた')+'</div>'
+    +'<div style="line-height:1.5;margin-top:2px;'+(st.done?'opacity:.5;text-decoration:line-through':'')+'">'+m.t+'</div>'
+    +'</div></div></div>';}).join('')
+  +'<div class="tiny" style="margin:9px 2px 0">出典：Permanent Notes／学びの設計（ずっと勉強していたい・41歳からの29年）</div>';
+}
+
+function buildBanshoMd(){
+ const bn=BN(),now=new Date();
+ let t='# 📒 板書ログ（アプリ書き出し）\n\n> 書き出し: '+now.toLocaleString('ja-JP')+'　／　記録の実体はゼンヤ（localStorage）\n\n';
+ t+='- 通算 **'+bn.boards.length+'枚**（◯板1枚 '+bn.boards.filter(b=>b.mode==='full').length+' ／ △1行 '+bn.boards.filter(b=>b.mode==='line').length+'）\n';
+ t+='- ✅卒業（白紙再現＋1分で説明）**'+gradCount()+'枚**　／　🔁あやふや '+bn.boards.filter(b=>b.und==='mid').length+'　／　🌱まだ '+bn.boards.filter(b=>b.und==='seed').length+'\n';
+ t+='- 週4枚を達成した週：**'+goodWeeks()+'週**\n';
+ t+='- 宅建 本番まで '+daysTo(bn.goal.date)+'日（'+bn.goal.date+'）／ 申込まで '+daysTo(bn.goal.apply)+'日\n\n';
+ const wk={};bn.boards.forEach(b=>{const m=monOf(b.date);(wk[m]=wk[m]||[]).push(b);});
+ t+='## 週次トラッカー\n\n| 週(月曜) | 月 | 火 | 水 | 木 | 金 | 土 | 日 | 枚数 | 判定 |\n|---|---|---|---|---|---|---|---|---|---|\n';
+ Object.keys(wk).sort().forEach(m=>{
+  let row='| '+m+' ';
+  for(let i=0;i<7;i++){const b=banshoOf(addD(m,i));row+='| '+(b?(b.mode==='full'?'◯':'△'):'−')+' ';}
+  const c=wk[m].length;row+='| '+c+' | '+(c>=4?'✅勝ち':'—')+' |\n';t+=row;});
+ t+='\n## 全板書\n\n| 日付 | レーン | テーマ | 形 | 理解度 | 再演 | 回数 |\n|---|---|---|---|---|---|---|\n';
+ bn.boards.slice().sort((x,y)=>x.date<y.date?1:-1).forEach(b=>{const g=laneOf(b.lane),u=UND[b.und]||UND.seed;
+  t+='| '+b.date+' | '+g.i+g.n+' | '+b.theme+' | '+(b.mode==='full'?'◯板1枚':'△1行')+' | '+u.ic+u.n+' | '+(b.next||'卒業')+' | '+(b.rev||0)+' |\n';});
+ t+='\n## 点検欄\n\n';
+ MILES.forEach(m=>{const st=bn.miles[m.d]||{};t+='- ['+(st.done?'x':' ')+'] **'+m.d+'** '+m.t+'\n';});
+ t+='\n---\n\n関連: [[00_板書MOC]] / [[板書_運用ガイド]] / [[宅建_合格プラン_2027]] / [[学びの設計（ずっと勉強していたい・41歳からの29年）]]\n';
+ return t;}
+
 /* ============ view ============ */
 function switchView(v){
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
@@ -1545,6 +1868,7 @@ function renderAll(){
  if(on('v-today'))renderToday();
  if(on('v-plan'))renderPlan();
  if(on('v-meal'))renderMeal();
+ if(on('v-learn'))renderLearn();
  if(on('v-char'))renderChar();
  if(on('v-log'))renderLog();}
 
@@ -1661,6 +1985,11 @@ document.getElementById('btnObsidian').onclick=()=>{
  const u='obsidian://new?vault='+encodeURIComponent('うるトトの思考')
   +'&file='+encodeURIComponent('04_output/zenya/冒険ログ.md')
   +'&overwrite=true&content='+encodeURIComponent(buildMd());
+ location.href=u;};
+document.getElementById('btnBansho').onclick=()=>{
+ const u='obsidian://new?vault='+encodeURIComponent('うるトトの思考')
+  +'&file='+encodeURIComponent('02_Research/Bansho/板書ログ_アプリ.md')
+  +'&overwrite=true&content='+encodeURIComponent(buildBanshoMd());
  location.href=u;};
 document.getElementById('btnBackup').onclick=()=>copyTx(JSON.stringify(S),'バックアップをコピーした');
 document.getElementById('btnRestore').onclick=()=>{
