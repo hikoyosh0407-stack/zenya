@@ -577,6 +577,26 @@ label.f:first-child{margin-top:0}
   <div id="qzBody"></div>
 </div>
 
+<!-- 食品マスタ編集シート -->
+<div class="sheet" id="sheetFood">
+  <div class="grab"></div>
+  <h3>食品を直す</h3>
+  <label class="f">品名</label>
+  <input type="text" id="efName">
+  <div class="f2" style="margin-top:10px">
+    <div><label class="f">kcal</label><input type="number" id="efK" step="1"></div>
+    <div><label class="f">P (g)</label><input type="number" id="efP" step="0.1"></div>
+  </div>
+  <div class="f2" style="margin-top:10px">
+    <div><label class="f">F (g)</label><input type="number" id="efF" step="0.1"></div>
+    <div><label class="f">C (g)</label><input type="number" id="efC" step="0.1"></div>
+  </div>
+  <div class="f2" style="margin-top:16px">
+    <button class="btn" id="btnDelFood">削除</button>
+    <button class="btn pri" id="btnSaveFood">保存</button>
+  </div>
+</div>
+
 <!-- 目標値・マスタシート -->
 <div class="sheet" id="sheetTarget">
   <div class="grab"></div>
@@ -590,7 +610,7 @@ label.f:first-child{margin-top:0}
     <div><label class="f">C (g)</label><input type="number" id="tC" step="5"></div>
   </div>
   <button class="btn pri wide" id="btnSaveTarget" style="margin-top:14px">保存</button>
-  <label class="f">食品マスタ（タップで削除）</label>
+  <label class="f">食品マスタ（タップで数値を直す）</label>
   <div id="masterList" style="max-height:40vh;overflow:auto"></div>
   <div class="tiny" style="margin-top:10px">出典：02_Research/Training/食事管理.md（目標 1779kcal / P145 F43 C202）</div>
 </div>
@@ -757,9 +777,10 @@ const FOODS_DEFAULT=[
  {n:'くるみ',p:2.7,f:9.8,c:2.6,kcal:106},
  {n:'バナナ',p:1,f:1,c:23,kcal:86},
  {n:'定番セット（昼まで一式）',p:121,f:32,c:56,kcal:1000},
- {n:'塩昆布おにぎり（ご飯150g）',p:5,f:0.5,c:58,kcal:244,seed:2}
+ {n:'塩昆布おにぎり（ご飯150g）',p:5,f:0.5,c:58,kcal:244,seed:2},
+ {n:'無水マッスルカレー（ご飯込み）',p:32.3,f:8.1,c:90.5,kcal:588,seed:3,fix:true}
 ];
-const FOOD_SEED=2;
+const FOOD_SEED=3;
 const TPL_DEFAULT=[
  {id:'wd',name:'平日',boxes:[
   {s:'05:30',m:20,t:'起床の儀',cat:'habit',lo:'体重と体脂肪率を測る',hi:'測る＋ビジョンボードを見る',ifthen:'もし二度寝しそうなら、まず立って体重計に乗るだけ'},
@@ -812,7 +833,9 @@ function load(){try{S=JSON.parse(localStorage.getItem(KEY))||defState();}catch(e
  // 後から追加した既定食品だけを取り込む（消した古い品は復活させない）
  if(seen<FOOD_SEED){
   FOODS_DEFAULT.filter(f=>(f.seed||1)>seen).forEach(f=>{
-   if(!S.foods.some(x=>x.n===f.n))S.foods.push(Object.assign({id:uid()},f));});
+   const ex=S.foods.find(x=>x.n===f.n);
+   if(!ex)S.foods.push(Object.assign({id:uid()},f));
+   else if(f.fix){ex.kcal=f.kcal;ex.p=f.p;ex.f=f.f;ex.c=f.c;}});
   S.foodSeed=FOOD_SEED;save();}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('保存できませんでした');}}
 
@@ -1517,9 +1540,30 @@ function renderMasterPicker(){
   :'<div class="tiny">見つからない。下の「マスタにないもの」に入れる。</div>';}
 function renderMasterList(){
  document.getElementById('masterList').innerHTML=S.foods.map(f=>
-  '<button class="fchip" onclick="delFood(\''+f.id+'\')"><div class="n1">'+esc(f.n)+' ✕</div>'
+  '<button class="fchip" onclick="editFood(\''+f.id+'\')"><div class="n1">'+esc(f.n)+' ✎</div>'
   +'<div class="n2">'+f.kcal+'kcal ・ P'+f.p+' F'+f.f+' C'+f.c+'</div></button>').join('');}
-function delFood(id){if(!confirm('マスタから消す？'))return;S.foods=S.foods.filter(f=>f.id!==id);save();renderMasterList();}
+function delFood(id){if(!confirm('マスタから消す？'))return;S.foods=S.foods.filter(f=>f.id!==id);save();closeSheet();toast('削除した');}
+function editFood(id){
+ const f=S.foods.find(x=>x.id===id);if(!f)return;
+ window._editFood=id;
+ document.getElementById('efName').value=f.n;
+ document.getElementById('efK').value=f.kcal;document.getElementById('efP').value=f.p;
+ document.getElementById('efF').value=f.f;document.getElementById('efC').value=f.c;
+ openSheet('sheetFood');}
+function saveFood(){
+ const id=window._editFood,f=S.foods.find(x=>x.id===id);if(!f)return;
+ const before=f.n;
+ const nf={n:document.getElementById('efName').value.trim()||f.n,
+  kcal:+document.getElementById('efK').value||0,p:+document.getElementById('efP').value||0,
+  f:+document.getElementById('efF').value||0,c:+document.getElementById('efC').value||0};
+ // 過去の食事ログ（同名）も直すか
+ let hits=0;
+ Object.values(S.meals||{}).forEach(list=>list.forEach(m=>{if(m.n===before)hits++;}));
+ if(hits&&confirm('この品を使った過去の記録 '+hits+'件 も同じ数値に直しますか？\n（食べた事実は消えません。数値だけ更新します）')){
+  Object.values(S.meals).forEach(list=>list.forEach(m=>{
+   if(m.n===before){m.n=nf.n;m.kcal=nf.kcal;m.p=nf.p;m.f=nf.f;m.c=nf.c;}}));}
+ Object.assign(f,nf);
+ save();closeSheet();renderAll();toast('マスタを更新した');}
 
 /* ============ カレンダー連携 ============ */
 function icsEsc(x){return(x||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
@@ -1579,7 +1623,7 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -1952,6 +1996,8 @@ document.getElementById('btnFreeAdd').onclick=()=>{
  addMeal(f,true);closeSheet();};
 document.getElementById('btnCloseMeal').onclick=closeMeal;
 document.getElementById('btnSaveRecord').onclick=saveRecord;
+document.getElementById('btnSaveFood').onclick=saveFood;
+document.getElementById('btnDelFood').onclick=()=>delFood(window._editFood);
 document.getElementById('btnImportPitari').onclick=importPitari;
 document.getElementById('dcPrev').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()-1);dcBase=dkey(d);renderDryCal();};
 document.getElementById('dcNext').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()+1);dcBase=dkey(d);renderDryCal();};
