@@ -352,6 +352,7 @@ label.f:first-child{margin-top:0}
   <div class="card">
     <div class="kcalbar"><i id="kcalFill"></i><div class="lb" id="kcalLb">-</div></div>
     <div class="lanes3" id="lanes"></div>
+    <div class="tiny" style="text-align:center" id="pBasis"></div>
     <div class="tiny" style="text-align:center">枠の上端＝目標ライン。Fレーンだけ細く二重枠にしてある（いちばん溢れやすいから）。</div>
   </div>
 
@@ -609,6 +610,13 @@ label.f:first-child{margin-top:0}
     <div><label class="f">F (g)</label><input type="number" id="tF" step="1"></div>
     <div><label class="f">C (g)</label><input type="number" id="tC" step="5"></div>
   </div>
+  <div style="margin-top:14px;padding:12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)">
+    <div class="row"><span style="font-size:13px;font-weight:600">Pを体重から自動計算</span>
+      <span class="sp"></span><button class="chip" id="tPAuto">オフ</button></div>
+    <div class="tiny" style="margin-top:6px">除脂肪を狙う時期は体重1kgあたり 1.6〜2.0g が目安。直近に記録した体重を使う。</div>
+    <div class="chips" id="tPKg" style="margin-top:10px"></div>
+    <div class="tiny" id="tPCalc" style="margin-top:9px"></div>
+  </div>
   <button class="btn pri wide" id="btnSaveTarget" style="margin-top:14px">保存</button>
   <label class="f">食品マスタ（タップで数値を直す）</label>
   <div id="masterList" style="max-height:40vh;overflow:auto"></div>
@@ -818,7 +826,7 @@ function defState(){return{
  days:{}, templates:JSON.parse(JSON.stringify(TPL_DEFAULT)), titles:[],
  rewards:['コーヒーを1杯、丁寧に淹れる','15分だけ昼寝する','由良の海の写真を見返す','好きな動画を1本だけ観る'],
  settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''},
- targets:{kcal:1779,p:145,f:43,c:202},
+ targets:{kcal:1779,p:145,f:43,c:202,pMode:'fixed',pPerKg:2.0},
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
  body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]},
  bansho:{boards:[],ptr:{takken:0,teach:0,relearn:0,read:0,sum:0},openDows:[0,1,2,4],
@@ -957,7 +965,7 @@ function renderToday(){
   return '<div class="'+cls+'"><div class="t">'+b.s+'</div><div class="dot"></div>'
    +'<div class="bx" style="border-left-color:'+CATS[b.cat].c+'">'
    +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
-   +(b.cat==='meal'?(function(){const t=mealTotal(k),T=S.targets;
+   +(b.cat==='meal'?(function(){const t=mealTotal(k),T=effT();
       return '<div class="sub" style="color:#e8c07a">'+Math.round(t.kcal)+' / '+T.kcal+' kcal ・ P'+r1(t.p)+'/'+T.p+'</div>';})()
      :(b.lo?'<div class="sub">最低：'+esc(b.lo)+'</div>':''))
    +(showActs?'<div class="acts">'
@@ -1462,6 +1470,20 @@ function setMinMode(v){const d=getDay(dkey(),true);d.minMode=v;d.minAuto=false;s
 
 /* ============ 食事 ============ */
 let curMealKey=null, mfSaveMaster=true;
+function latestWeight(){
+ const b=B(),ks=Object.keys(b.days).filter(k=>typeof b.days[k].w==='number').sort();
+ if(!ks.length)return null;
+ const k=ks[ks.length-1];return{w:b.days[k].w,k:k};}
+function effT(){
+ const T=S.targets;let p=T.p;
+ if(T.pMode==='auto'){const lw=latestWeight();if(lw)p=Math.round(lw.w*(T.pPerKg||2.0));}
+ return{kcal:T.kcal,p:p,f:T.f,c:T.c};}
+function pBasis(){
+ const T=S.targets;if(T.pMode!=='auto')return '';
+ const lw=latestWeight();
+ if(!lw)return '体重が未記録のため P'+T.p+'g（固定値）を使用中。1回記録すると自動になる。';
+ return 'P目標 '+Math.round(lw.w*(T.pPerKg||2.0))+'g ＝ '+lw.w+'kg × '+(T.pPerKg||2.0).toFixed(1)
+  +'（'+labelD(lw.k).replace('今日 ','').replace('昨日 ','')+'の体重）';}
 function mealsOf(k){if(!S.meals[k])S.meals[k]=[];return S.meals[k];}
 function mealTotal(k){const t={kcal:0,p:0,f:0,c:0};
  mealsOf(k).forEach(m=>{t.kcal+=m.kcal;t.p+=m.p;t.f+=m.f;t.c+=m.c;});
@@ -1469,7 +1491,7 @@ function mealTotal(k){const t={kcal:0,p:0,f:0,c:0};
 function r1(x){return Math.round(x*10)/10;}
 function renderMeal(){
  if(!curMealKey)curMealKey=dkey();
- const k=curMealKey,T=S.targets,t=mealTotal(k),list=mealsOf(k);
+ const k=curMealKey,T=effT(),t=mealTotal(k),list=mealsOf(k);
  document.getElementById('mealDate').textContent=labelD(k);
  document.getElementById('mealSub').textContent=list.length?list.length+'件 記録':'まだ記録がない';
 
@@ -1500,12 +1522,16 @@ function renderMeal(){
   '<div class="row"><span style="font-size:22px">'+(j.hi?'◎':j.lo?'◯':'⬜️')+'</span>'
   +'<div style="margin-left:9px"><div style="font-weight:700;font-size:14px">'+j.msg+'</div>'
   +'<div class="tiny">'+j.detail+'</div></div></div>';
+ const pb=pBasis();
+ const pbEl=document.getElementById('pBasis');
+ pbEl.innerHTML=pb?'<span style="color:#e8c07a">⚖️ '+esc(pb)+'</span>':'';
+ pbEl.style.marginBottom=pb?'6px':'0';
  renderDryToday();renderBoard21();
  document.getElementById('btnCloseMeal').textContent=
   (S.days[k]&&(S.days[k].plan||[]).some(b=>b.cat==='meal'&&b.st!=='todo'))?'🍽 締め直す':'🍽 今日の食事を締める';
 }
 function judgeMeal(k){
- const T=S.targets,t=mealTotal(k),n=mealsOf(k).length;
+ const T=effT(),t=mealTotal(k),n=mealsOf(k).length;
  if(!n)return{lo:false,hi:false,msg:'まだ記録なし',detail:'1食でも記録すれば最低ライン達成。'};
  const inK=t.kcal<=T.kcal, inP=t.p>=T.p*0.9;
  if(inK&&inP)return{lo:true,hi:true,msg:'最高ライン',detail:'目標kcal以内、タンパク質も足りている。'};
@@ -2017,11 +2043,34 @@ document.getElementById('btnSaveDry').onclick=()=>{
 document.getElementById('btnTarget').onclick=()=>{
  document.getElementById('tK').value=S.targets.kcal;document.getElementById('tP').value=S.targets.p;
  document.getElementById('tF').value=S.targets.f;document.getElementById('tC').value=S.targets.c;
- renderMasterList();openSheet('sheetTarget');};
+ renderPAuto();renderMasterList();openSheet('sheetTarget');};
+function renderPAuto(){
+ const T=S.targets,auto=T.pMode==='auto';
+ const b=document.getElementById('tPAuto');
+ b.textContent=auto?'オン':'オフ';b.classList.toggle('on',auto);
+ const tp=document.getElementById('tP');
+ tp.disabled=auto;tp.style.opacity=auto?.55:1;
+ tp.value=auto?effT().p:T.p;   // 自動中は計算結果を映す（保存時は固定値を温存）
+ document.getElementById('tPKg').innerHTML=[1.6,1.7,1.8,1.9,2.0].map(v=>
+  '<button class="chip'+((T.pPerKg||2.0)===v?' on':'')+'" data-v="'+v+'"'+(auto?'':' disabled style="opacity:.4"')+'>×'+v.toFixed(1)+'</button>').join('');
+ document.getElementById('tPKg').querySelectorAll('button').forEach(el=>el.onclick=()=>{
+  if(S.targets.pMode!=='auto')return;
+  S.targets.pPerKg=+el.dataset.v;save();renderPAuto();});
+ const lw=latestWeight();
+ document.getElementById('tPCalc').innerHTML=!auto
+  ?'オフの間は上のP欄の数値を使う（現在 '+T.p+'g）。'
+  :(lw?'<b style="color:var(--gold2)">'+lw.w+'kg × '+(T.pPerKg||2.0).toFixed(1)+' = '+Math.round(lw.w*(T.pPerKg||2.0))+'g</b>'
+     +'　<span style="color:var(--tx3)">'+lw.k+' の記録／固定値だと '+T.p+'g</span>'
+   :'体重の記録がまだない。からだタブの「今日を記録する」で1回入れると反映される。それまでは固定値 '+T.p+'g を使う。');}
+document.getElementById('tPAuto').onclick=()=>{
+ S.targets.pMode=(S.targets.pMode==='auto')?'fixed':'auto';save();renderPAuto();};
 document.getElementById('btnSaveTarget').onclick=()=>{
- S.targets={kcal:+document.getElementById('tK').value||1779,p:+document.getElementById('tP').value||145,
-  f:+document.getElementById('tF').value||43,c:+document.getElementById('tC').value||202};
- save();closeSheet();renderMeal();toast('目標を更新した');};
+ S.targets=Object.assign({},S.targets,{
+  kcal:+document.getElementById('tK').value||1779,
+  p:(S.targets.pMode==='auto')?S.targets.p:(+document.getElementById('tP').value||145),
+  f:+document.getElementById('tF').value||43,c:+document.getElementById('tC').value||202});
+ save();closeSheet();renderMeal();
+ toast(S.targets.pMode==='auto'?'目標を更新した（Pは体重から自動）':'目標を更新した');};
 document.getElementById('btnIcs').onclick=sendIcs;
 document.getElementById('btnPlanTx').onclick=()=>copyTx(planText(),'作戦をコピーした');
 document.getElementById('calWork').onclick=()=>{S.settings.calWork=!S.settings.calWork;save();renderCal();};
