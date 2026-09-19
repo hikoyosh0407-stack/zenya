@@ -173,6 +173,8 @@ label.f:first-child{margin-top:0}
 .gauge2 .k{font-size:11px;font-weight:800;letter-spacing:1px;width:22px}
 .gauge2 .bar{flex:1;height:13px;border-radius:7px;background:#0d1017;border:1px solid #2a3040;overflow:hidden;position:relative}
 .gauge2 .bar i{display:block;height:100%;transition:width .5s}
+.gauge2 .bar i.bst{position:absolute;top:0;bottom:0;height:100%;
+  background:repeating-linear-gradient(45deg,#7fe0c0,#7fe0c0 3px,#5fbf9f 3px,#5fbf9f 6px)}
 .gauge2 .bar .seg{position:absolute;top:0;bottom:0;width:1px;background:#0d1017}
 .gauge2 .v{font-size:11px;color:var(--tx2);width:34px;text-align:right;font-variant-numeric:tabular-nums}
 .dots{display:flex;gap:6px;margin-top:6px}
@@ -1168,7 +1170,8 @@ function renderLog(){
 }
 
 function avgCond(keys,kind){
- const v=keys.map(k=>S.days[k]&&S.days[k][kind]).filter(x=>typeof x==='number');
+ const v=keys.map(k=>{const d=S.days[k];if(!d)return null;
+  return kind==='mp'?effMP(d):kind==='hp'?effHP(d):d[kind];}).filter(x=>typeof x==='number');
  return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):0;}
 
 /* ============ 書き出し ============ */
@@ -1184,7 +1187,8 @@ function buildMd(){
  t+='## 直近14日\n\n| 日付 | 作戦 | 達成 | 実行率 | HP | MP | 振り返り |\n|---|---|---|---|---|---|---|\n';
  Object.keys(S.days).sort().slice(-14).forEach(k=>{const st=dayStats(k);if(!st)return;const dd=S.days[k];
   t+='| '+k+' | '+(st.eve?'前夜':(st.locked?'当日':'—'))+' | '+st.done+'/'+st.total+' | '+Math.round(st.rate*100)+'% | '
-   +(typeof dd.hp==='number'?dd.hp:'—')+' | '+(typeof dd.mp==='number'?dd.mp:'—')+' | '
+   +(typeof dd.hp==='number'?effHP(dd):'—')+' | '
+   +(typeof dd.mp==='number'?(effMP(dd)+((dd.boosts||[]).length?'('+(dd.boosts||[]).map(b=>b.i).join('')+')':'')):'—')+' | '
    +((dd.rev||'').replace(/\n/g,' ／ '))+' |\n';});
  t+='\n## 食事（直近14日）\n\n| 日付 | kcal | P | F | C | 判定 |\n|---|---|---|---|---|---|\n';
  Object.keys(S.meals||{}).sort().slice(-14).forEach(k=>{const m=mealTotal(k);if(!mealsOf(k).length)return;
@@ -1419,6 +1423,12 @@ function applyPitari(d){
  alert('ピタリから取り込みました。\n記録 '+n+'日分 ／ カード '+b.cards.length+'枚 ／ 開始日 '+b.startDate);}
 
 /* ============ コンディション（HP/MP） ============ */
+const BOOSTS=[{id:'zen',n:'瞑想',i:'🧘',stat:'mp',v:20,xp:10,
+ say:'頭の残量が戻る。MPが上がる行動として数える。'}];
+function boostsOf(d,stat){return (d.boosts||[]).filter(b=>!stat||BOOSTS.find(x=>x.id===b.id&&x.stat===stat));}
+function boostSum(d,stat){return boostsOf(d,stat).reduce((a,b)=>a+b.v,0);}
+function effMP(d){if(typeof d.mp!=='number')return null;return Math.min(100,d.mp+boostSum(d,'mp'));}
+function effHP(d){if(typeof d.hp!=='number')return null;return Math.min(100,d.hp+boostSum(d,'hp'));}
 const HPLB=[['🥴','ボロボロ'],['😮‍💨','だるい'],['😐','ふつう'],['🙂','いい'],['💪','絶好調']];
 const MPLB=[['🫠','限界'],['😕','重い'],['😐','ふつう'],['😌','冴えてる'],['🔥','無敵']];
 function condMode(hp,mp){
@@ -1437,9 +1447,11 @@ function renderCond(){
    +'<div style="margin-top:12px;font-size:11px;color:var(--tx3);letter-spacing:1px">MP・あたま</div>'
    +'<div class="dots">'+MPLB.map((x,i)=>'<button onclick="setCond(\'mp\','+((i+1)*20)+')"><b>'+x[0]+'</b>'+x[1]+'</button>').join('')+'</div>'
    +(typeof d.hp==='number'||typeof d.mp==='number'?'<div class="tiny" style="margin-top:10px">もう片方も入れると今日の戦い方が出る。</div>':'')
+   +boostRow(d)
    +'</div>';
   return;}
- const md=condMode(d.hp,d.mp);
+ const hp=effHP(d),mp=effMP(d);
+ const md=condMode(hp,mp);
  const segs=[20,40,60,80].map(v=>'<span class="seg" style="left:'+v+'%"></span>').join('');
  w.innerHTML='<div class="cond">'
   +'<div class="row"><div style="font-size:10.5px;letter-spacing:2px;color:var(--gold);font-weight:700">今朝のコンディション</div>'
@@ -1448,18 +1460,56 @@ function renderCond(){
    +'<i style="width:'+d.hp+'%;background:linear-gradient(90deg,#e0574a,#5fbf7f '+Math.max(40,d.hp)+'%)"></i>'+segs+'</span>'
    +'<span class="v">'+d.hp+'</span></div>'
   +'<div class="gauge2"><span class="k" style="color:#4a9ee0">MP</span><span class="bar">'
-   +'<i style="width:'+d.mp+'%;background:linear-gradient(90deg,#9a7fd0,#4a9ee0)"></i>'+segs+'</span>'
-   +'<span class="v">'+d.mp+'</span></div>'
+   +'<i style="width:'+d.mp+'%;background:linear-gradient(90deg,#9a7fd0,#4a9ee0)"></i>'
+   +(mp>d.mp?'<i class="bst" style="left:'+d.mp+'%;width:'+(mp-d.mp)+'%"></i>':'')
+   +segs+'</span>'
+   +'<span class="v">'+(mp>d.mp?'<span style="color:#7fe0c0">'+mp+'</span>':mp)+'</span></div>'
+  +boostRow(d)
   +'<div class="advice '+md.k+'"><span>'+(md.k==='go'?'⚔️':md.k==='low'?'🛡':'🎯')+'</span><span><b>'+md.t+'</b>'
    +(d.minMode?'<span class="mmbadge">最低ラインモード</span>':'')+'<br>'+md.m+'</span></div>'
   +(md.k==='low'&&!d.minMode?'<button class="btn sm wide" style="margin-top:9px" onclick="setMinMode(true)">最低ラインモードにする</button>':'')
   +(d.minMode?'<button class="btn sm wide" style="margin-top:9px" onclick="setMinMode(false)">通常モードに戻す</button>':'')
   +'</div>';}
+function boostRow(d){
+ const list=d.boosts||[];
+ return '<div style="margin-top:11px;display:flex;gap:7px;flex-wrap:wrap">'
+  +BOOSTS.map(b=>{const n=list.filter(x=>x.id===b.id).length;
+   return '<button class="chip'+(n?' on':'')+'" onclick="addBoost(\''+b.id+'\')">'
+    +b.i+' '+b.n+'した'+(n?' ×'+n:'')+'　+'+b.v+'</button>';}).join('')
+  +(list.length?'<button class="chip" onclick="undoBoost()">取り消す</button>':'')
+  +'</div>'
+  +(list.length?'<div class="tiny" style="margin-top:7px">'
+    +list.map(x=>x.i+' '+x.n+' '+x.at).join('　')
+    +(typeof d.mp==='number'&&boostSum(d,'mp')?'　<span style="color:#7fe0c0">MP '+d.mp+' → '+effMP(d)+'</span>':'')
+    +'</div>':'');}
+function addBoost(id){
+ const b=BOOSTS.find(x=>x.id===id);if(!b)return;
+ const k=dkey(),d=getDay(k,true);
+ if(!d.boosts)d.boosts=[];
+ const first=!d.boosts.some(x=>x.id===id);
+ const now=new Date();
+ d.boosts.push({id:b.id,n:b.n,i:b.i,v:b.v,stat:b.stat,
+  at:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
+ if(first){addXp(b.xp,'rest');}
+ // ブーストで条件が戻ったら最低ラインモードを自動解除（自動でONにしたものだけ）
+ const hp=effHP(d),mp=effMP(d);
+ if(typeof hp==='number'&&typeof mp==='number'&&condMode(hp,mp).k!=='low'&&d.minAuto){d.minMode=false;d.minAuto=false;}
+ save();renderAll();
+ toast(typeof d.mp==='number'
+  ? b.i+' '+b.n+'　MP '+d.mp+' → '+effMP(d)+(first?'　＋'+b.xp+' EXP':'')
+  : b.i+' '+b.n+' を記録。MPを入れると反映される'+(first?'　＋'+b.xp+' EXP':''));}
+function undoBoost(){
+ const d=getDay(dkey(),true);
+ if(!d.boosts||!d.boosts.length)return;
+ const last=d.boosts.pop();
+ const b=BOOSTS.find(x=>x.id===last.id);
+ if(b&&!d.boosts.some(x=>x.id===last.id))addXp(-b.xp,'rest');
+ save();renderAll();toast('取り消した');}
 function setCond(kind,v){
  const k=dkey(),d=getDay(k,true);
  d[kind]=v;
  if(typeof d.hp==='number'&&typeof d.mp==='number'){
-  const md=condMode(d.hp,d.mp);
+  const md=condMode(effHP(d),effMP(d));
   if(!d.condXp){d.condXp=true;addXp(5,'habit');toast('コンディション記録 ＋5 EXP');}
   if(md.k==='low'&&!d.minMode){d.minMode=true;d.minAuto=true;}
   else if(md.k!=='low'&&d.minAuto){d.minMode=false;d.minAuto=false;}}
