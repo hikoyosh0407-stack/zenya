@@ -992,7 +992,8 @@ function mark(id,st){
  const k=dkey(),d=S.days[k];if(!d)return;
  const b=d.plan.find(x=>x.id===id);if(!b)return;
  const before=b.st;
- if(before===st){ if(before==='lo'||before==='hi')addXp(-(b.xp||0),b.cat); b.st='todo'; b.xp=0; save(); renderAll(); return; }
+ if(before===st){ if(before==='lo'||before==='hi')addXp(-(b.xp||0),b.cat); b.st='todo'; b.xp=0;
+  syncCatBoost(d); save(); renderAll(); return; }
  if(before==='lo'||before==='hi'){addXp(-(b.xp||0),b.cat);b.xp=0;}
  b.st=st;
  if(st==='lo'||st==='hi'){const g=st==='hi'?16:10;b.xp=g;addXp(g,b.cat);
@@ -1002,8 +1003,16 @@ function mark(id,st){
    showTreasure(d.treasure);}
   else toast(st==='hi'?'◎ 最高ライン ＋16 EXP':'◯ 最低ライン ＋10 EXP');
  }
+ syncCatBoost(d);
  save();renderAll();
 }
+/* 鍛錬などカテゴリ連動のブーストを、その日のクエスト達成状況に合わせる */
+function syncCatBoost(d){
+ BOOSTS.filter(b=>b.autoCat).forEach(b=>{
+  const done=(d.plan||[]).some(x=>x.cat===b.autoCat&&(x.st==='lo'||x.st==='hi'));
+  const has=(d.boosts||[]).some(x=>x.id===b.id);
+  if(done&&!has)putBoost(b.id,{once:true,auto:true});
+  else if(!done&&has)dropAutoBoost(b.id);});}
 function quickRecover(){
  const k=dkey(),d=getDay(k,true);
  d.plan.push({id:uid(),s:mh(nowMin()+5),m:5,t:'立て直しの一歩',cat:'habit',lo:'2分で終わることを1つやる',hi:'',ifthen:'',st:'todo'});
@@ -1423,8 +1432,10 @@ function applyPitari(d){
  alert('ピタリから取り込みました。\n記録 '+n+'日分 ／ カード '+b.cards.length+'枚 ／ 開始日 '+b.startDate);}
 
 /* ============ コンディション（HP/MP） ============ */
-const BOOSTS=[{id:'zen',n:'瞑想',i:'🧘',stat:'mp',v:20,xp:10,
- say:'頭の残量が戻る。MPが上がる行動として数える。'}];
+const BOOSTS=[
+ {id:'zen',  n:'瞑想', i:'🧘',stat:'mp',v:20,xp:10},
+ {id:'train',n:'筋トレ',i:'💪',stat:'hp',v:20,xp:10,autoCat:'train'}
+];
 function boostsOf(d,stat){return (d.boosts||[]).filter(b=>!stat||BOOSTS.find(x=>x.id===b.id&&x.stat===stat));}
 function boostSum(d,stat){return boostsOf(d,stat).reduce((a,b)=>a+b.v,0);}
 function effMP(d){if(typeof d.mp!=='number')return null;return Math.min(100,d.mp+boostSum(d,'mp'));}
@@ -1457,8 +1468,10 @@ function renderCond(){
   +'<div class="row"><div style="font-size:10.5px;letter-spacing:2px;color:var(--gold);font-weight:700">今朝のコンディション</div>'
   +'<span class="sp"></span><button class="btn sm" onclick="resetCond()">入れ直す</button></div>'
   +'<div class="gauge2"><span class="k" style="color:#5fbf7f">HP</span><span class="bar">'
-   +'<i style="width:'+d.hp+'%;background:linear-gradient(90deg,#e0574a,#5fbf7f '+Math.max(40,d.hp)+'%)"></i>'+segs+'</span>'
-   +'<span class="v">'+d.hp+'</span></div>'
+   +'<i style="width:'+d.hp+'%;background:linear-gradient(90deg,#e0574a,#5fbf7f '+Math.max(40,d.hp)+'%)"></i>'
+   +(hp>d.hp?'<i class="bst" style="left:'+d.hp+'%;width:'+(hp-d.hp)+'%"></i>':'')
+   +segs+'</span>'
+   +'<span class="v">'+(hp>d.hp?'<span style="color:#7fe0c0">'+hp+'</span>':hp)+'</span></div>'
   +'<div class="gauge2"><span class="k" style="color:#4a9ee0">MP</span><span class="bar">'
    +'<i style="width:'+d.mp+'%;background:linear-gradient(90deg,#9a7fd0,#4a9ee0)"></i>'
    +(mp>d.mp?'<i class="bst" style="left:'+d.mp+'%;width:'+(mp-d.mp)+'%"></i>':'')
@@ -1480,30 +1493,45 @@ function boostRow(d){
   +'</div>'
   +(list.length?'<div class="tiny" style="margin-top:7px">'
     +list.map(x=>x.i+' '+x.n+' '+x.at).join('　')
+    +(typeof d.hp==='number'&&boostSum(d,'hp')?'　<span style="color:#7fe0c0">HP '+d.hp+' → '+effHP(d)+'</span>':'')
     +(typeof d.mp==='number'&&boostSum(d,'mp')?'　<span style="color:#7fe0c0">MP '+d.mp+' → '+effMP(d)+'</span>':'')
     +'</div>':'');}
-function addBoost(id){
- const b=BOOSTS.find(x=>x.id===id);if(!b)return;
- const k=dkey(),d=getDay(k,true);
+function putBoost(id,opt){
+ opt=opt||{};
+ const b=BOOSTS.find(x=>x.id===id);if(!b)return null;
+ const d=getDay(dkey(),true);
  if(!d.boosts)d.boosts=[];
+ if(opt.once&&d.boosts.some(x=>x.id===id))return null;
  const first=!d.boosts.some(x=>x.id===id);
  const now=new Date();
- d.boosts.push({id:b.id,n:b.n,i:b.i,v:b.v,stat:b.stat,
+ d.boosts.push({id:b.id,n:b.n,i:b.i,v:b.v,stat:b.stat,auto:!!opt.auto,
   at:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
- if(first){addXp(b.xp,'rest');}
- // ブーストで条件が戻ったら最低ラインモードを自動解除（自動でONにしたものだけ）
- const hp=effHP(d),mp=effMP(d);
- if(typeof hp==='number'&&typeof mp==='number'&&condMode(hp,mp).k!=='low'&&d.minAuto){d.minMode=false;d.minAuto=false;}
+ if(first)addXp(b.xp,b.stat==='hp'?'train':'rest');
+ if(d.minAuto){const hp=effHP(d),mp=effMP(d);
+  if(typeof hp==='number'&&typeof mp==='number'&&condMode(hp,mp).k!=='low'){d.minMode=false;d.minAuto=false;}}
+ return{b:b,first:first,d:d};}
+function dropAutoBoost(id){
+ const d=getDay(dkey(),true);
+ if(!d.boosts)return;
+ const i=d.boosts.findIndex(x=>x.id===id&&x.auto);
+ if(i<0)return;
+ d.boosts.splice(i,1);
+ const b=BOOSTS.find(x=>x.id===id);
+ if(b&&!d.boosts.some(x=>x.id===id))addXp(-b.xp,b.stat==='hp'?'train':'rest');}
+function addBoost(id){
+ const r=putBoost(id);if(!r)return;
+ const b=r.b,d=r.d,first=r.first;
  save();renderAll();
- toast(typeof d.mp==='number'
-  ? b.i+' '+b.n+'　MP '+d.mp+' → '+effMP(d)+(first?'　＋'+b.xp+' EXP':'')
-  : b.i+' '+b.n+' を記録。MPを入れると反映される'+(first?'　＋'+b.xp+' EXP':''));}
+ const cur=b.stat==='hp'?d.hp:d.mp, eff=b.stat==='hp'?effHP(d):effMP(d), nm=b.stat.toUpperCase();
+ toast(typeof cur==='number'
+  ? b.i+' '+b.n+'　'+nm+' '+cur+' → '+eff+(first?'　＋'+b.xp+' EXP':'')
+  : b.i+' '+b.n+' を記録。'+nm+'を入れると反映される'+(first?'　＋'+b.xp+' EXP':''));}
 function undoBoost(){
  const d=getDay(dkey(),true);
  if(!d.boosts||!d.boosts.length)return;
  const last=d.boosts.pop();
  const b=BOOSTS.find(x=>x.id===last.id);
- if(b&&!d.boosts.some(x=>x.id===last.id))addXp(-b.xp,'rest');
+ if(b&&!d.boosts.some(x=>x.id===last.id))addXp(-b.xp,b.stat==='hp'?'train':'rest');
  save();renderAll();toast('取り消した');}
 function setCond(kind,v){
  const k=dkey(),d=getDay(k,true);
