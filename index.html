@@ -23,7 +23,7 @@
 html,body{margin:0;padding:0;background:var(--bg);color:var(--tx);
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
   font-size:15px;line-height:1.6;overscroll-behavior-y:none}
-body{padding-top:calc(var(--sat) + 56px);padding-bottom:calc(var(--sab) + 68px)}
+body{padding-top:calc(var(--sat) + 82px);padding-bottom:calc(var(--sab) + 68px)}
 button,input,select,textarea{font-family:inherit;font-size:16px;color:inherit}
 button{cursor:pointer;border:none;background:none}
 a{color:var(--gold2)}
@@ -42,6 +42,22 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(15,17,23,.
 .xpbar{height:6px;border-radius:3px;background:#252a38;overflow:hidden;margin-top:4px}
 .xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width .5s}
 
+.gearbar{width:100%;display:block;padding:0;background:#131720;border-top:1px solid #1e2330;text-align:left}
+.gearbar .gr{display:flex;align-items:center;gap:7px;padding:5px 14px 6px}
+.gearbar .ic{font-size:13px}
+.gearbar .tt{flex:1;min-width:0;font-size:11.5px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gearbar .tt em{font-style:normal;color:var(--tx3)}
+.gearbar .pg{font-size:10.5px;color:var(--tx3);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.gearbar .pbar{height:2px;background:#1e2330}
+.gearbar .pbar i{display:block;height:100%;background:linear-gradient(90deg,#4a9ee0,#7fc4f0);transition:width .5s}
+.gearcard{background:linear-gradient(150deg,#16202c,#121820);border:1px solid #2b3a4a;border-radius:14px;padding:15px;margin-bottom:12px}
+.gearcard .k{font-size:10px;letter-spacing:2px;color:#7fc4f0;font-weight:700}
+.gearcard .v{font-size:16px;font-weight:700;margin-top:5px;line-height:1.45}
+.bklist{display:grid;gap:7px}
+.bkrow{display:flex;gap:9px;align-items:center;padding:9px 11px;border-radius:11px;background:var(--panel2);
+  border:1px solid var(--line);font-size:13px}
+.bkrow .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bkrow .d{font-size:10.5px;color:var(--tx3);flex:0 0 auto}
 /* nav */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:rgba(15,17,23,.96);
   backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:var(--sab)}
@@ -273,6 +289,7 @@ label.f:first-child{margin-top:0}
       <div class="xpbar"><i id="xpFill"></i></div>
     </div>
   </div>
+  <button class="gearbar" id="gearBar"></button>
 </header>
 
 <main>
@@ -388,6 +405,10 @@ label.f:first-child{margin-top:0}
   <div class="bosscard" id="bossMid" style="background:linear-gradient(150deg,#2c1c1c,#1c1313);border-color:#5a3030"></div>
   <div class="bosscard" id="bossStudy" style="background:linear-gradient(150deg,#16232c,#121a20);border-color:#2f5060"></div>
   <button class="btn wide sm" id="btnBoss">👹 ボスを設定しなおす</button>
+
+  <h2 class="sec">装備</h2>
+  <div class="gearcard" id="gearCard"></div>
+  <div id="bookDone"></div>
 
   <h2 class="sec">ステータス</h2>
   <div class="card">
@@ -600,6 +621,26 @@ label.f:first-child{margin-top:0}
   </div>
 </div>
 
+<!-- 装備（いま読んでいる本）シート -->
+<div class="sheet" id="sheetGear">
+  <div class="grab"></div>
+  <h3>📖 いま読んでいる本</h3>
+  <div class="tiny">装備している本は、どのタブにいても画面の一番上に出る。読み終えるまで外れない。</div>
+  <label class="f">書名</label>
+  <input type="text" id="gkT" placeholder="例：ヤバい集中力">
+  <label class="f">著者（任意）</label>
+  <input type="text" id="gkA" placeholder="鈴木祐">
+  <div class="f2" style="margin-top:10px">
+    <div><label class="f">総ページ（任意）</label><input type="number" id="gkN" step="1" inputmode="numeric"></div>
+    <div><label class="f">いま何ページ</label><input type="number" id="gkP" step="1" inputmode="numeric"></div>
+  </div>
+  <button class="btn pri wide" id="btnGearSave" style="margin-top:16px">装備する / 更新</button>
+  <div class="f2" style="margin-top:10px">
+    <button class="btn" id="btnGearOff">外す</button>
+    <button class="btn" id="btnGearDone">📚 読み終えた</button>
+  </div>
+</div>
+
 <!-- 目標値・マスタシート -->
 <div class="sheet" id="sheetTarget">
   <div class="grab"></div>
@@ -775,7 +816,8 @@ const TITLES=[
  {id:'ban1', ic:'📚',n:'板を出した者',d:'板書を1枚書いた',f:s=>BN().boards.length>=1},
  {id:'ban10',ic:'🧑‍🏫',n:'自分の先生',d:'板書 通算10枚',f:s=>BN().boards.length>=10},
  {id:'grad5',ic:'🗣️',n:'1分で話せる人',d:'板書を5枚 卒業した（白紙再現＋1分で説明）',f:s=>BN().boards.filter(b=>b.und==='done').length>=5},
- {id:'wk4',  ic:'🎓',n:'週4枚の主',d:'週4枚を 4週 達成した',f:s=>goodWeeks()>=4}
+ {id:'wk4',  ic:'🎓',n:'週4枚の主',d:'週4枚を 4週 達成した',f:s=>goodWeeks()>=4},
+ {id:'bk3',  ic:'📕',n:'本を読み切る者',d:'装備した本を3冊読み終えた',f:s=>((S.gear&&S.gear.done)||[]).length>=3}
 ];
 const FOODS_DEFAULT=[
  {n:'昼食プロテイン（チョコ）',p:25,f:0,c:6,kcal:120},
@@ -831,6 +873,7 @@ function defState(){return{
  targets:{kcal:1779,p:145,f:43,c:202,pMode:'fixed',pPerKg:2.0},
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
  body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]},
+ gear:{book:null,done:[]},
  bansho:{boards:[],ptr:{takken:0,teach:0,relearn:0,read:0,sum:0},openDows:[0,1,2,4],
   goal:{n:'宅建 合格（36点で通す）',date:'2027-10-17',apply:'2027-07-01'},
   vow:{n:'板書が10枚たまるまで、新しいアプリ・仕組みを作らない',need:10,on:true},
@@ -894,12 +937,72 @@ function kpis(){
   prevZero=zero;prevKey=k;});
  return{done,eve,recover,activeDays,noZeroMax,cat,lv:levelInfo().lv};}
 
+/* ============ 装備（いま読んでいる本） ============ */
+function G(){if(!S.gear)S.gear={book:null,done:[]};if(!S.gear.done)S.gear.done=[];return S.gear;}
+function bookPct(b){if(!b||!b.n||!b.p)return null;return Math.max(0,Math.min(100,Math.round(b.p/b.n*100)));}
+function renderGear(){
+ const g=G(),b=g.book,el=document.getElementById('gearBar');
+ const pct=bookPct(b);
+ el.innerHTML='<div class="gr"><span class="ic">📖</span>'
+  +'<span class="tt">'+(b?esc(b.t)+(b.a?'<em>　'+esc(b.a)+'</em>':'')
+    :'<em>装備なし — いま読んでいる本をセットする</em>')+'</span>'
+  +'<span class="pg">'+(b?(b.n?b.p+'/'+b.n+'p':(b.p?b.p+'p':'—')):'')+'</span></div>'
+  +'<div class="pbar"><i style="width:'+(pct===null?0:pct)+'%"></i></div>';
+ const c=document.getElementById('gearCard');
+ if(c){
+  c.innerHTML=b
+   ?'<div class="k">📖 装備中</div><div class="v">'+esc(b.t)+'</div>'
+    +'<div class="tiny" style="margin-top:6px">'+(b.a?esc(b.a)+'　':'')+'読み始め '+b.s
+      +(pct!==null?'　'+pct+'%（残り '+Math.max(0,b.n-b.p)+'p）':'')+'</div>'
+    +'<div class="xpbar" style="margin-top:9px"><i style="width:'+(pct===null?0:pct)
+      +'%;background:linear-gradient(90deg,#4a9ee0,#7fc4f0)"></i></div>'
+    +'<button class="btn sm wide" style="margin-top:11px" onclick="openGear()">ページを進める / 持ち替える</button>'
+   :'<div class="k">📖 装備なし</div><div class="v">武器を持たずに歩いている</div>'
+    +'<div class="tiny" style="margin-top:6px">いま読んでいる本を1冊だけ装備する。画面の一番上に出続ける。</div>'
+    +'<button class="btn pri sm wide" style="margin-top:11px" onclick="openGear()">本を装備する</button>';}
+ const dl=document.getElementById('bookDone');
+ if(dl){
+  dl.innerHTML=g.done.length
+   ?'<h2 class="sec">読破した本（'+g.done.length+'冊）</h2><div class="bklist">'
+     +g.done.slice().reverse().map(x=>'<div class="bkrow"><span>📚</span><span class="n">'+esc(x.t)+'</span>'
+       +'<span class="d">'+(x.e||'')+'</span></div>').join('')+'</div>'
+   :'';}}
+function openGear(){
+ const b=G().book||{};
+ document.getElementById('gkT').value=b.t||'';
+ document.getElementById('gkA').value=b.a||'';
+ document.getElementById('gkN').value=b.n||'';
+ document.getElementById('gkP').value=b.p||'';
+ document.getElementById('btnGearOff').style.display=G().book?'':'none';
+ document.getElementById('btnGearDone').style.display=G().book?'':'none';
+ openSheet('sheetGear');}
+function saveGear(){
+ const t=document.getElementById('gkT').value.trim();
+ if(!t){toast('書名を入れて');return;}
+ const g=G(),was=g.book;
+ g.book={t:t,a:document.getElementById('gkA').value.trim(),
+  n:+document.getElementById('gkN').value||0,p:+document.getElementById('gkP').value||0,
+  s:(was&&was.t===t&&was.s)?was.s:dkey()};
+ save();closeSheet();renderAll();
+ toast(was&&was.t===t?'進捗を更新した':'📖 '+t+' を装備した');}
+function gearOff(){
+ if(!confirm('装備を外す？（読破リストには入りません）'))return;
+ G().book=null;save();closeSheet();renderAll();toast('装備を外した');}
+function gearDone(){
+ const g=G(),b=g.book;if(!b)return;
+ if(!confirm('「'+b.t+'」を読み終えた？　読破リストに入れて装備を外します'))return;
+ g.done.push({t:b.t,a:b.a,s:b.s,e:dkey(),n:b.n});
+ g.book=null;addXp(50,'learn');
+ save();closeSheet();renderAll();
+ toast('📚 '+b.t+' を読破　＋50 EXP');}
+
 /* ============ header ============ */
 function renderHead(){const L=levelInfo();
  document.getElementById('lvNum').textContent=L.lv;
  document.getElementById('hdTitle').textContent=L.rank;
  document.getElementById('hdXp').textContent=L.rest+' / '+L.need+' EXP';
- document.getElementById('xpFill').style.width=Math.min(100,L.rest/L.need*100)+'%';}
+ document.getElementById('xpFill').style.width=Math.min(100,L.rest/L.need*100)+'%';
+ renderGear();}
 
 /* ============ 今日 ============ */
 function renderToday(){
@@ -1203,6 +1306,13 @@ function buildMd(){
  Object.keys(S.meals||{}).sort().slice(-14).forEach(k=>{const m=mealTotal(k);if(!mealsOf(k).length)return;
   const j=judgeMeal(k);
   t+='| '+k+' | '+Math.round(m.kcal)+' / '+S.targets.kcal+' | '+r1(m.p)+' | '+r1(m.f)+' | '+r1(m.c)+' | '+(j.hi?'◎':'◯')+' |\n';});
+ const g=G();
+ t+='\n## 装備\n\n';
+ t+=g.book?('- 📖 いま読んでいる本：**'+g.book.t+'**'+(g.book.a?'（'+g.book.a+'）':'')
+   +'　読み始め '+g.book.s+(g.book.n?'　'+g.book.p+'/'+g.book.n+'p':'')+'\n')
+  :'- 📖 装備なし\n';
+ if(g.done.length){t+='- 📚 読破 '+g.done.length+'冊\n\n| 書名 | 読み始め | 読了 |\n|---|---|---|\n';
+  g.done.slice().reverse().forEach(x=>{t+='| '+x.t+' | '+(x.s||'')+' | '+(x.e||'')+' |\n';});}
  const bb=B();
  t+='\n## からだ（ピタリ統合）\n\n';
  t+='- 21日ボード：'+logged21()+' / 21日（開始 '+bb.startDate+'）\n';
@@ -1727,7 +1837,7 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -2099,6 +2209,10 @@ document.getElementById('btnFreeAdd').onclick=()=>{
  if(mfSaveMaster)S.foods.push(Object.assign({id:uid()},f));
  addMeal(f,true);closeSheet();};
 document.getElementById('btnCloseMeal').onclick=closeMeal;
+document.getElementById('gearBar').onclick=openGear;
+document.getElementById('btnGearSave').onclick=saveGear;
+document.getElementById('btnGearOff').onclick=gearOff;
+document.getElementById('btnGearDone').onclick=gearDone;
 document.getElementById('btnSaveRecord').onclick=saveRecord;
 document.getElementById('btnSaveFood').onclick=saveFood;
 document.getElementById('btnDelFood').onclick=()=>delFood(window._editFood);
