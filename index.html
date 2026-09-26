@@ -49,6 +49,11 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(15,17,23,.
 .gearbar .tt em{font-style:normal;color:var(--tx3)}
 .gearbar .pg{font-size:10.5px;color:var(--tx3);font-variant-numeric:tabular-nums;flex:0 0 auto}
 .gearbar .pbar{height:2px;background:#1e2330}
+.gearbar .gslots{display:flex}
+.gearbar .gs{flex:1;min-width:0;cursor:pointer}
+.gearbar .gs+.gs{border-left:1px solid #1e2330}
+.gearbar .gs+.gs .gr{padding-left:10px}
+.gearbar .gslots .gs:first-child:not(:last-child) .gr{padding-right:10px}
 .gearbar .pbar i{display:block;height:100%;background:linear-gradient(90deg,#4a9ee0,#7fc4f0);transition:width .5s}
 .gearcard{background:linear-gradient(150deg,#16202c,#121820);border:1px solid #2b3a4a;border-radius:14px;padding:15px;margin-bottom:12px}
 .gearcard .k{font-size:10px;letter-spacing:2px;color:#7fc4f0;font-weight:700}
@@ -407,7 +412,7 @@ label.f:first-child{margin-top:0}
   <button class="btn wide sm" id="btnBoss">👹 ボスを設定しなおす</button>
 
   <h2 class="sec">装備</h2>
-  <div class="gearcard" id="gearCard"></div>
+  <div id="gearCard"></div>
   <div id="bookDone"></div>
 
   <h2 class="sec">ステータス</h2>
@@ -624,8 +629,8 @@ label.f:first-child{margin-top:0}
 <!-- 装備（いま読んでいる本）シート -->
 <div class="sheet" id="sheetGear">
   <div class="grab"></div>
-  <h3>📖 いま読んでいる本</h3>
-  <div class="tiny">装備している本は、どのタブにいても画面の一番上に出る。読み終えるまで外れない。</div>
+  <h3 id="gearTitle">📖 いま読んでいる本</h3>
+  <div class="tiny">装備している本は、どのタブにいても画面の一番上に出る。2冊まで持てる。</div>
   <label class="f">書名</label>
   <input type="text" id="gkT" placeholder="例：ヤバい集中力">
   <label class="f">著者（任意）</label>
@@ -873,7 +878,7 @@ function defState(){return{
  targets:{kcal:1779,p:145,f:43,c:202,pMode:'fixed',pPerKg:2.0},
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
  body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]},
- gear:{book:null,done:[]},
+ gear:{books:[],done:[]},
  bansho:{boards:[],ptr:{takken:0,teach:0,relearn:0,read:0,sum:0},openDows:[0,1,2,4],
   goal:{n:'宅建 合格（36点で通す）',date:'2027-10-17',apply:'2027-07-01'},
   vow:{n:'板書が10枚たまるまで、新しいアプリ・仕組みを作らない',need:10,on:true},
@@ -937,29 +942,51 @@ function kpis(){
   prevZero=zero;prevKey=k;});
  return{done,eve,recover,activeDays,noZeroMax,cat,lv:levelInfo().lv};}
 
-/* ============ 装備（いま読んでいる本） ============ */
-function G(){if(!S.gear)S.gear={book:null,done:[]};if(!S.gear.done)S.gear.done=[];return S.gear;}
+/* ============ 装備（いま読んでいる本・2冊まで） ============ */
+const GEAR_MAX=2, GEAR_IC=['📖','📗'];
+function G(){
+ if(!S.gear)S.gear={books:[],done:[]};
+ const g=S.gear;
+ if(!g.done)g.done=[];
+ if(!g.books)g.books=g.book?[Object.assign({id:uid()},g.book)]:[];   // 旧1冊形式から移行
+ if('book' in g)delete g.book;
+ return g;}
 function bookPct(b){if(!b||!b.n||!b.p)return null;return Math.max(0,Math.min(100,Math.round(b.p/b.n*100)));}
 function renderGear(){
- const g=G(),b=g.book,el=document.getElementById('gearBar');
- const pct=bookPct(b);
- el.innerHTML='<div class="gr"><span class="ic">📖</span>'
-  +'<span class="tt">'+(b?esc(b.t)+(b.a?'<em>　'+esc(b.a)+'</em>':'')
-    :'<em>装備なし — いま読んでいる本をセットする</em>')+'</span>'
-  +'<span class="pg">'+(b?(b.n?b.p+'/'+b.n+'p':(b.p?b.p+'p':'—')):'')+'</span></div>'
-  +'<div class="pbar"><i style="width:'+(pct===null?0:pct)+'%"></i></div>';
+ const g=G(),bs=g.books,el=document.getElementById('gearBar');
+ if(!bs.length){
+  el.innerHTML='<div class="gr"><span class="ic">📖</span>'
+   +'<span class="tt"><em>装備なし — いま読んでいる本をセットする</em></span></div>'
+   +'<div class="pbar"><i style="width:0"></i></div>';
+ }else{
+  el.innerHTML='<div class="gslots">'+bs.map((b,i)=>{const pct=bookPct(b);
+   return '<div class="gs" onclick="event.stopPropagation();openGear('+i+')">'
+    +'<div class="gr"><span class="ic">'+GEAR_IC[i]+'</span>'
+    +'<span class="tt">'+esc(b.t)+(bs.length===1&&b.a?'<em>　'+esc(b.a)+'</em>':'')+'</span>'
+    +'<span class="pg">'+(b.n?b.p+'/'+b.n+'p':(b.p?b.p+'p':''))+'</span></div>'
+    +'<div class="pbar"><i style="width:'+(pct===null?0:pct)+'%"></i></div></div>';}).join('')+'</div>';}
  const c=document.getElementById('gearCard');
  if(c){
-  c.innerHTML=b
-   ?'<div class="k">📖 装備中</div><div class="v">'+esc(b.t)+'</div>'
-    +'<div class="tiny" style="margin-top:6px">'+(b.a?esc(b.a)+'　':'')+'読み始め '+b.s
-      +(pct!==null?'　'+pct+'%（残り '+Math.max(0,b.n-b.p)+'p）':'')+'</div>'
-    +'<div class="xpbar" style="margin-top:9px"><i style="width:'+(pct===null?0:pct)
-      +'%;background:linear-gradient(90deg,#4a9ee0,#7fc4f0)"></i></div>'
-    +'<button class="btn sm wide" style="margin-top:11px" onclick="openGear()">ページを進める / 持ち替える</button>'
-   :'<div class="k">📖 装備なし</div><div class="v">武器を持たずに歩いている</div>'
-    +'<div class="tiny" style="margin-top:6px">いま読んでいる本を1冊だけ装備する。画面の一番上に出続ける。</div>'
-    +'<button class="btn pri sm wide" style="margin-top:11px" onclick="openGear()">本を装備する</button>';}
+  let h='';
+  for(let i=0;i<GEAR_MAX;i++){
+   const bk=bs[i];
+   if(bk){const pct=bookPct(bk);
+    h+='<div class="gearcard"><div class="k">'+GEAR_IC[i]+' 装備スロット'+(i+1)+'</div>'
+     +'<div class="v">'+esc(bk.t)+'</div>'
+     +'<div class="tiny" style="margin-top:6px">'+(bk.a?esc(bk.a)+'　':'')+'読み始め '+bk.s
+       +(pct!==null?'　'+pct+'%（残り '+Math.max(0,bk.n-bk.p)+'p）':'')+'</div>'
+     +'<div class="xpbar" style="margin-top:9px"><i style="width:'+(pct===null?0:pct)
+       +'%;background:linear-gradient(90deg,#4a9ee0,#7fc4f0)"></i></div>'
+     +'<button class="btn sm wide" style="margin-top:11px" onclick="openGear('+i+')">ページを進める / 持ち替える</button></div>';
+   }else if(i===bs.length){
+    h+=(i===0
+     ?'<div class="gearcard"><div class="k">📖 装備スロット1</div><div class="v">武器を持たずに歩いている</div>'
+       +'<div class="tiny" style="margin-top:6px">いま読んでいる本を装備する。画面の一番上に出続ける。</div>'
+       +'<button class="btn pri sm wide" style="margin-top:11px" onclick="openGear(null)">本を装備する</button></div>'
+     :'<div class="gearcard" style="opacity:.7;border-style:dashed"><div class="k">'+GEAR_IC[i]+' 装備スロット'+(i+1)+'（空き）</div>'
+       +'<div class="tiny" style="margin-top:6px">2冊目を持てる。持たなくてもいい。</div>'
+       +'<button class="btn sm wide" style="margin-top:11px" onclick="openGear(null)">2冊目を装備する</button></div>');}}
+  c.innerHTML=h;}
  const dl=document.getElementById('bookDone');
  if(dl){
   dl.innerHTML=g.done.length
@@ -967,32 +994,42 @@ function renderGear(){
      +g.done.slice().reverse().map(x=>'<div class="bkrow"><span>📚</span><span class="n">'+esc(x.t)+'</span>'
        +'<span class="d">'+(x.e||'')+'</span></div>').join('')+'</div>'
    :'';}}
-function openGear(){
- const b=G().book||{};
+function openGear(i){
+ const g=G();
+ if(i===null||i===undefined||i>=g.books.length){
+  if(g.books.length>=GEAR_MAX){toast('装備できるのは'+GEAR_MAX+'冊まで');return;}
+  i=null;}
+ window._gearIdx=i;
+ const b=(i===null)?{}:g.books[i];
+ const slot=(i===null)?g.books.length:i;
+ document.getElementById('gearTitle').textContent=GEAR_IC[slot]+' 装備スロット'+(slot+1);
  document.getElementById('gkT').value=b.t||'';
  document.getElementById('gkA').value=b.a||'';
  document.getElementById('gkN').value=b.n||'';
  document.getElementById('gkP').value=b.p||'';
- document.getElementById('btnGearOff').style.display=G().book?'':'none';
- document.getElementById('btnGearDone').style.display=G().book?'':'none';
+ document.getElementById('btnGearOff').style.display=(i===null)?'none':'';
+ document.getElementById('btnGearDone').style.display=(i===null)?'none':'';
  openSheet('sheetGear');}
 function saveGear(){
  const t=document.getElementById('gkT').value.trim();
  if(!t){toast('書名を入れて');return;}
- const g=G(),was=g.book;
- g.book={t:t,a:document.getElementById('gkA').value.trim(),
+ const g=G(),i=window._gearIdx,was=(i===null)?null:g.books[i];
+ const nb={id:was?was.id:uid(),t:t,a:document.getElementById('gkA').value.trim(),
   n:+document.getElementById('gkN').value||0,p:+document.getElementById('gkP').value||0,
   s:(was&&was.t===t&&was.s)?was.s:dkey()};
+ if(i===null){if(g.books.length>=GEAR_MAX){toast('装備できるのは'+GEAR_MAX+'冊まで');return;}g.books.push(nb);}
+ else g.books[i]=nb;
  save();closeSheet();renderAll();
- toast(was&&was.t===t?'進捗を更新した':'📖 '+t+' を装備した');}
+ toast(was&&was.t===t?'進捗を更新した':GEAR_IC[(i===null)?g.books.length-1:i]+' '+t+' を装備した');}
 function gearOff(){
- if(!confirm('装備を外す？（読破リストには入りません）'))return;
- G().book=null;save();closeSheet();renderAll();toast('装備を外した');}
+ const g=G(),i=window._gearIdx;if(i===null||!g.books[i])return;
+ if(!confirm('「'+g.books[i].t+'」の装備を外す？（読破リストには入りません）'))return;
+ g.books.splice(i,1);save();closeSheet();renderAll();toast('装備を外した');}
 function gearDone(){
- const g=G(),b=g.book;if(!b)return;
+ const g=G(),i=window._gearIdx,b=(i===null)?null:g.books[i];if(!b)return;
  if(!confirm('「'+b.t+'」を読み終えた？　読破リストに入れて装備を外します'))return;
  g.done.push({t:b.t,a:b.a,s:b.s,e:dkey(),n:b.n});
- g.book=null;addXp(50,'learn');
+ g.books.splice(i,1);addXp(50,'learn');
  save();closeSheet();renderAll();
  toast('📚 '+b.t+' を読破　＋50 EXP');}
 
@@ -1308,8 +1345,8 @@ function buildMd(){
   t+='| '+k+' | '+Math.round(m.kcal)+' / '+S.targets.kcal+' | '+r1(m.p)+' | '+r1(m.f)+' | '+r1(m.c)+' | '+(j.hi?'◎':'◯')+' |\n';});
  const g=G();
  t+='\n## 装備\n\n';
- t+=g.book?('- 📖 いま読んでいる本：**'+g.book.t+'**'+(g.book.a?'（'+g.book.a+'）':'')
-   +'　読み始め '+g.book.s+(g.book.n?'　'+g.book.p+'/'+g.book.n+'p':'')+'\n')
+ t+=g.books.length?g.books.map((bk,i)=>'- '+GEAR_IC[i]+' いま読んでいる本：**'+bk.t+'**'+(bk.a?'（'+bk.a+'）':'')
+   +'　読み始め '+bk.s+(bk.n?'　'+bk.p+'/'+bk.n+'p':'')+'\n').join('')
   :'- 📖 装備なし\n';
  if(g.done.length){t+='- 📚 読破 '+g.done.length+'冊\n\n| 書名 | 読み始め | 読了 |\n|---|---|---|\n';
   g.done.slice().reverse().forEach(x=>{t+='| '+x.t+' | '+(x.s||'')+' | '+(x.e||'')+' |\n';});}
@@ -2209,7 +2246,7 @@ document.getElementById('btnFreeAdd').onclick=()=>{
  if(mfSaveMaster)S.foods.push(Object.assign({id:uid()},f));
  addMeal(f,true);closeSheet();};
 document.getElementById('btnCloseMeal').onclick=closeMeal;
-document.getElementById('gearBar').onclick=openGear;
+document.getElementById('gearBar').onclick=()=>openGear(null);
 document.getElementById('btnGearSave').onclick=saveGear;
 document.getElementById('btnGearOff').onclick=gearOff;
 document.getElementById('btnGearDone').onclick=gearDone;
