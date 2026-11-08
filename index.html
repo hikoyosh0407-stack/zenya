@@ -283,6 +283,61 @@ label.f:first-child{margin-top:0}
   background:#2a3040;border:1px solid var(--line);color:var(--tx);padding:10px 16px;border-radius:99px;
   font-size:13px;z-index:110;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* とっぱらう（Make Time） */
+.hlcard{background:linear-gradient(150deg,#2a2112,#18150e);border:1px solid #6a5426;border-radius:16px;padding:14px;margin-bottom:12px}
+.hlcard.done{border-color:#5fbf7f;background:linear-gradient(150deg,#15261a,#121a14)}
+.hlk{font-size:10.5px;letter-spacing:2px;color:var(--gold);font-weight:700}
+.lens{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--tx2)}
+.hlt{font-size:19px;font-weight:700;line-height:1.45;margin:8px 0 3px}
+.tune{display:flex;align-items:center;gap:8px;margin-top:11px}
+.tune>span:first-child{font-size:12.5px;color:var(--tx2)}
+.tune button{width:52px;height:40px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:19px;font-weight:700;color:var(--tx2)}
+.tune button.on-ok{background:#1d3a26;border-color:#5fbf7f;color:#8fe0a8}
+.tune button.on-ng{background:#2a2430;border-color:#8a7fa0;color:#c9bfe0}
+.tune .tiny{margin-left:auto}
+.hlsub{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.rqlist{margin-top:10px;padding-top:9px;border-top:1px dashed #4a3c20}
+.rq{display:flex;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.rq.done span{text-decoration:line-through;color:var(--tx3)}
+.rq button{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid var(--line);color:var(--tx2)}
+.burner{display:grid;grid-template-columns:1.15fr 1fr;gap:8px;margin-bottom:6px}
+.bz{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:10px;min-width:0}
+.bz.front{grid-row:1/3;border-color:#6a3a2a;background:linear-gradient(170deg,#2a1a14,#171a24 70%)}
+.bk{font-size:10.5px;letter-spacing:1px;color:var(--tx3);font-weight:700}
+.bn{font-size:14px;font-weight:700;margin:4px 0 6px;line-height:1.4;word-break:break-all}
+.bstep{display:flex;gap:4px;align-items:flex-start;font-size:12.5px;padding:5px 0;border-top:1px solid #232838}
+.bstep span{flex:1;min-width:0;word-break:break-all}
+.bstep button{color:var(--tx3);font-size:13px;padding:0 4px}
+.badd{display:flex;gap:4px;margin-top:6px}
+.badd input{padding:6px 8px!important;font-size:13px!important;min-width:0}
+.badd button{flex:0 0 auto;padding:0 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.tac{display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);margin-bottom:7px}
+.tac.on{border-color:#6a5426;background:#1f1b12}
+.tac .tn{font-size:13px;line-height:1.45}
+.tsw{flex:0 0 auto;font-size:11px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);color:var(--tx3);min-width:50px}
+.tac.on .tsw{border-color:var(--gold);color:var(--gold2)}
+.tgood{flex:0 0 auto;font-size:12px;padding:5px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.tdel{flex:0 0 auto;color:var(--tx3);padding:0 3px}
+.tally{font-size:22px;letter-spacing:2px;color:var(--gold2);font-weight:700;word-break:break-all;line-height:1.5}
+.gcell{position:relative}
+.gcell .hlm{position:absolute;top:1px;right:3px;font-size:8px;color:#8fe0a8;font-style:normal}
+.laser{position:fixed;inset:0;z-index:105;display:none;background:#0b0c11;overflow:auto;
+  padding:calc(var(--sat) + 14px) 16px calc(var(--sab) + 20px)}
+.laser.on{display:block}
+.lzin{max-width:420px;margin:0 auto;text-align:center}
+.lzt{font-size:17px;font-weight:700;margin:10px 0 12px;line-height:1.45}
+#lzCv{display:block;margin:0 auto;width:280px;height:280px;max-width:100%}
+.lzrem{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:6px;letter-spacing:1px}
+.lzq{text-align:left;margin-top:18px;padding:12px;border-radius:13px;background:var(--panel);border:1px solid var(--line)}
+.laser.end .lzrun{display:none}
+.laser:not(.end) #lzEnd{display:none}
+.nosc{position:fixed;inset:0;z-index:106;display:none;background:#000;color:#555;text-align:center;
+  padding:calc(var(--sat) + 30px) 20px calc(var(--sab) + 30px);user-select:none;-webkit-user-select:none}
+.nosc.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.nosc .nst{font-size:17px;font-weight:700;color:#999;margin:6px 0}
+.nosc .chip{background:#111;border-color:#333;color:#aaa}
+.nsdim{font-size:13px;color:#3a3a3a}
 </style>
 </head>
 <body>
@@ -301,6 +356,7 @@ label.f:first-child{margin-top:0}
 <!-- ========== 今日 ========== -->
 <section class="view on" id="v-today">
   <div id="todayHead"></div>
+  <div id="hlWrap"></div>
   <div id="condWrap"></div>
   <div id="zeroLine"></div>
   <div id="nowWrap"></div>
@@ -318,6 +374,12 @@ label.f:first-child{margin-top:0}
     <div class="sp" style="text-align:center"><b id="planDate">-</b><div class="tiny" id="planSub"></div></div>
     <button class="btn sm" id="planNext">›</button>
   </div>
+
+  <div id="hlPlan"></div>
+  <details class="card" id="burnerBox" style="padding:12px">
+    <summary style="font-size:13px;font-weight:700;cursor:pointer">🔥 バーナーリスト（手前・奥・流し台）</summary>
+    <div id="burner" style="margin-top:10px"></div>
+  </details>
 
   <div class="card">
     <div class="row" style="margin-bottom:8px">
@@ -423,6 +485,9 @@ label.f:first-child{margin-top:0}
     </div>
   </div>
 
+  <h2 class="sec">🧪 試している戦術（とっぱらう）</h2>
+  <div id="tactics"></div>
+
   <h2 class="sec">称号</h2>
   <div class="titles" id="titleList"></div>
 
@@ -469,6 +534,9 @@ label.f:first-child{margin-top:0}
 
   <h2 class="sec">冒険の指標</h2>
   <div class="mgrid" id="metrics"></div>
+
+  <h2 class="sec">✦ ハイライト（今月）</h2>
+  <div class="card" id="hlLog"></div>
 
   <h2 class="sec">休肝日カレンダー</h2>
   <div class="card">
@@ -689,6 +757,89 @@ label.f:first-child{margin-top:0}
   <button class="btn pri wide" id="btnSaveBoss" style="margin-top:16px">保存</button>
 </div>
 
+
+<!-- ハイライト設定シート -->
+<div class="sheet" id="sheetHl">
+  <div class="grab"></div>
+  <h3 id="hlSheetTitle">✦ ハイライト</h3>
+  <div class="tiny">その日の主役を1つだけ。数えられる形（何問・何ページ）にしておくと、当日に迷わない。</div>
+  <label class="f">ハイライト</label>
+  <input type="text" id="hlT">
+  <div class="chips" id="hlSteps" style="margin-top:8px"></div>
+  <label class="f">選んだ基準（3つのレンズ）</label>
+  <div class="chips" id="hlLens"></div>
+  <label class="f">時間</label>
+  <div class="chips" id="hlMin"></div>
+  <label class="f">予定に入れる時刻（空なら入れない）</label>
+  <input type="time" id="hlAt">
+  <div class="row" style="margin-top:14px">
+    <span class="tiny">🔁 いつもの（デジャブ）にする<br>＝次の日からも、これを自動でセットする</span><span class="sp"></span>
+    <button class="chip" id="hlDeja">オフ</button>
+  </div>
+  <div class="f2" style="margin-top:14px">
+    <button class="btn" id="btnHlAuto">いつものに戻す</button>
+    <button class="btn pri" id="btnHlSave">保存</button>
+  </div>
+</div>
+
+<!-- チャージ完了シート -->
+<div class="sheet" id="sheetCharge">
+  <div class="grab"></div>
+  <div style="text-align:center">
+    <div style="font-size:40px">⚡</div>
+    <h3 style="margin:2px 0 4px">チャージ完了</h3>
+    <div class="tiny">体があたたまっているうちに、そのままハイライトへ。</div>
+    <div class="hlt" id="chgTx" style="margin:12px 0 14px"></div>
+    <button class="btn pri wide" id="btnChgGo">▶ レーザー開始</button>
+    <button class="btn wide sm" style="margin-top:8px" id="btnChgLater">あとで</button>
+  </div>
+</div>
+
+<!-- 戦術を足すシート -->
+<div class="sheet" id="sheetTac">
+  <div class="grab"></div>
+  <h3>🧪 本から戦術を足す</h3>
+  <label class="f">戦術の番号（本で確かめたものだけ・なければ空）</label>
+  <input type="text" id="tcNo" inputmode="numeric" placeholder="例：34">
+  <label class="f">名前</label>
+  <input type="text" id="tcN" placeholder="例：メールは1日の終わりに見る">
+  <label class="f">ページ（任意）</label>
+  <input type="text" id="tcP" placeholder="例：p.200">
+  <label class="f">ステップ</label>
+  <div class="chips" id="tcSt"></div>
+  <button class="btn pri wide" id="btnTacSave" style="margin-top:16px">足す</button>
+</div>
+
+<!-- レーザー・モード -->
+<div class="laser" id="laser">
+  <div class="lzin">
+    <div class="lzrun">
+      <div class="row"><span class="hlk">🎯 レーザー・モード</span><span class="sp"></span>
+        <button class="chip" id="lzSnd">🎵 オン</button></div>
+      <div class="lzt" id="lzTitle"></div>
+      <canvas id="lzCv" width="280" height="280"></canvas>
+      <div class="lzrem" id="lzRem">--:--</div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn sp" id="lzPause">一時停止</button>
+        <button class="btn sp" id="lzStop">終える</button>
+      </div>
+      <div class="lzq">
+        <div class="tiny">🅿️ ふとした疑問は、ここに置いて作業に戻る。終わるまで中身は見せない。</div>
+        <div class="row" style="margin-top:7px">
+          <input type="text" id="lzQ" placeholder="例：Amazonの靴下の値段" style="flex:1;min-width:0">
+          <button class="btn sm" id="lzQAdd">置く</button>
+        </div>
+        <div class="tiny" id="lzQn" style="margin-top:6px"></div>
+      </div>
+      <button class="btn wide sm" id="lzHide" style="margin-top:12px">一度とじる（タイマーは進む）</button>
+    </div>
+    <div id="lzEnd"></div>
+  </div>
+</div>
+
+<!-- 画面なしタイマー -->
+<div class="nosc" id="nosc"></div>
+
 <!-- 宝箱 -->
 <div class="tre" id="tre">
   <div class="trebox">
@@ -879,6 +1030,7 @@ function defState(){return{
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
  body:{startDate:dkey(),freeDows:[5,6],parties:{},days:{},cards:[]},
  gear:{books:[],done:[]},
+ mt:null,
  bansho:{boards:[],ptr:{takken:0,teach:0,relearn:0,read:0,sum:0},openDows:[0,1,2,4],
   goal:{n:'宅建 合格（36点で通す）',date:'2027-10-17',apply:'2027-07-01'},
   vow:{n:'板書が10枚たまるまで、新しいアプリ・仕組みを作らない',need:10,on:true},
@@ -1044,6 +1196,7 @@ function renderHead(){const L=levelInfo();
 /* ============ 今日 ============ */
 function renderToday(){
  const k=dkey(), d=S.days[k], nm=nowMin();
+ renderHl();
  renderCond();
  const head=document.getElementById('todayHead');
  head.innerHTML='<div class="row" style="margin-bottom:10px"><div><div style="font-size:19px;font-weight:700">'
@@ -1106,7 +1259,7 @@ function renderToday(){
   const showActs=b.cat!=='work';
   return '<div class="'+cls+'"><div class="t">'+b.s+'</div><div class="dot"></div>'
    +'<div class="bx" style="border-left-color:'+CATS[b.cat].c+'">'
-   +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
+   +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+(b.hl?'✦ ':'')+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
    +(b.cat==='meal'?(function(){const t=mealTotal(k),T=effT();
       return '<div class="sub" style="color:#e8c07a">'+Math.round(t.kcal)+' / '+T.kcal+' kcal ・ P'+r1(t.p)+'/'+T.p+'</div>';})()
      :(b.lo?'<div class="sub">最低：'+esc(b.lo)+'</div>':''))
@@ -1137,6 +1290,7 @@ function mark(id,st){
  if(before==='lo'||before==='hi'){addXp(-(b.xp||0),b.cat);b.xp=0;}
  b.st=st;
  if(st==='lo'||st==='hi'){const g=st==='hi'?16:10;b.xp=g;addXp(g,b.cat);
+  if(b.cat==='train'&&before!=='lo'&&before!=='hi')setTimeout(chargeHook,0);
   const q=d.plan.filter(x=>x.cat!=='work'&&(x.st==='lo'||x.st==='hi'));
   if(!d.treasure&&Math.random()<0.22&&S.rewards.length){
    d.treasure=S.rewards[Math.floor(Math.random()*S.rewards.length)];
@@ -1174,6 +1328,7 @@ function renderPlan(){
  sortBoxes(d.plan);
  document.getElementById('planDate').textContent=labelD(k);
  document.getElementById('planSub').textContent=d.locked?'出撃準備 完了':'編成中';
+ renderHlPlan();
 
  const cap=planCap();
  const used=d.plan.filter(b=>b.cat!=='work').reduce((a,b)=>a+b.m,0);
@@ -1194,7 +1349,7 @@ function renderPlan(){
  document.getElementById('planTl').innerHTML=d.plan.length?('<div class="tl">'+d.plan.map((b,i)=>
   '<div class="box"><div class="t">'+b.s+'</div><div class="dot"></div>'
   +'<div class="bx" style="border-left-color:'+CATS[b.cat].c+'" onclick="openBox('+i+')">'
-  +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
+  +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+(b.hl?'✦ ':'')+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
   +(b.lo?'<div class="sub">最低：'+esc(b.lo)+'</div>':'')
   +(b.ifthen?'<div class="sub" style="color:#c7a8d6">if-then：'+esc(b.ifthen)+'</div>':'')
   +'</div></div>').join('')+'</div>')
@@ -1269,6 +1424,7 @@ function renderChar(){
   return '<div class="tt2'+(on?'':' lock')+'"><div class="ic">'+(on?t.ic:'🔒')+'</div><div>'
    +'<div class="nm">'+t.n+'</div><div class="tiny">'+t.d+'</div></div></div>';}).join('');
 
+ renderTactics();
  document.getElementById('rewardsBox').value=S.rewards.join('\n');
  const need={week:'21日ボードの記録',dry:'休肝日を守った回数',party:'飲み会の事前登録'};
  document.getElementById('knowList').innerHTML=
@@ -1295,7 +1451,7 @@ function renderLog(){
   const bg=st&&st.done?'rgba(217,164,65,'+a+')':'#161a24';
   const bd=st&&st.eve?'#d9a441':'#202634';
   const isT=k===today;
-  cells+='<div class="gcell" style="background:'+bg+';border-color:'+bd+';'+(isT?'box-shadow:0 0 0 2px #4a9ee0;':'')+'">'+dt.getDate()+'</div>';}
+  cells+='<div class="gcell" style="background:'+bg+';border-color:'+bd+';'+(isT?'box-shadow:0 0 0 2px #4a9ee0;':'')+'">'+dt.getDate()+(hlOk(k)===true?'<i class="hlm">✦</i>':'')+'</div>';}
  document.getElementById('calGrid').innerHTML=cells;
 
  const K=kpis(), keys=Object.keys(S.days).filter(k=>dayStats(k));
@@ -1314,6 +1470,7 @@ function renderLog(){
   [avgCond(last14,'mp')||'—','平均MP（14日）']
  ].map(m=>'<div class="metric"><div class="n">'+m[0]+'</div><div class="l">'+m[1]+'</div></div>').join('');
  renderDryCal();
+ renderHlLog();
  const d=S.days[today];
  document.getElementById('revNote').value=d?(d.rev||''):'';
 }
@@ -1333,6 +1490,16 @@ function buildMd(){
  t+='## 指標\n\n| 項目 | 値 |\n|---|---|\n';
  t+='| 通算実行日数 | '+K.activeDays+' |\n| 前夜に作戦を立てた日 | '+K.eve+' |\n| 立て直した回数 | '+K.recover+' |\n| ゼロなし最長連続 | '+K.noZeroMax+' |\n';
  t+=Object.keys(CATS).map(c=>'| '+CATS[c].i+' '+CATS[c].n+' 達成 | '+(K.cat[c]||0)+' |').join('\n')+'\n\n';
+ const hm0=hlMonth(dkey());
+ t+='## ✦ ハイライト（とっぱらう）\n\n- 今月：◯ '+hm0.o+'日 ／ × '+hm0.x+'日 ／ レーザー '+hm0.lz+'分 ／ 画面なし '+hm0.ns+'回\n';
+ t+='- 試している戦術：'+(MT().tac.filter(x=>x.on).map(x=>(x.no?'戦術'+x.no+' ':'')+x.n+'（👍'+(x.good||0)+'）').join('、')||'なし')+'\n\n';
+ t+='| 日付 | ハイライト | ◯× | レーザー | 預けた疑問 |\n|---|---|---|---|---|\n';
+ Object.keys(S.days).sort().slice(-14).forEach(k=>{const dd=S.days[k];if(!dd.hl&&!dd.laser&&!dd.rq)return;
+  const ok=dd.hl?dd.hl.ok:undefined;
+  t+='| '+k+' | '+((dd.hl&&(dd.hl.t||dd.hl.snap))||hlOf(k).t)+' | '+(ok===true?'◯':ok===false?'×':'—')+' | '
+   +((dd.laser||[]).reduce((a,l)=>a+(l.act||0),0)||'—')+(dd.laser&&dd.laser.length?'分':'')+' | '
+   +((dd.rq||[]).map(q=>(q.done?'~~'+q.t+'~~':q.t)).join(' ／ ')||'—')+' |\n';});
+ t+='\n';
  t+='## 直近14日\n\n| 日付 | 作戦 | 達成 | 実行率 | HP | MP | 振り返り |\n|---|---|---|---|---|---|---|\n';
  Object.keys(S.days).sort().slice(-14).forEach(k=>{const st=dayStats(k);if(!st)return;const dd=S.days[k];
   t+='| '+k+' | '+(st.eve?'前夜':(st.locked?'当日':'—'))+' | '+st.done+'/'+st.total+' | '+Math.round(st.rate*100)+'% | '
@@ -1669,6 +1836,7 @@ function addBoost(id){
  const r=putBoost(id);if(!r)return;
  const b=r.b,d=r.d,first=r.first;
  save();renderAll();
+ if(id==='train'&&first)chargeHook();
  const cur=b.stat==='hp'?d.hp:d.mp, eff=b.stat==='hp'?effHP(d):effMP(d), nm=b.stat.toUpperCase();
  toast(typeof cur==='number'
   ? b.i+' '+b.n+'　'+nm+' '+cur+' → '+eff+(first?'　＋'+b.xp+' EXP':'')
@@ -1859,6 +2027,7 @@ function gcalUrl(b){const st=hm(b.s);
 function planText(){
  const d=getDay(curPlanKey,true);sortBoxes(d.plan);
  let t=curPlanKey+'（'+WD[dObj(curPlanKey).getDay()]+'）の作戦\n';
+ t+='✦ハイライト：'+hlOf(curPlanKey).t+'（'+hlOf(curPlanKey).min+'分）\n';
  d.plan.forEach(b=>{const st=hm(b.s);
   t+='\n'+b.s+'-'+mh(st+b.m)+' '+CATS[b.cat].i+' '+b.t+'（'+b.m+'分）';
   const ds=boxDesc(b).replace(/\n/g,' ／ ');if(ds)t+='\n  '+ds;});
@@ -1874,7 +2043,7 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear','sheetHl','sheetCharge','sheetTac'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -2152,6 +2321,383 @@ function buildBanshoMd(){
  t+='\n---\n\n関連: [[00_板書MOC]] / [[板書_運用ガイド]] / [[宅建_合格プラン_2027]] / [[学びの設計（ずっと勉強していたい・41歳からの29年）]]\n';
  return t;}
 
+
+/* ============ とっぱらう（Make Time）：ハイライト・レーザー・チャージ・チューニング ============ */
+const LENS={urg:{n:'緊急性',i:'🔥'},sat:{n:'満足感',i:'🏆'},joy:{n:'喜び',i:'😊'}};
+const HL_MINS=[15,20,30,60,90];
+const MT_STEP={h:['✦','ハイライト'],l:['🎯','レーザー'],e:['⚡','チャージ'],r:['🔁','チューニング']};
+/* 番号は読書メモで本と照合できたものだけ入れる（未確認は空） */
+const TAC_DEFAULT=[
+ {no:'08',n:'ハイライトを予定に入れる',p:'p.368',st:'h',on:true},
+ {no:'',n:'翌日のハイライトを前の晩に決める',p:'p.86〜87',st:'h',on:true},
+ {no:'',n:'タイムタイマーで残り時間を見せる',p:'p.238',st:'l',on:true},
+ {no:'55',n:'ふとした疑問はその場で調べず書きとめる',p:'p.244〜245',st:'l',on:true},
+ {no:'24',n:'散漫クリプトナイトを遮断する（スマホを別室へ）',p:'p.368',st:'l',on:false},
+ {no:'20',n:'ホーム画面を「からっぽ」にする',p:'p.164〜165',st:'l',on:false},
+ {no:'53',n:'ツールに凝らない',p:'p.239',st:'l',on:false},
+ {no:'62',n:'歩きまわる（毎日数分）',p:'p.369',st:'e',on:false},
+ {no:'',n:'7分間のキツめの運動',p:'p.284〜285',st:'e',on:false},
+ {no:'',n:'カフェインナップ（コーヒーのあと15分仮眠）',p:'p.310',st:'e',on:false},
+ {no:'73',n:'コーヒー1杯を緑茶2〜3杯に置き換える',p:'p.311',st:'e',on:false},
+ {no:'',n:'夜の振り返りを3日間やってみる',p:'p.369',st:'r',on:true}
+];
+function MT(){
+ if(!S.mt)S.mt={};
+ const m=S.mt;
+ if(!m.hl)m.hl={t:'',lens:'sat',min:0};   // t空＝合格プランの量を日付で自動／min0＝自動
+ if(!m.burner)m.burner={
+  front:{n:'宅建2027 合格',steps:['一問一答20問（通勤10・昼10）','火・木の朝に穴埋め1枚','土曜の朝に×だけ解き直し']},
+  back:{n:'体脂肪率13%へ',steps:['筋トレを記録する']},sink:[]};
+ if(typeof m.caf!=='number')m.caf=14;
+ if(m.snd===undefined)m.snd=true;
+ if(!m.tac)m.tac=TAC_DEFAULT.map(t=>Object.assign({id:uid(),since:t.on?dkey():'',good:0},t));
+ return m;}
+/* 判断ゼロ：宅建_合格プラン_2027 の量を日付と曜日で自動セットする */
+function autoHl(k){
+ const dw=dObj(k).getDay();
+ if(k<'2026-11-01')return(dw===0||dw===6)?{t:'宅建 誤答の解き直し',min:30}:{t:'宅建 一問一答10問',min:15};
+ if(k<'2027-05-01')return dw===6?{t:'宅建 今週の穴埋めの×を解き直す',min:30}
+  :dw===0?{t:'宅建 今週の誤答を全部解き直す',min:30}:{t:'宅建 一問一答20問（通勤10・昼10）',min:20};
+ if(k<'2027-08-01')return dw===6?{t:'宅建 60分（×の解き直し）',min:60}
+  :dw===0?{t:'宅建 誤答を解き直して消す',min:30}:{t:'宅建 過去問30問（ランダムに混ぜる）',min:30};
+ if(k<='2027-10-17')return(dw===0||dw===6)?{t:'宅建 60分 または 模試',min:60}:{t:'宅建 過去問30問 または 統計の暗記',min:30};
+ return{t:'今日の主役を1つ',min:15};}
+function hlOf(k){
+ const d=S.days[k];
+ if(d&&d.hl&&d.hl.t)return Object.assign({by:'set'},d.hl);
+ const m=MT(),a=autoHl(k);
+ return{t:m.hl.t||a.t,lens:m.hl.lens||'sat',min:m.hl.min||a.min,by:'auto'};}
+function hlOk(k){const d=S.days[k];return d&&d.hl?d.hl.ok:undefined;}
+function hhmm(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+function hlMonth(base){
+ const m=base.slice(0,7);let o=0,x=0,lz=0,ns=0;
+ Object.keys(S.days).forEach(k=>{if(k.slice(0,7)!==m)return;const d=S.days[k];
+  if(d.hl&&d.hl.ok===true)o++;else if(d.hl&&d.hl.ok===false)x++;
+  (d.laser||[]).forEach(l=>lz+=l.act||0);ns+=d.nosc||0;});
+ return{o,x,lz,ns};}
+function tally(n){const p=['','一','丅','下','止'];return '正'.repeat(Math.floor(n/5))+p[n%5];}
+function fmtH(v){return v>=60?Math.floor(v/60)+'時間'+(v%60?v%60+'分':''):v+'分';}
+
+/* ---- 今日：ハイライトカード ---- */
+function cafChip(){
+ const m=MT(),lim=m.caf*60,nm=nowMin(),lb=String(m.caf).padStart(2,'0')+':00';
+ return '<button class="chip" onclick="setCaf()">'+(nm<lim?'☕ カフェインは'+lb+'まで（あと'+fmtH(lim-nm)+'）'
+  :'☕ '+lb+'をすぎた。ここからはノンカフェイン')+'</button>';}
+function setCaf(){
+ const v=prompt('カフェインの門限（何時まで）',MT().caf);if(v===null)return;
+ const n=parseInt(v,10);if(!(n>=0&&n<=23)){toast('0〜23で入れて');return;}
+ MT().caf=n;save();renderAll();toast('☕ 門限を'+n+':00にした');}
+function renderHl(){
+ const el=document.getElementById('hlWrap');if(!el)return;
+ const k=dkey(),h=hlOf(k),d=S.days[k],L=LENS[h.lens]||LENS.sat,ok=hlOk(k),m=MT(),run=m.run;
+ const mon=hlMonth(k);
+ const box=d&&d.plan?d.plan.find(b=>b.hl):null;
+ const rq=(d&&d.rq)||[];
+ el.innerHTML='<div class="hlcard'+(ok===true?' done':'')+'">'
+  +'<div class="row"><span class="hlk">✦ 今日のハイライト</span><span class="sp"></span>'
+  +'<span class="lens">'+L.i+' '+L.n+'</span><span class="lens">'+h.min+'分</span></div>'
+  +'<div class="hlt" onclick="openHl(\''+k+'\')">'+esc(h.t)+'</div>'
+  +'<div class="tiny">'+(h.by==='auto'?'いつもの（デジャブ）で自動セット':'前の晩に決めた')
+   +(box?'　📅 '+box.s+'–'+mh(hm(box.s)+box.m):'')+'</div>'
+  +'<button class="btn '+(ok===true?'':'pri ')+'wide" style="margin-top:11px" onclick="startLaser()">'
+   +(run?'⏱ レーザーに戻る':'▶ レーザー開始（'+h.min+'分）')+'</button>'
+  +'<div class="tune"><span>できた？</span>'
+   +'<button class="'+(ok===true?'on-ok':'')+'" onclick="tuneHl(true)">◯</button>'
+   +'<button class="'+(ok===false?'on-ng':'')+'" onclick="tuneHl(false)">×</button>'
+   +'<span class="tiny">今月 ◯'+mon.o+' ×'+mon.x+'</span></div>'
+  +'<div class="hlsub">'+cafChip()+'<button class="chip" onclick="openNosc()">🍽 画面なしタイマー</button></div>'
+  +(run&&run.rq.length?'<div class="rqlist tiny">🅿️ ふとした疑問 '+run.rq.length+'件を預かり中（レーザーが終わったら見せる）</div>':'')
+  +(!run&&rq.length?'<div class="rqlist"><div class="tiny" style="margin-bottom:3px">🅿️ 預けておいた疑問（調べたら済にする）</div>'
+   +rq.map((q,i)=>'<div class="rq'+(q.done?' done':'')+'"><span>'+esc(q.t)+'</span><span class="sp"></span>'
+    +'<button onclick="rqDone('+i+')">'+(q.done?'もどす':'済')+'</button></div>').join('')+'</div>':'')
+  +'</div>';}
+function rqDone(i){const d=getDay(dkey(),true);if(!d.rq||!d.rq[i])return;d.rq[i].done=!d.rq[i].done;save();renderHl();}
+/* チューニング：1タップの◯/× */
+function tuneHl(v){
+ const k=dkey(),d=getDay(k,true);
+ if(!d.hl)d.hl={};
+ const prev=d.hl.ok;
+ if(prev===true||prev===false){addXp(-(d.hl.xp||0),'habit');d.hl.xp=0;}
+ if(prev===v){d.hl.ok=null;save();renderAll();toast('取り消した');paintLzEnd();return;}
+ if(!d.hl.t)d.hl.snap=hlOf(k).t;   // その日に何をハイライトにしていたか残す
+ d.hl.ok=v;const g=v?15:3;d.hl.xp=g;addXp(g,'habit');
+ save();renderAll();paintLzEnd();
+ toast(v?'◯ ハイライト達成 ＋15 EXP':'× 記録した ＋3 EXP（記録したこと自体が前進）');}
+
+/* ---- 作戦：ハイライトとバーナーリスト ---- */
+function renderHlPlan(){
+ const el=document.getElementById('hlPlan');if(!el)return;
+ const k=curPlanKey,h=hlOf(k),L=LENS[h.lens]||LENS.sat,d=S.days[k];
+ const box=d&&d.plan?d.plan.find(b=>b.hl):null;
+ el.innerHTML='<div class="hlcard" onclick="openHl(\''+k+'\')" style="cursor:pointer">'
+  +'<div class="row"><span class="hlk">✦ この日のハイライト</span><span class="sp"></span>'
+  +'<span class="lens">'+L.i+' '+L.n+'</span><span class="lens">'+h.min+'分</span></div>'
+  +'<div class="hlt">'+esc(h.t)+'</div>'
+  +'<div class="tiny">'+(h.by==='auto'?'いつもの（デジャブ）。変えなければこのまま入る':'この日だけ決めた')
+   +(box?'　📅 '+box.s+' からタイムボックスに入れてある':'　タップで変える／予定に入れる')+'</div></div>';
+ renderBurner();}
+function renderBurner(){
+ const el=document.getElementById('burner');if(!el)return;
+ const b=MT().burner;
+ const steps=side=>b[side].steps.map((s,i)=>'<div class="bstep"><span onclick="stepToHl(\''+side+'\','+i+')">'+esc(s)+'</span>'
+  +'<button onclick="delStep(\''+side+'\','+i+')">×</button></div>').join('');
+ const add=(side,ph)=>'<div class="badd"><input type="text" id="bIn_'+side+'" placeholder="'+ph+'"><button onclick="addStep(\''+side+'\')">＋</button></div>';
+ el.innerHTML='<div class="burner">'
+  +'<div class="bz front"><div class="bk">🔥 手前のコンロ（メイン）</div><div class="bn" onclick="renBurner(\'front\')">'+esc(b.front.n)+'</div>'
+   +steps('front')+add('front','一歩を足す')+'</div>'
+  +'<div class="bz"><div class="bk">♨️ 奥のコンロ（サブ）</div><div class="bn" onclick="renBurner(\'back\')">'+esc(b.back.n)+'</div>'
+   +steps('back')+add('back','一歩を足す')+'</div>'
+  +'<div class="bz"><div class="bk">🧽 流し台（雑務）</div>'
+   +(b.sink.length?b.sink.map((s,i)=>'<div class="bstep"><span>'+esc(s)+'</span><button onclick="delStep(\'sink\','+i+')" title="片づけた">✓</button></div>').join('')
+    :'<div class="tiny" style="margin:4px 0">小さな用事はここに流す。ハイライトにはしない。</div>')
+   +add('sink','用事を足す')+'</div>'
+  +'</div><div class="tiny">一歩をタップすると、この日（'+labelD(curPlanKey)+'）のハイライトになる＝大きな目標を、着手できる一歩にこっぱみじんにする。名前はタップで変えられる。</div>';}
+function bList(side){const b=MT().burner;return side==='sink'?b.sink:b[side].steps;}
+function addStep(side){
+ const i=document.getElementById('bIn_'+side),v=(i.value||'').trim();if(!v)return;
+ bList(side).push(v);save();renderBurner();}
+function delStep(side,i){bList(side).splice(i,1);save();renderBurner();if(side==='sink')toast('流した');}
+function renBurner(side){
+ const b=MT().burner[side],v=prompt(side==='front'?'手前のコンロ（いちばん大事なプロジェクト）':'奥のコンロ（2番目のプロジェクト）',b.n);
+ if(v===null||!v.trim())return;b.n=v.trim();save();renderBurner();}
+function stepToHl(side,i){
+ const k=curPlanKey,t=bList(side)[i];if(!t)return;
+ const d=getDay(k,true),h=hlOf(k);
+ d.hl=Object.assign({},d.hl||{},{t:t,lens:h.lens,min:h.min});
+ save();renderPlan();toast('✦ '+labelD(k)+' のハイライトにした');}
+
+/* ---- ハイライト設定シート ---- */
+function openHl(k){
+ window._hlK=k;const h=hlOf(k),d=S.days[k];
+ document.getElementById('hlSheetTitle').textContent='✦ '+labelD(k)+' のハイライト';
+ document.getElementById('hlT').value=h.t;
+ window._hlLens=h.lens||'sat';window._hlMin=h.min;window._hlDeja=false;
+ const box=d&&d.plan?d.plan.find(b=>b.hl):null;
+ document.getElementById('hlAt').value=box?box.s:'';
+ const b=MT().burner,sug=[autoHl(k).t].concat(b.front.steps,b.back.steps).filter((x,i,a)=>x&&a.indexOf(x)===i);
+ document.getElementById('hlSteps').innerHTML=sug.map(x=>'<button class="chip" data-t="'+esc(x)+'">'+esc(x)+'</button>').join('');
+ document.getElementById('hlSteps').querySelectorAll('button').forEach(e=>e.onclick=()=>{document.getElementById('hlT').value=e.dataset.t;});
+ paintHlSheet();openSheet('sheetHl');}
+function paintHlSheet(){
+ document.getElementById('hlLens').innerHTML=Object.keys(LENS).map(x=>
+  '<button class="chip'+(window._hlLens===x?' on':'')+'" onclick="window._hlLens=\''+x+'\';paintHlSheet()">'+LENS[x].i+' '+LENS[x].n+'</button>').join('');
+ const mins=HL_MINS.indexOf(window._hlMin)<0?HL_MINS.concat([window._hlMin]).sort((a,b)=>a-b):HL_MINS;
+ document.getElementById('hlMin').innerHTML=mins.map(x=>
+  '<button class="chip'+(window._hlMin===x?' on':'')+'" onclick="window._hlMin='+x+';paintHlSheet()">'+x+'分</button>').join('');
+ const dj=document.getElementById('hlDeja');dj.textContent=window._hlDeja?'オン':'オフ';dj.classList.toggle('on',!!window._hlDeja);}
+function saveHl(){
+ const k=window._hlK,d=getDay(k,true),a=autoHl(k);
+ const t=document.getElementById('hlT').value.trim()||a.t,lens=window._hlLens,min=window._hlMin;
+ const keep={ok:d.hl?d.hl.ok:undefined,xp:d.hl?d.hl.xp:0};
+ if(window._hlDeja){
+  MT().hl={t:t===a.t?'':t,lens:lens,min:min===a.min?0:min};   // 自動の量のままなら、日付で増える
+  d.hl=keep;}
+ else d.hl=Object.assign(keep,{t:t,lens:lens,min:min});
+ const at=document.getElementById('hlAt').value,bi=d.plan.findIndex(b=>b.hl);
+ if(at){
+  if(bi>=0)Object.assign(d.plan[bi],{s:at,m:min,t:t});
+  else d.plan.push({id:uid(),s:at,m:min,t:t,cat:'learn',lo:'最初の1つだけやる（2分で始める）',hi:t,ifthen:'',st:'todo',xp:0,hl:true});
+  sortBoxes(d.plan);}
+ else if(bi>=0&&d.plan[bi].st==='todo')d.plan.splice(bi,1);
+ save();closeSheet();renderAll();
+ toast(window._hlDeja?'🔁 いつものハイライトにした':'✦ ハイライトを決めた');}
+function hlBackAuto(){
+ const k=window._hlK,d=getDay(k,true);
+ d.hl={ok:d.hl?d.hl.ok:undefined,xp:d.hl?d.hl.xp:0};
+ save();closeSheet();renderAll();toast('いつもの（デジャブ）に戻した');}
+
+/* ---- レーザー：タイムタイマー＋サウンド＋ふとした疑問 ---- */
+let AC=null,NZ=null,NZG=null,WL=null,LZT=null;
+function actx(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C();}
+ if(AC.state==='suspended')AC.resume();return AC;}
+function chime(n){const a=actx();if(!a)return;const t0=a.currentTime;
+ [660,880,990].slice(0,n||2).forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain(),t=t0+i*.2;
+  o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.2,t+.02);
+  g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+1.2);});}
+function noiseOn(){const a=actx();if(!a||NZ)return;
+ const len=a.sampleRate*6,buf=a.createBuffer(1,len,a.sampleRate),ch=buf.getChannelData(0);
+ let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+ for(let i=0;i<len;i++){const w=Math.random()*2-1;   // ピンクノイズ（Paul Kellet）
+  b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
+  b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;ch[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;}
+ const fade=Math.floor(a.sampleRate*.05);   // つなぎ目のプツッを消す
+ for(let i=0;i<fade;i++){const r=i/fade;ch[i]*=r;ch[len-1-i]*=r;}
+ const src=a.createBufferSource();src.buffer=buf;src.loop=true;
+ const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;
+ const g=a.createGain();g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(.4,a.currentTime+2);
+ src.connect(lp);lp.connect(g);g.connect(a.destination);src.start();NZ=src;NZG=g;}
+function noiseOff(){if(!NZ)return;const n=NZ,g=NZG;NZ=null;NZG=null;
+ try{g.gain.cancelScheduledValues(AC.currentTime);g.gain.setValueAtTime(g.gain.value,AC.currentTime);
+  g.gain.linearRampToValueAtTime(0,AC.currentTime+.5);}catch(e){}
+ setTimeout(()=>{try{n.stop();}catch(e){}},600);}
+async function wakeOn(){try{if('wakeLock' in navigator&&!WL)WL=await navigator.wakeLock.request('screen');}catch(e){WL=null;}}
+function wakeOff(){try{if(WL)WL.release();}catch(e){}WL=null;}
+function lzEl(r){return r.acc+(r.paused?0:Date.now()-r.start);}
+function startLaser(){
+ const m=MT();
+ if(!m.run){const k=dkey(),h=hlOf(k);
+  m.run={k:k,t:h.t,min:h.min,start:Date.now(),acc:0,paused:false,rq:[]};save();
+  if(m.snd)noiseOn();chime(1);}
+ else if(!m.run.paused&&m.snd)noiseOn();
+ closeSheet();openLaserUI();}
+function openLaserUI(){
+ const r=MT().run;if(!r)return;
+ const el=document.getElementById('laser');el.classList.remove('end');el.classList.add('on');
+ document.getElementById('lzTitle').textContent='✦ '+r.t;
+ paintLzCtl();wakeOn();clearInterval(LZT);LZT=setInterval(lzTick,250);lzTick();}
+function paintLzCtl(){const m=MT(),r=m.run;
+ document.getElementById('lzSnd').textContent=m.snd?'🎵 オン':'🔇 オフ';
+ document.getElementById('lzSnd').classList.toggle('on',!!m.snd);
+ if(r){document.getElementById('lzPause').textContent=r.paused?'▶ 再開':'一時停止';
+  document.getElementById('lzQn').textContent=r.rq.length?'🅿️ '+r.rq.length+'件 預かり中':'';}}
+function lzTick(){
+ const r=MT().run;if(!r){clearInterval(LZT);return;}
+ const total=r.min*60000,rem=Math.max(0,total-lzEl(r));
+ const s=Math.ceil(rem/1000);
+ document.getElementById('lzRem').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+ drawTimer(rem,total);
+ if(rem<=0&&!r.paused)finishLaser();}
+function drawTimer(rem,total){
+ const cv=document.getElementById('lzCv'),dpr=window.devicePixelRatio||1,W=280;
+ if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=W*dpr;}
+ const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,W);
+ const cx=W/2,cy=W/2,R=104,sc=Math.max(60,Math.ceil(total/60000/15)*15);   // 目盛りは60分（90分枠は90分）
+ c.beginPath();c.arc(cx,cy,136,0,Math.PI*2);c.fillStyle='#eceef3';c.fill();
+ const fr=Math.min(1,rem/60000/sc);
+ if(fr>0){c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R,-Math.PI/2,-Math.PI/2-fr*Math.PI*2,true);c.closePath();
+  c.fillStyle='#e0362c';c.fill();}
+ for(let i=0;i<60;i++){const a=-Math.PI/2-i/60*Math.PI*2,mj=i%5===0;
+  c.beginPath();c.moveTo(cx+Math.cos(a)*(R+3),cy+Math.sin(a)*(R+3));
+  c.lineTo(cx+Math.cos(a)*(R+(mj?12:7)),cy+Math.sin(a)*(R+(mj?12:7)));
+  c.strokeStyle='#3a3d48';c.lineWidth=mj?2:1;c.stroke();
+  if(mj){c.fillStyle='#2a2d36';c.font='600 12px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';
+   c.fillText(String(Math.round(i/60*sc)),cx+Math.cos(a)*(R+23),cy+Math.sin(a)*(R+23));}}
+ c.beginPath();c.arc(cx,cy,11,0,Math.PI*2);c.fillStyle='#f6f7fa';c.fill();c.strokeStyle='#c8cbd4';c.lineWidth=1;c.stroke();}
+function lzPause(){const m=MT(),r=m.run;if(!r)return;
+ if(r.paused){r.start=Date.now();r.paused=false;if(m.snd)noiseOn();}
+ else{r.acc+=Date.now()-r.start;r.paused=true;noiseOff();}
+ save();paintLzCtl();}
+function lzSnd(){const m=MT();m.snd=!m.snd;save();
+ if(m.snd&&m.run&&!m.run.paused)noiseOn();else noiseOff();paintLzCtl();}
+function lzAddQ(){const i=document.getElementById('lzQ'),v=(i.value||'').trim(),r=MT().run;if(!v||!r)return;
+ r.rq.push(v);i.value='';save();paintLzCtl();toast('🅿️ 置いた。作業に戻ろう');}
+function lzHide(){document.getElementById('laser').classList.remove('on');clearInterval(LZT);noiseOff();wakeOff();renderAll();}
+function finishLaser(){
+ const m=MT(),r=m.run;if(!r)return;
+ const act=Math.min(r.min,Math.round(lzEl(r)/60000));
+ const d=getDay(r.k,true);
+ if(!d.laser)d.laser=[];d.laser.push({t:r.t,min:r.min,act:act,at:hhmm()});
+ if(!d.rq)d.rq=[];r.rq.forEach(q=>d.rq.push({t:q,done:false}));
+ let xp=0;if(act>=5){xp=10;addXp(10,'learn');}
+ window._lzEnd={t:r.t,act:act,min:r.min,xp:xp,rq:r.rq.slice(),k:r.k};
+ m.run=null;save();clearInterval(LZT);noiseOff();wakeOff();chime(3);
+ document.getElementById('laser').classList.add('on','end');
+ paintLzEnd();renderAll();}
+function paintLzEnd(){
+ const e=window._lzEnd,el=document.getElementById('lzEnd');
+ if(!e||!document.getElementById('laser').classList.contains('end'))return;
+ const ok=hlOk(e.k);
+ el.innerHTML='<div style="font-size:46px;margin-top:20px">🎯</div>'
+  +'<div class="hlk" style="margin-top:4px">レーザー終了</div>'
+  +'<div class="lzt">'+esc(e.t)+'</div>'
+  +'<div class="tiny">'+e.act+'分 集中した'+(e.xp?'　＋'+e.xp+' EXP':'')+'</div>'
+  +(e.rq.length?'<div class="lzq"><div class="tiny" style="margin-bottom:4px">🅿️ 預かっていた疑問（今日のハイライトのカードに残してある）</div>'
+   +e.rq.map(q=>'<div class="rq"><span>'+esc(q)+'</span></div>').join('')+'</div>':'')
+  +'<div class="lzq" style="text-align:center"><div style="font-size:13px">ハイライトはできた？</div>'
+   +'<div class="tune" style="justify-content:center">'
+   +'<button class="'+(ok===true?'on-ok':'')+'" onclick="tuneHl(true)">◯</button>'
+   +'<button class="'+(ok===false?'on-ng':'')+'" onclick="tuneHl(false)">×</button></div>'
+   +'<div class="tiny" style="margin-top:6px">まだ途中なら押さなくていい。夜に今日タブで押せる。</div></div>'
+  +'<button class="btn pri wide" style="margin-top:16px" onclick="closeLzEnd()">とじる</button>';}
+function closeLzEnd(){const l=document.getElementById('laser');l.classList.remove('on','end');window._lzEnd=null;renderAll();}
+function lzStop(){if(!confirm('ここで終える？（ここまでの分は記録する）'))return;finishLaser();}
+
+/* ---- チャージ：筋トレのあと、そのままハイライトへ ---- */
+function chargeHook(){
+ const k=dkey(),d=getDay(k,true);
+ if(hlOk(k)===true||MT().run||d.chargeAsked)return;
+ d.chargeAsked=true;save();
+ const h=hlOf(k);
+ document.getElementById('chgTx').textContent='✦ '+h.t;
+ document.getElementById('btnChgGo').textContent='▶ レーザー開始（'+h.min+'分）';
+ setTimeout(()=>{if(!document.getElementById('tre').classList.contains('on'))openSheet('sheetCharge');
+  else{const t=document.getElementById('treClose'),o=t.onclick;t.onclick=()=>{t.onclick=o;o&&o();openSheet('sheetCharge');};}},450);}
+
+/* ---- 画面なしタイマー ---- */
+let NST=null,NSP=null;
+function openNosc(){const m=MT(),el=document.getElementById('nosc');
+ if(m.nosc){el.classList.add('on');paintNosc();return;}
+ el.innerHTML='<div style="font-size:40px">🍽</div><div class="nst">画面なしタイマー</div>'
+  +'<div class="tiny" style="color:#666;max-width:280px">食事や休憩のあいだは画面を消す。時間が来たら音で知らせる。スマホは伏せて置いておく。</div>'
+  +'<div class="chips" style="justify-content:center;margin-top:18px">'
+  +[15,20,30,45,60].map(x=>'<button class="chip" onclick="startNosc('+x+')">'+x+'分</button>').join('')+'</div>'
+  +'<button class="btn sm" style="margin-top:22px;color:#777;border-color:#333;background:#0a0a0a" onclick="closeNosc()">やめる</button>';
+ el.classList.add('on');}
+function startNosc(min){const m=MT();actx();
+ m.nosc={min:min,end:Date.now()+min*60000,k:dkey()};save();paintNosc();}
+function paintNosc(){
+ const m=MT(),el=document.getElementById('nosc');if(!m.nosc)return;
+ el.innerHTML='<div class="nsdim" id="nsRem"></div><div style="flex:1"></div>'
+  +'<div class="nsdim" id="nsHold" style="padding:30px">長押し（1秒）でもどる</div>';
+ el.onpointerdown=()=>{clearTimeout(NSP);NSP=setTimeout(()=>{endNosc(false);},1000);};
+ el.onpointerup=el.onpointercancel=el.onpointerleave=()=>clearTimeout(NSP);
+ clearInterval(NST);NST=setInterval(nsTick,1000);nsTick();}
+function nsTick(){const m=MT();if(!m.nosc){clearInterval(NST);return;}
+ const rem=m.nosc.end-Date.now();
+ const e=document.getElementById('nsRem');if(e)e.textContent='🍽 画面なし　あと'+Math.max(1,Math.ceil(rem/60000))+'分';
+ if(rem<=0)endNosc(true);}
+function endNosc(full){const m=MT(),n=m.nosc;clearInterval(NST);clearTimeout(NSP);
+ const el=document.getElementById('nosc');el.onpointerdown=el.onpointerup=el.onpointercancel=el.onpointerleave=null;
+ if(!n){el.classList.remove('on');return;}
+ m.nosc=null;
+ if(full){const d=getDay(n.k,true);d.nosc=(d.nosc||0)+1;addXp(5,'life');save();chime(2);
+  el.innerHTML='<div style="font-size:44px">🌿</div><div class="nst">おかえり</div>'
+   +'<div class="tiny" style="color:#777">'+n.min+'分、画面なしで過ごした　＋5 EXP</div>'
+   +'<button class="btn sm" style="margin-top:22px" onclick="closeNosc()">とじる</button>';}
+ else{save();el.classList.remove('on');toast('もどった');}
+ renderAll();}
+function closeNosc(){document.getElementById('nosc').classList.remove('on');}
+
+/* ---- 自分：試している戦術（選ぶ・試す・繰り返す） ---- */
+function renderTactics(){
+ const el=document.getElementById('tactics');if(!el)return;
+ const m=MT(),on=m.tac.filter(t=>t.on);
+ const sorted=on.concat(m.tac.filter(t=>!t.on));
+ el.innerHTML='<div class="tiny" style="margin-bottom:9px">選ぶ・試す・繰り返す。本のクイックスタートは「ハイライト・レーザー・チャージから1つずつ選んで、3日続けて試す」（p.368〜369）。効いた日は👍を押すだけ。文章は書かなくていい。</div>'
+  +sorted.map(t=>{const n=t.on&&t.since?Math.max(0,Math.round((dObj(dkey())-dObj(t.since))/86400000))+1:0;
+   return '<div class="tac'+(t.on?' on':'')+'">'
+    +'<button class="tsw" onclick="togTac(\''+t.id+'\')">'+(t.on?'試す中':'試す')+'</button>'
+    +'<div class="sp" style="min-width:0"><div class="tn">'+MT_STEP[t.st][0]+' '+esc(t.n)+'</div>'
+    +'<div class="tiny">'+(t.no?'戦術'+esc(t.no):'番号は未確認')+(t.p?'・'+esc(t.p):'')+(n?'・試して'+n+'日目':'')+'</div></div>'
+    +(t.on?'<button class="tgood" onclick="goodTac(\''+t.id+'\')">👍 '+(t.good||0)+'</button>':'')
+    +(t.user?'<button class="tdel" onclick="delTac(\''+t.id+'\')">×</button>':'')
+    +'</div>';}).join('')
+  +'<button class="btn sm wide" onclick="openTac()">＋ 本から戦術を足す</button>';}
+function togTac(id){const t=MT().tac.find(x=>x.id===id);if(!t)return;
+ t.on=!t.on;if(t.on)t.since=dkey();save();renderTactics();toast(t.on?'🧪 試しはじめた':'やめた（いつでも戻せる）');}
+function goodTac(id){const t=MT().tac.find(x=>x.id===id);if(!t)return;
+ t.good=(t.good||0)+1;save();renderTactics();toast('👍 効いた '+t.good);}
+function delTac(id){if(!confirm('この戦術を消す？'))return;MT().tac=MT().tac.filter(x=>x.id!==id);save();renderTactics();}
+function openTac(){['tcNo','tcN','tcP'].forEach(i=>document.getElementById(i).value='');window._tcSt='h';paintTac();openSheet('sheetTac');}
+function paintTac(){document.getElementById('tcSt').innerHTML=Object.keys(MT_STEP).map(x=>
+ '<button class="chip'+(window._tcSt===x?' on':'')+'" onclick="window._tcSt=\''+x+'\';paintTac()">'+MT_STEP[x][0]+' '+MT_STEP[x][1]+'</button>').join('');}
+function saveTac(){const n=document.getElementById('tcN').value.trim();if(!n){toast('名前を入れて');return;}
+ MT().tac.push({id:uid(),no:document.getElementById('tcNo').value.trim(),n:n,p:document.getElementById('tcP').value.trim(),
+  st:window._tcSt||'h',on:true,since:dkey(),good:0,user:true});
+ save();closeSheet();renderTactics();toast('🧪 足して、試しはじめた');}
+
+/* ---- 記録：今月のハイライト ---- */
+function renderHlLog(){
+ const el=document.getElementById('hlLog');if(!el)return;
+ const k=dkey(),mon=hlMonth(k),n=mon.o+mon.x;
+ el.innerHTML='<div class="row"><div><div class="tiny">◯ できた日</div><div class="tally">'+(mon.o?tally(mon.o):'—')+'</div></div>'
+  +'<span class="sp"></span><div style="text-align:right"><div class="tiny">達成率</div>'
+  +'<div style="font-size:22px;font-weight:700;color:var(--gold2)">'+(n?Math.round(mon.o/n*1000)/10+'%':'—')+'</div></div></div>'
+  +'<div class="mgrid" style="margin-top:10px">'
+  +[[mon.o+'日','◯ できた'],[mon.x+'日','× できなかった'],[mon.lz+'分','🎯 レーザーで集中'],[mon.ns+'回','🍽 画面なしで過ごした']]
+   .map(x=>'<div class="metric"><div class="n">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('')+'</div>'
+  +'<div class="tiny" style="margin-top:9px">×は失敗ではなく記録。押した日は上の4週グリッドに✦がつく（◯の日だけ）。</div>';}
+
 /* ============ view ============ */
 function switchView(v){
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
@@ -2248,6 +2794,18 @@ document.getElementById('btnFreeAdd').onclick=()=>{
 document.getElementById('btnCloseMeal').onclick=closeMeal;
 document.getElementById('gearBar').onclick=()=>openGear(null);
 document.getElementById('btnGearSave').onclick=saveGear;
+document.getElementById('btnHlSave').onclick=saveHl;
+document.getElementById('btnHlAuto').onclick=hlBackAuto;
+document.getElementById('hlDeja').onclick=()=>{window._hlDeja=!window._hlDeja;paintHlSheet();};
+document.getElementById('btnChgGo').onclick=startLaser;
+document.getElementById('btnChgLater').onclick=closeSheet;
+document.getElementById('btnTacSave').onclick=saveTac;
+document.getElementById('lzPause').onclick=lzPause;
+document.getElementById('lzStop').onclick=lzStop;
+document.getElementById('lzSnd').onclick=lzSnd;
+document.getElementById('lzQAdd').onclick=lzAddQ;
+document.getElementById('lzQ').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();lzAddQ();}};
+document.getElementById('lzHide').onclick=lzHide;
 document.getElementById('btnGearOff').onclick=gearOff;
 document.getElementById('btnGearDone').onclick=gearDone;
 document.getElementById('btnSaveRecord').onclick=saveRecord;
@@ -2327,6 +2885,12 @@ const _t=dkey();
 if(!S.days[_t]&&nowMin()<4*60){/* 深夜起動時のケア */}
 switchView(nowMin()>=20*60&&!(S.days[addD(_t,1)]&&S.days[addD(_t,1)].locked)?'plan':'today');
 setInterval(()=>{if(document.getElementById('v-today').classList.contains('on'))renderToday();},30000);
+if(MT().run)openLaserUI();
+setInterval(()=>{const r=MT().run;if(r&&!r.paused&&lzEl(r)>=r.min*60000)finishLaser();},5000);
+if(MT().nosc){document.getElementById('nosc').classList.add('on');paintNosc();}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){
+ if(MT().run&&document.getElementById('laser').classList.contains('on')){wakeOn();lzTick();}
+ if(MT().nosc)nsTick();}});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
