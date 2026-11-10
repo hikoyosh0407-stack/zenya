@@ -338,6 +338,8 @@ label.f:first-child{margin-top:0}
 .nosc .nst{font-size:17px;font-weight:700;color:#999;margin:6px 0}
 .nosc .chip{background:#111;border-color:#333;color:#aaa}
 .nsdim{font-size:13px;color:#3a3a3a}
+#sheetGas .chip{white-space:nowrap;flex:0 0 auto}
+#sheetGas .row .tiny{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -409,8 +411,9 @@ label.f:first-child{margin-top:0}
   <button class="btn pri wide" id="btnLock" style="margin-top:4px">この作戦で出撃する</button>
   <div class="tiny" style="text-align:center;margin-top:8px" id="lockNote"></div>
 
-  <h2 class="sec">カレンダーに送る</h2>
+  <h2 class="sec">カレンダー・タスクに送る</h2>
   <div class="card">
+    <div id="gasBox"></div>
     <button class="btn wide sm" id="btnIcs">📅 この日の予定をまとめて送る（.ics）</button>
     <div class="tiny" style="margin:8px 0 12px">共有シートが出たら「カレンダー」を選ぶ。Googleアカウントを iPhone のカレンダーに追加していれば、そのままGoogleカレンダーに入る。</div>
     <div class="tiny" style="margin-bottom:6px">1件ずつGoogleカレンダーで開く：</div>
@@ -839,6 +842,27 @@ label.f:first-child{margin-top:0}
 
 <!-- 画面なしタイマー -->
 <div class="nosc" id="nosc"></div>
+
+
+<!-- Google直結の設定シート -->
+<div class="sheet" id="sheetGas">
+  <div class="grab"></div>
+  <h3>🔗 Google直結の設定</h3>
+  <div class="tiny">あなたのGoogleアカウントで動く中継スクリプト（Apps Script）を通して、Googleカレンダーとタスクに送る。作り方は Obsidian の「04_output/ゼンヤ_Google連携/設定手順」。</div>
+  <label class="f">ウェブアプリのURL（https://script.google.com/macros/s/…/exec）</label>
+  <input type="text" id="gsUrl" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label class="f">合言葉（スクリプトの TOKEN と同じ文字）</label>
+  <input type="text" id="gsTok" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <div class="row" style="margin-top:14px"><span class="tiny">📅 タイムボックス → Googleカレンダー</span><span class="sp"></span><button class="chip" id="gsCal">オン</button></div>
+  <div class="row" style="margin-top:10px"><span class="tiny">✅ ハイライト・預けた疑問・流し台 → Googleタスク（リスト「ゼンヤ」）</span><span class="sp"></span><button class="chip" id="gsTask">オン</button></div>
+  <div class="row" style="margin-top:10px"><span class="tiny">⚡ 出撃したら自動で送る（送った日は、◯×や編集も自動で追いかける）</span><span class="sp"></span><button class="chip" id="gsAuto">オン</button></div>
+  <div class="tiny" style="margin-top:10px">予定を入れるカレンダーは、作戦タブの「対象カレンダーID」（空ならメイン）。</div>
+  <div class="f2" style="margin-top:14px">
+    <button class="btn" id="btnGasTest">接続テスト</button>
+    <button class="btn pri" id="btnGasSave">保存</button>
+  </div>
+  <div class="tiny" id="gsMsg" style="margin-top:10px"></div>
+</div>
 
 <!-- 宝箱 -->
 <div class="tre" id="tre">
@@ -1298,7 +1322,7 @@ function mark(id,st){
   else toast(st==='hi'?'◎ 最高ライン ＋16 EXP':'◯ 最低ライン ＋10 EXP');
  }
  syncCatBoost(d);
- save();renderAll();
+ save();renderAll();gasAuto(k);
 }
 /* 鍛錬などカテゴリ連動のブーストを、その日のクエスト達成状況に合わせる */
 function syncCatBoost(d){
@@ -1370,6 +1394,7 @@ function renderPlan(){
   ?(d.madeAt?d.madeAt.slice(0,16).replace('T',' ')+' に確定':'')
   :'前の晩に確定させると＋20EXP。1日は前夜に決まる。';
  renderCal();
+ renderGas();
 }
 function applyTpl(id){
  const t=S.templates.find(x=>x.id===id);if(!t)return;
@@ -2043,7 +2068,7 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear','sheetHl','sheetCharge','sheetTac'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear','sheetHl','sheetCharge','sheetTac','sheetGas'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -2411,17 +2436,17 @@ function renderHl(){
    +rq.map((q,i)=>'<div class="rq'+(q.done?' done':'')+'"><span>'+esc(q.t)+'</span><span class="sp"></span>'
     +'<button onclick="rqDone('+i+')">'+(q.done?'もどす':'済')+'</button></div>').join('')+'</div>':'')
   +'</div>';}
-function rqDone(i){const d=getDay(dkey(),true);if(!d.rq||!d.rq[i])return;d.rq[i].done=!d.rq[i].done;save();renderHl();}
+function rqDone(i){const d=getDay(dkey(),true);if(!d.rq||!d.rq[i])return;d.rq[i].done=!d.rq[i].done;save();renderHl();gasAuto(dkey());}
 /* チューニング：1タップの◯/× */
 function tuneHl(v){
  const k=dkey(),d=getDay(k,true);
  if(!d.hl)d.hl={};
  const prev=d.hl.ok;
  if(prev===true||prev===false){addXp(-(d.hl.xp||0),'habit');d.hl.xp=0;}
- if(prev===v){d.hl.ok=null;save();renderAll();toast('取り消した');paintLzEnd();return;}
+ if(prev===v){d.hl.ok=null;save();renderAll();toast('取り消した');paintLzEnd();gasAuto(k);return;}
  if(!d.hl.t)d.hl.snap=hlOf(k).t;   // その日に何をハイライトにしていたか残す
  d.hl.ok=v;const g=v?15:3;d.hl.xp=g;addXp(g,'habit');
- save();renderAll();paintLzEnd();
+ save();renderAll();paintLzEnd();gasAuto(k);
  toast(v?'◯ ハイライト達成 ＋15 EXP':'× 記録した ＋3 EXP（記録したこと自体が前進）');}
 
 /* ---- 作戦：ハイライトとバーナーリスト ---- */
@@ -2455,8 +2480,8 @@ function renderBurner(){
 function bList(side){const b=MT().burner;return side==='sink'?b.sink:b[side].steps;}
 function addStep(side){
  const i=document.getElementById('bIn_'+side),v=(i.value||'').trim();if(!v)return;
- bList(side).push(v);save();renderBurner();}
-function delStep(side,i){bList(side).splice(i,1);save();renderBurner();if(side==='sink')toast('流した');}
+ bList(side).push(v);save();renderBurner();if(side==='sink')gasAuto(curPlanKey);}
+function delStep(side,i){bList(side).splice(i,1);save();renderBurner();if(side==='sink'){toast('流した');gasAuto(curPlanKey);}}
 function renBurner(side){
  const b=MT().burner[side],v=prompt(side==='front'?'手前のコンロ（いちばん大事なプロジェクト）':'奥のコンロ（2番目のプロジェクト）',b.n);
  if(v===null||!v.trim())return;b.n=v.trim();save();renderBurner();}
@@ -2499,7 +2524,7 @@ function saveHl(){
   else d.plan.push({id:uid(),s:at,m:min,t:t,cat:'learn',lo:'最初の1つだけやる（2分で始める）',hi:t,ifthen:'',st:'todo',xp:0,hl:true});
   sortBoxes(d.plan);}
  else if(bi>=0&&d.plan[bi].st==='todo')d.plan.splice(bi,1);
- save();closeSheet();renderAll();
+ save();closeSheet();renderAll();gasAuto(k);
  toast(window._hlDeja?'🔁 いつものハイライトにした':'✦ ハイライトを決めた');}
 function hlBackAuto(){
  const k=window._hlK,d=getDay(k,true);
@@ -2698,6 +2723,83 @@ function renderHlLog(){
    .map(x=>'<div class="metric"><div class="n">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('')+'</div>'
   +'<div class="tiny" style="margin-top:9px">×は失敗ではなく記録。押した日は上の4週グリッドに✦がつく（◯の日だけ）。</div>';}
 
+
+/* ============ Google直結（Apps Script 中継）：予定→カレンダー／タスク→Googleタスク ============ */
+function GS(){if(!S.settings.gas)S.settings.gas={url:'',token:'',cal:true,tasks:true,auto:true};return S.settings.gas;}
+function gasReady(){const g=GS();return !!(g.url&&g.token);}
+function locStr(k,mins){const d=dObj(k);d.setMinutes(mins);
+ return dkey(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function sinkKey(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return 's'+(h>>>0).toString(36);}
+const ST_MARK={lo:'◯ ',hi:'◎ ',skip:'（見送り）'};
+function gasPayload(k){
+ const g=GS(),d=getDay(k,true),o={date:k,cal:(S.settings.calSrc||'').trim()};
+ if(g.cal){sortBoxes(d.plan);
+  o.events=d.plan.filter(b=>S.settings.calWork||b.cat!=='work').map(b=>{const st=hm(b.s),ds=boxDesc(b);
+   return{id:b.id,title:(ST_MARK[b.st]||'')+CATS[b.cat].i+' '+(b.hl?'✦ ':'')+b.t,
+    start:locStr(k,st),end:locStr(k,st+b.m),desc:ds+(ds?'\n\n':'')+'— ゼンヤ（'+k+' の作戦）'};});}
+ if(g.tasks){const h=hlOf(k),L=LENS[h.lens]||LENS.sat;
+  o.taskGroups=['d:'+k,'sink'];
+  o.tasks=[{g:'d:'+k,id:'hl',title:'✦ '+h.t,notes:'ハイライト（'+L.n+'・'+h.min+'分）— ゼンヤ',due:k,done:hlOk(k)===true}]
+   .concat((d.rq||[]).map((q,i)=>({g:'d:'+k,id:'rq'+i,title:'🅿️ '+q.t,notes:'レーザー中に預けた疑問 — ゼンヤ',due:k,done:!!q.done})))
+   .concat(MT().burner.sink.map(t=>({g:'sink',id:sinkKey(t),title:'🧽 '+t,notes:'流し台（雑務）— ゼンヤ'})));}
+ return o;}
+async function gasPost(o,url,token){
+ const g=GS();
+ const r=await fetch((url||g.url).trim(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+  body:JSON.stringify(Object.assign({token:(token||g.token).trim()},o))});
+ const t=await r.text();
+ try{return JSON.parse(t);}catch(e){throw new Error('応答が読めない（URLと、デプロイの「アクセス：全員」を確認）');}}
+let gasBusy=false;
+async function gasSend(k,quiet){
+ if(!gasReady()){if(!quiet)openGas();return;}
+ const g=GS();if(!g.cal&&!g.tasks){if(!quiet)toast('送る対象が両方オフになっている');return;}
+ if(gasBusy){if(!quiet)toast('送信中…');return;}
+ gasBusy=true;if(!quiet)toast('Googleに送っています…');
+ const d=getDay(k,true);
+ try{const r=await gasPost(gasPayload(k));
+  if(!r.ok)throw new Error(r.err||'失敗した');
+  d.gas={at:dkey()+' '+hhmm(),ev:r.ev||null,tk:r.tk||null};delete d.gasErr;save();
+  if(!quiet)toast('🔗 送った：予定 '+(r.ev?r.ev.add+r.ev.upd:0)+'件・タスク '+(r.tk?r.tk.add+r.tk.upd:0)+'件');
+ }catch(e){d.gasErr=String(e&&e.message||e);save();toast('🔗 送れなかった：'+d.gasErr);}
+ finally{gasBusy=false;if(document.getElementById('v-plan').classList.contains('on'))renderGas();}}
+/* 一度送った日は、◯×・編集・流し台の変化を少し待ってから自動で追いかける */
+function gasAuto(k){
+ if(!gasReady()||!GS().auto)return;
+ const d=S.days[k];if(!d||!d.gas)return;
+ clearTimeout(window._gasT);window._gasT=setTimeout(()=>gasSend(k,true),4000);}
+function renderGas(){
+ const el=document.getElementById('gasBox');if(!el)return;
+ if(!gasReady()){
+  el.innerHTML='<button class="btn wide sm" onclick="openGas()">🔗 Googleカレンダー・タスクに直結する（最初に1回だけ設定）</button>'
+   +'<div class="tiny" style="margin:8px 0 14px">設定すると、1タップ（または出撃と同時）で、予定はカレンダーへ、ハイライト・疑問・流し台はGoogleタスクへ入る。何回送っても重複しない。</div>';
+  return;}
+ const g=GS(),d=S.days[curPlanKey]||{};
+ el.innerHTML='<button class="btn pri wide" onclick="gasSend(curPlanKey)">🔗 この日をGoogleに送る</button>'
+  +'<div class="tiny" style="margin:7px 0 0">'+[g.cal?'📅 予定 → カレンダー':'',g.tasks?'✅ ハイライト・疑問・流し台 → タスク「ゼンヤ」':''].filter(Boolean).join('　')
+  +(g.auto?'<br>⚡ 出撃と同時に自動で送る':'')+'</div>'
+  +(d.gas?'<div class="tiny" style="color:#8fe0a8;margin-top:4px">✓ '+esc(d.gas.at.slice(5))+' に送信（予定 '
+    +(d.gas.ev?d.gas.ev.add+d.gas.ev.upd:0)+'・タスク '+(d.gas.tk?d.gas.tk.add+d.gas.tk.upd:0)+'）。送り直しても上書きになる</div>':'')
+  +(d.gasErr?'<div class="tiny" style="color:#e0a04a;margin-top:4px">⚠️ 前回は送れなかった：'+esc(d.gasErr)+'</div>':'')
+  +'<button class="chip" style="margin:9px 0 14px" onclick="openGas()">⚙️ 直結の設定</button>'
+  +'<div class="tiny" style="border-top:1px dashed var(--line);padding-top:10px;margin-bottom:8px">ほかの送り方（設定なしで使える）</div>';}
+function openGas(){const g=GS();
+ document.getElementById('gsUrl').value=g.url||'';document.getElementById('gsTok').value=g.token||'';
+ window._gs={cal:g.cal!==false,tasks:g.tasks!==false,auto:g.auto!==false};
+ document.getElementById('gsMsg').textContent='';paintGas();openSheet('sheetGas');}
+function paintGas(){[['gsCal','cal'],['gsTask','tasks'],['gsAuto','auto']].forEach(x=>{
+ const e=document.getElementById(x[0]),on=window._gs[x[1]];e.textContent=on?'オン':'オフ';e.classList.toggle('on',on);});}
+function saveGas(){const g=GS();
+ g.url=document.getElementById('gsUrl').value.trim();g.token=document.getElementById('gsTok').value.trim();
+ Object.assign(g,window._gs);save();closeSheet();renderAll();toast(gasReady()?'🔗 直結を保存した':'保存した（URLと合言葉の両方が要る）');}
+async function testGas(){
+ const u=document.getElementById('gsUrl').value.trim(),t=document.getElementById('gsTok').value.trim(),m=document.getElementById('gsMsg');
+ if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)){m.textContent='⚠️ URLは https://script.google.com/macros/s/…/exec の形';return;}
+ if(!t){m.textContent='⚠️ 合言葉を入れて';return;}
+ m.textContent='つないでいます…';
+ try{const r=await gasPost({ping:true,cal:(S.settings.calSrc||'').trim(),tasks:window._gs.tasks},u,t);
+  m.textContent=r.ok?('✅ つながった　カレンダー：'+r.cal+'　タスク：'+(r.taskErr?'⚠️ '+r.taskErr:'リスト「'+r.list+'」')):'⚠️ '+(r.err||'失敗');}
+ catch(e){m.textContent='⚠️ '+(e.message||e);}}
+
 /* ============ view ============ */
 function switchView(v){
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
@@ -2734,11 +2836,11 @@ document.getElementById('btnSaveBox').onclick=()=>{
   st:editIdx===null?'todo':(d.plan[editIdx].st||'todo'),
   xp:editIdx===null?0:(d.plan[editIdx].xp||0)};
  if(editIdx===null)d.plan.push(o);else d.plan[editIdx]=o;
- sortBoxes(d.plan);save();closeSheet();renderAll();};
+ sortBoxes(d.plan);save();closeSheet();renderAll();gasAuto(curPlanKey);};
 document.getElementById('btnDelBox').onclick=()=>{
  const d=getDay(curPlanKey,true);
  if(editIdx!==null){const b=d.plan[editIdx];if(b.xp)addXp(-b.xp,b.cat);d.plan.splice(editIdx,1);}
- save();closeSheet();renderAll();};
+ save();closeSheet();renderAll();gasAuto(curPlanKey);};
 document.getElementById('btnCap').onclick=()=>{
  document.getElementById('cWake').value=S.settings.wake;
  document.getElementById('cSleep').value=S.settings.sleep;
@@ -2766,7 +2868,8 @@ document.getElementById('btnLock').onclick=()=>{
  d.locked=true;const now=new Date();d.madeAt=now.toISOString();
  if(dkey(now)<k&&!d.bonus){d.bonus=true;addXp(20,'habit');toast('前夜の作戦 ＋20 EXP');}
  else toast('出撃準備 完了');
- save();renderPlan();renderHead();};
+ save();renderPlan();renderHead();
+ if(gasReady()&&GS().auto)setTimeout(()=>gasSend(k,true),300);};
 ['preMortem','preThen'].forEach(id=>document.getElementById(id).onblur=()=>{
  const d=getDay(curPlanKey,true);d.pre=document.getElementById('preMortem').value;
  d.preThen=document.getElementById('preThen').value;save();});
@@ -2800,6 +2903,9 @@ document.getElementById('hlDeja').onclick=()=>{window._hlDeja=!window._hlDeja;pa
 document.getElementById('btnChgGo').onclick=startLaser;
 document.getElementById('btnChgLater').onclick=closeSheet;
 document.getElementById('btnTacSave').onclick=saveTac;
+document.getElementById('btnGasSave').onclick=saveGas;
+document.getElementById('btnGasTest').onclick=testGas;
+[['gsCal','cal'],['gsTask','tasks'],['gsAuto','auto']].forEach(x=>document.getElementById(x[0]).onclick=()=>{window._gs[x[1]]=!window._gs[x[1]];paintGas();});
 document.getElementById('lzPause').onclick=lzPause;
 document.getElementById('lzStop').onclick=lzStop;
 document.getElementById('lzSnd').onclick=lzSnd;
