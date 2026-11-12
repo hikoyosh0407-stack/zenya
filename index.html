@@ -819,6 +819,8 @@ label.f:first-child{margin-top:0}
     <div class="lzrun">
       <div class="row"><span class="hlk">🎯 レーザー・モード</span><span class="sp"></span>
         <button class="chip" id="lzSnd">🎵 オン</button></div>
+      <div class="chips" id="lzSnds" style="display:none;justify-content:center;margin-top:10px"></div>
+      <input type="file" id="lzFile" accept="audio/*" style="display:none">
       <div class="lzt" id="lzTitle"></div>
       <canvas id="lzCv" width="280" height="280"></canvas>
       <div class="lzrem" id="lzRem">--:--</div>
@@ -2539,22 +2541,94 @@ function chime(n){const a=actx();if(!a)return;const t0=a.currentTime;
  [660,880,990].slice(0,n||2).forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain(),t=t0+i*.2;
   o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.2,t+.02);
   g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+1.2);});}
-function noiseOn(){const a=actx();if(!a||NZ)return;
- const len=a.sampleRate*6,buf=a.createBuffer(1,len,a.sampleRate),ch=buf.getChannelData(0);
- let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
- for(let i=0;i<len;i++){const w=Math.random()*2-1;   // ピンクノイズ（Paul Kellet）
-  b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
-  b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;ch[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;}
- const fade=Math.floor(a.sampleRate*.05);   // つなぎ目のプツッを消す
- for(let i=0;i<fade;i++){const r=i/fade;ch[i]*=r;ch[len-1-i]*=r;}
- const src=a.createBufferSource();src.buffer=buf;src.loop=true;
- const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;
- const g=a.createGain();g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(.4,a.currentTime+2);
- src.connect(lp);lp.connect(g);g.connect(a.destination);src.start();NZ=src;NZG=g;}
+/* 音：アプリ内で作る4種＋自分の音（端末の中だけに保存） */
+const SOUNDS={brown:{n:'低音ブラウンノイズ',i:'🟤'},rain:{n:'雨音',i:'🌧'},river:{n:'川のせせらぎ',i:'🏞'},pink:{n:'ピンクノイズ',i:'🌫'},file:{n:'自分の音',i:'📁'}};
+const SCFG={pink:{f:[['lowpass',1100]],g:.3},brown:{f:[['lowpass',600]],g:.42},
+ rain:{f:[['highpass',350],['lowpass',6500]],g:.3},river:{f:[['highpass',120],['lowpass',2000]],g:.42,lfo:true}};
+const SBUF={};
+function sndKind(){const m=MT();return SOUNDS[m.sound]?m.sound:'pink';}
+function genCh(kind,len,sr){
+ const ch=new Float32Array(len);
+ let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,br=0,env=0;const bub=[];
+ const pink=w=>{b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
+  b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;const v=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;return v;};
+ const dropP=260/sr,dropK=Math.exp(-1/(sr*.004)),bubP=9/sr;
+ for(let i=0;i<len;i++){const w=Math.random()*2-1;let v;
+  if(kind==='brown'){br=(br+.02*w)/1.02;v=br*3.5;}                       // ブラウンノイズ（低音）
+  else if(kind==='rain'){                                                 // 雨：さーっ＋ぱらぱら
+   if(Math.random()<dropP)env=Math.max(env,.15+Math.random()*.6);env*=dropK;
+   v=pink(w)*.55+(Math.random()*2-1)*env;}
+  else if(kind==='river'){                                                // 川：ざーっ＋こぽこぽ
+   br=(br+.02*w)/1.02;v=br*2.2+pink(w)*.35;
+   if(bub.length<4&&Math.random()<bubP)bub.push({f:250+Math.random()*900,p:0,a:.05+Math.random()*.18,k:Math.exp(-1/(sr*(.015+Math.random()*.04)))});
+   for(let j=bub.length-1;j>=0;j--){const b=bub[j];b.p+=2*Math.PI*b.f/sr;b.f*=1.00003;v+=Math.sin(b.p)*b.a;b.a*=b.k;if(b.a<.002)bub.splice(j,1);}}
+  else v=pink(w);                                                         // ピンクノイズ
+  ch[i]=v;}
+ return ch;}
+function sndBuf(a,kind){
+ if(SBUF[kind]&&SBUF[kind].sampleRate===a.sampleRate)return SBUF[kind];
+ const sr=a.sampleRate,N=sr*((kind==='pink'||kind==='brown')?8:14),F=Math.floor(sr*.5);
+ const buf=a.createBuffer(2,N,sr);
+ for(let c=0;c<2;c++){const raw=genCh(kind,N+F,sr),ch=buf.getChannelData(c);
+  for(let i=0;i<N;i++)ch[i]=raw[i];
+  for(let i=0;i<F;i++){const t=i/F;ch[i]=raw[i]*Math.sqrt(t)+raw[N+i]*Math.sqrt(1-t);}   // つなぎ目を重ねて消す
+  let q=0;for(let i=0;i<N;i+=7)q+=ch[i]*ch[i];const k=.12/(Math.sqrt(q/(N/7))||1);   // 音量をそろえる
+  for(let i=0;i<N;i++)ch[i]*=k;}
+ return SBUF[kind]=buf;}
+function noiseOn(){const m=MT();if(!m.snd||NZ)return;
+ const kind=sndKind();if(kind==='file'){fileOn();return;}
+ const a=actx();if(!a)return;const c=SCFG[kind];
+ const src=a.createBufferSource();src.buffer=sndBuf(a,kind);src.loop=true;
+ let node=src;const extra=[];
+ c.f.forEach(x=>{const f=a.createBiquadFilter();f.type=x[0];f.frequency.value=x[1];node.connect(f);node=f;});
+ if(c.lfo)[[.11,500],[.37,250]].forEach(x=>{const o=a.createOscillator(),og=a.createGain();   // 流れのゆらぎ
+  o.frequency.value=x[0];og.gain.value=x[1];o.connect(og);og.connect(node.frequency);o.start();extra.push(o);});
+ const g=a.createGain();g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(c.g,a.currentTime+2);
+ node.connect(g);g.connect(a.destination);src.start();
+ NZ={stop:()=>{try{src.stop();}catch(e){}extra.forEach(o=>{try{o.stop();}catch(e){}});}};NZG=g;}
 function noiseOff(){if(!NZ)return;const n=NZ,g=NZG;NZ=null;NZG=null;
  try{g.gain.cancelScheduledValues(AC.currentTime);g.gain.setValueAtTime(g.gain.value,AC.currentTime);
   g.gain.linearRampToValueAtTime(0,AC.currentTime+.5);}catch(e){}
  setTimeout(()=>{try{n.stop();}catch(e){}},600);}
+/* 自分の音：IndexedDB に保存（サーバーには送らない） */
+let FA=null,FAG=null,FURL=null;
+function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open('zenya-audio',1);
+ r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbGet(k){const db=await idbOpen();return new Promise((res,rej)=>{
+ const r=db.transaction('f').objectStore('f').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbPut(k,v){const db=await idbOpen();return new Promise((res,rej)=>{
+ const t=db.transaction('f','readwrite');t.objectStore('f').put(v,k);
+ t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('abort'));});}
+async function loadFileSound(){
+ try{const b=await idbGet('laser');if(!b)return false;
+  if(FURL)URL.revokeObjectURL(FURL);FURL=URL.createObjectURL(b);
+  if(!FA){FA=new Audio();FA.loop=true;FA.preload='auto';FA.setAttribute('playsinline','');}
+  FA.src=FURL;return true;}catch(e){return false;}}
+function fileOn(){const a=actx();
+ if(!FA||!a){toast('📁 自分の音がまだ読み込まれていない');return;}
+ if(!FAG){const sn=a.createMediaElementSource(FA);FAG=a.createGain();sn.connect(FAG);FAG.connect(a.destination);}
+ FAG.gain.cancelScheduledValues(a.currentTime);FAG.gain.setValueAtTime(0,a.currentTime);FAG.gain.linearRampToValueAtTime(.9,a.currentTime+2);
+ const p=FA.play();if(p&&p.catch)p.catch(()=>toast('音を出せなかった。上の音のボタンをもう一度押して'));
+ NZ={file:true,stop:()=>{if(NZ&&NZ.file)return;FA.pause();}};NZG=FAG;}
+function paintSnds(){
+ const m=MT(),k=m.snd?sndKind():'off',el=document.getElementById('lzSnds');
+ const list=['brown','rain','river','pink'].concat(m.soundName?['file']:[]);
+ el.innerHTML=list.map(x=>'<button class="chip'+(k===x?' on':'')+'" onclick="pickSnd(\''+x+'\')">'+SOUNDS[x].i+' '
+   +esc(x==='file'?m.soundName.slice(0,14):SOUNDS[x].n)+'</button>').join('')
+  +'<button class="chip" onclick="document.getElementById(\'lzFile\').click()">📁 '+(m.soundName?'入れ替える':'自分の音を読み込む')+'</button>'
+  +'<button class="chip'+(k==='off'?' on':'')+'" onclick="pickSnd(\'off\')">🔇 なし</button>';}
+function pickSnd(kind){const m=MT();
+ if(kind==='off')m.snd=false;else{m.snd=true;m.sound=kind;}
+ save();noiseOff();if(m.snd&&m.run&&!m.run.paused)noiseOn();paintLzCtl();paintSnds();
+ document.getElementById('lzSnds').style.display='none';}
+async function onSndFile(e){
+ const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+ const mb=Math.round(f.size/1048576);
+ if(mb>60&&!confirm('大きいファイル（'+mb+'MB）。iPhoneでは保存できないことがある。20分ほどに切った版がおすすめ。このまま読み込む？'))return;
+ toast('読み込んでいます…');
+ try{await idbPut('laser',f);MT().soundName=f.name.replace(/\.[^.]+$/,'');save();
+  await loadFileSound();pickSnd('file');toast('📁 '+MT().soundName.slice(0,16)+' を使う');}
+ catch(err){toast('保存できなかった（iPhoneの空き容量か、ファイルが大きすぎるかも）');}}
 async function wakeOn(){try{if('wakeLock' in navigator&&!WL)WL=await navigator.wakeLock.request('screen');}catch(e){WL=null;}}
 function wakeOff(){try{if(WL)WL.release();}catch(e){}WL=null;}
 function lzEl(r){return r.acc+(r.paused?0:Date.now()-r.start);}
@@ -2571,7 +2645,7 @@ function openLaserUI(){
  document.getElementById('lzTitle').textContent='✦ '+r.t;
  paintLzCtl();wakeOn();clearInterval(LZT);LZT=setInterval(lzTick,250);lzTick();}
 function paintLzCtl(){const m=MT(),r=m.run;
- document.getElementById('lzSnd').textContent=m.snd?'🎵 オン':'🔇 オフ';
+ document.getElementById('lzSnd').textContent=(m.snd?SOUNDS[sndKind()].i+' '+(sndKind()==='file'&&m.soundName?m.soundName.slice(0,10):SOUNDS[sndKind()].n):'🔇 音なし')+' ▾';
  document.getElementById('lzSnd').classList.toggle('on',!!m.snd);
  if(r){document.getElementById('lzPause').textContent=r.paused?'▶ 再開':'一時停止';
   document.getElementById('lzQn').textContent=r.rq.length?'🅿️ '+r.rq.length+'件 預かり中':'';}}
@@ -2602,8 +2676,8 @@ function lzPause(){const m=MT(),r=m.run;if(!r)return;
  if(r.paused){r.start=Date.now();r.paused=false;if(m.snd)noiseOn();}
  else{r.acc+=Date.now()-r.start;r.paused=true;noiseOff();}
  save();paintLzCtl();}
-function lzSnd(){const m=MT();m.snd=!m.snd;save();
- if(m.snd&&m.run&&!m.run.paused)noiseOn();else noiseOff();paintLzCtl();}
+function lzSnd(){const el=document.getElementById('lzSnds'),open=el.style.display==='none';
+ el.style.display=open?'flex':'none';if(open)paintSnds();}
 function lzAddQ(){const i=document.getElementById('lzQ'),v=(i.value||'').trim(),r=MT().run;if(!v||!r)return;
  r.rq.push(v);i.value='';save();paintLzCtl();toast('🅿️ 置いた。作業に戻ろう');}
 function lzHide(){document.getElementById('laser').classList.remove('on');clearInterval(LZT);noiseOff();wakeOff();renderAll();}
@@ -2909,6 +2983,7 @@ document.getElementById('btnGasTest').onclick=testGas;
 document.getElementById('lzPause').onclick=lzPause;
 document.getElementById('lzStop').onclick=lzStop;
 document.getElementById('lzSnd').onclick=lzSnd;
+document.getElementById('lzFile').onchange=onSndFile;
 document.getElementById('lzQAdd').onclick=lzAddQ;
 document.getElementById('lzQ').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();lzAddQ();}};
 document.getElementById('lzHide').onclick=lzHide;
@@ -2991,6 +3066,7 @@ const _t=dkey();
 if(!S.days[_t]&&nowMin()<4*60){/* 深夜起動時のケア */}
 switchView(nowMin()>=20*60&&!(S.days[addD(_t,1)]&&S.days[addD(_t,1)].locked)?'plan':'today');
 setInterval(()=>{if(document.getElementById('v-today').classList.contains('on'))renderToday();},30000);
+loadFileSound();
 if(MT().run)openLaserUI();
 setInterval(()=>{const r=MT().run;if(r&&!r.paused&&lzEl(r)>=r.min*60000)finishLaser();},5000);
 if(MT().nosc){document.getElementById('nosc').classList.add('on');paintNosc();}
