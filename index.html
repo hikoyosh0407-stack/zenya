@@ -296,29 +296,10 @@ label.f:first-child{margin-top:0}
 .tune button.on-ok{background:#1d3a26;border-color:#5fbf7f;color:#8fe0a8}
 .tune button.on-ng{background:#2a2430;border-color:#8a7fa0;color:#c9bfe0}
 .tune .tiny{margin-left:auto}
-.hlsub{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
 .rqlist{margin-top:10px;padding-top:9px;border-top:1px dashed #4a3c20}
 .rq{display:flex;gap:8px;align-items:center;font-size:13px;padding:4px 0}
 .rq.done span{text-decoration:line-through;color:var(--tx3)}
 .rq button{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid var(--line);color:var(--tx2)}
-.burner{display:grid;grid-template-columns:1.15fr 1fr;gap:8px;margin-bottom:6px}
-.bz{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:10px;min-width:0}
-.bz.front{grid-row:1/3;border-color:#6a3a2a;background:linear-gradient(170deg,#2a1a14,#171a24 70%)}
-.bk{font-size:10.5px;letter-spacing:1px;color:var(--tx3);font-weight:700}
-.bn{font-size:14px;font-weight:700;margin:4px 0 6px;line-height:1.4;word-break:break-all}
-.bstep{display:flex;gap:4px;align-items:flex-start;font-size:12.5px;padding:5px 0;border-top:1px solid #232838}
-.bstep span{flex:1;min-width:0;word-break:break-all}
-.bstep button{color:var(--tx3);font-size:13px;padding:0 4px}
-.badd{display:flex;gap:4px;margin-top:6px}
-.badd input{padding:6px 8px!important;font-size:13px!important;min-width:0}
-.badd button{flex:0 0 auto;padding:0 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
-.tac{display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);margin-bottom:7px}
-.tac.on{border-color:#6a5426;background:#1f1b12}
-.tac .tn{font-size:13px;line-height:1.45}
-.tsw{flex:0 0 auto;font-size:11px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);color:var(--tx3);min-width:50px}
-.tac.on .tsw{border-color:var(--gold);color:var(--gold2)}
-.tgood{flex:0 0 auto;font-size:12px;padding:5px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
-.tdel{flex:0 0 auto;color:var(--tx3);padding:0 3px}
 .tally{font-size:22px;letter-spacing:2px;color:var(--gold2);font-weight:700;word-break:break-all;line-height:1.5}
 .gcell{position:relative}
 .gcell .hlm{position:absolute;top:1px;right:3px;font-size:8px;color:#8fe0a8;font-style:normal}
@@ -332,14 +313,15 @@ label.f:first-child{margin-top:0}
 .lzq{text-align:left;margin-top:18px;padding:12px;border-radius:13px;background:var(--panel);border:1px solid var(--line)}
 .laser.end .lzrun{display:none}
 .laser:not(.end) #lzEnd{display:none}
-.nosc{position:fixed;inset:0;z-index:106;display:none;background:#000;color:#555;text-align:center;
-  padding:calc(var(--sat) + 30px) 20px calc(var(--sab) + 30px);user-select:none;-webkit-user-select:none}
-.nosc.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.nosc .nst{font-size:17px;font-weight:700;color:#999;margin:6px 0}
-.nosc .chip{background:#111;border-color:#333;color:#aaa}
-.nsdim{font-size:13px;color:#3a3a3a}
 #sheetGas .chip{white-space:nowrap;flex:0 0 auto}
 #sheetGas .row .tiny{flex:1;min-width:0}
+details.more>summary{font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:'＋ ';color:var(--gold)}
+details.more[open]>summary::before{content:'－ '}
+.hd{cursor:pointer}
+.statgrid{grid-template-columns:1fr}
+#tlToggle{margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -359,14 +341,12 @@ label.f:first-child{margin-top:0}
 <section class="view on" id="v-today">
   <div id="todayHead"></div>
   <div id="hlWrap"></div>
-  <div id="condWrap"></div>
-  <div id="zeroLine"></div>
-  <div id="nowWrap"></div>
-  <h2 class="sec" id="tlHead" style="display:none">本日の行程</h2>
-  <div id="todayTl"></div>
-  <div id="todayFoot"></div>
-  <div id="todayEmpty"></div>
   <div id="recoverWrap"></div>
+  <div id="nowWrap"></div>
+  <div id="todayEmpty"></div>
+  <div id="condWrap"></div>
+  <div id="tlToggle"></div>
+  <div id="todayTl"></div>
 </section>
 
 <!-- ========== 作戦 ========== -->
@@ -378,11 +358,6 @@ label.f:first-child{margin-top:0}
   </div>
 
   <div id="hlPlan"></div>
-  <details class="card" id="burnerBox" style="padding:12px">
-    <summary style="font-size:13px;font-weight:700;cursor:pointer">🔥 バーナーリスト（手前・奥・流し台）</summary>
-    <div id="burner" style="margin-top:10px"></div>
-  </details>
-
   <div class="card">
     <div class="row" style="margin-bottom:8px">
       <div style="font-size:12px;color:var(--tx3);letter-spacing:1px">きょうの容量</div>
@@ -400,13 +375,13 @@ label.f:first-child{margin-top:0}
   <h2 class="sec">呼び出し</h2>
   <div class="chips" id="tplChips"></div>
 
-  <h2 class="sec">事前検死（プレモーテム）</h2>
-  <div class="card">
-    <div class="tiny" style="margin-bottom:8px">明日この計画が崩れるとしたら、原因は何か。先に書いておくと、崩れた瞬間に迷わない。</div>
+  <details class="card more" style="margin-top:14px">
+    <summary>崩れそうな日だけ：事前検死（任意）</summary>
+    <div class="tiny" style="margin:10px 0 8px">明日この計画が崩れるとしたら、原因は何か。先に書いておくと、崩れた瞬間に迷わない。</div>
     <textarea id="preMortem" placeholder="例：残業で20時帰宅になる。疲れて風呂→スマホの流れに入る。"></textarea>
     <label class="f">→ その時の if-then（最低ラインへの逃げ道）</label>
     <textarea id="preThen" placeholder="例：もし20時を過ぎて帰ったら、腕立て10回だけやって寝る。"></textarea>
-  </div>
+  </details>
 
   <button class="btn pri wide" id="btnLock" style="margin-top:4px">この作戦で出撃する</button>
   <div class="tiny" style="text-align:center;margin-top:8px" id="lockNote"></div>
@@ -414,17 +389,16 @@ label.f:first-child{margin-top:0}
   <h2 class="sec">カレンダー・タスクに送る</h2>
   <div class="card">
     <div id="gasBox"></div>
+    <div id="icsBox">
     <button class="btn wide sm" id="btnIcs">📅 この日の予定をまとめて送る（.ics）</button>
     <div class="tiny" style="margin:8px 0 12px">共有シートが出たら「カレンダー」を選ぶ。Googleアカウントを iPhone のカレンダーに追加していれば、そのままGoogleカレンダーに入る。</div>
-    <div class="tiny" style="margin-bottom:6px">1件ずつGoogleカレンダーで開く：</div>
-    <div class="chips" id="gcalChips"></div>
-    <label class="f">対象カレンダーID（任意・空ならメイン）</label>
+    </div>
+    <label class="f">予定を入れるカレンダーのID（空ならメイン）</label>
     <input type="text" id="calSrc" placeholder="例：2edrmd0h7dsqbann8qab8nmioc@group.calendar.google.com">
     <div class="row" style="margin-top:12px">
       <span class="tiny">🏢 任務（仕事）も送る</span><span class="sp"></span>
       <button class="chip" id="calWork">オフ</button>
     </div>
-    <button class="btn wide sm" id="btnPlanTx" style="margin-top:12px">📋 作戦をテキストでコピー</button>
   </div>
 </section>
 
@@ -465,12 +439,12 @@ label.f:first-child{margin-top:0}
   <div class="chips" style="margin-bottom:20px">
     <button class="chip" id="btnTarget">🎯 目標値とマスタ</button>
     <button class="chip" id="btnDrySet">🍶 解禁曜日と開始日</button>
-    <button class="chip" id="btnImportPitari">📥 ピタリから取り込む</button>
   </div>
 </section>
 
 <!-- ========== 自分 ========== -->
 <section class="view" id="v-char">
+  <div class="row" style="margin-bottom:12px"><button class="btn sm" id="btnMeBack">‹ もどる</button><b style="font-size:15px;margin-left:4px">自分と記録</b></div>
   <div class="bosscard" id="bossLast"></div>
   <div class="bosscard" id="bossMid" style="background:linear-gradient(150deg,#2c1c1c,#1c1313);border-color:#5a3030"></div>
   <div class="bosscard" id="bossStudy" style="background:linear-gradient(150deg,#16232c,#121a20);border-color:#2f5060"></div>
@@ -483,38 +457,18 @@ label.f:first-child{margin-top:0}
   <h2 class="sec">ステータス</h2>
   <div class="card">
     <div class="statgrid">
-      <svg id="radar" viewBox="0 0 160 160"></svg>
       <div class="slist" id="statList"></div>
     </div>
   </div>
-
-  <h2 class="sec">🧪 試している戦術（とっぱらう）</h2>
-  <div id="tactics"></div>
-
-  <h2 class="sec">称号</h2>
-  <div class="titles" id="titleList"></div>
-
-  <h2 class="sec">ごほうび箱（宝箱の中身）</h2>
-  <div class="card">
-    <div class="tiny" style="margin-bottom:8px">クエスト達成時にまれに宝箱が出る。中身はここに登録したものだけ。1行に1つ。</div>
-    <textarea id="rewardsBox" placeholder="コーヒーを1杯だけ丁寧に淹れる"></textarea>
-    <button class="btn sm wide" id="btnRewards" style="margin-top:8px">保存</button>
-  </div>
-
-  <h2 class="sec">秘伝の書</h2>
-  <div id="knowList"></div>
 
   <h2 class="sec">連携</h2>
   <div class="chips" style="margin-bottom:20px">
     <a class="chip" href="https://hikoyosh0407-stack.github.io/workout-app/" target="_blank">💪 筋トレ記録</a>
     <a class="chip" href="https://hikoyosh0407-stack.github.io/jissen-app/" target="_blank">🧠 実践5</a>
     <a class="chip" href="https://hikoyosh0407-stack.github.io/habit-chain/" target="_blank">🔗 ハビットチェーン</a>
-    <a class="chip" href="https://hikoyosh0407-stack.github.io/pitari/" target="_blank">🍽 ピタリ</a>
   </div>
-</section>
 
-<!-- ========== 記録 ========== -->
-<section class="view" id="v-log">
+  <!-- 記録 -->
   <h2 class="sec">直近4週</h2>
   <div class="card">
     <div class="tiny" style="margin-bottom:8px;display:flex;justify-content:space-between"><span>月</span><span>日</span></div>
@@ -561,8 +515,6 @@ label.f:first-child{margin-top:0}
   <button data-v="today" class="on"><span>⚔️</span>今日</button>
   <button data-v="plan"><span>🌙</span>作戦</button>
   <button data-v="meal"><span>⚖️</span>からだ</button>
-  <button data-v="char"><span>🧙</span>自分</button>
-  <button data-v="log"><span>📜</span>記録</button>
 </nav>
 
 <div class="mask" id="mask"></div>
@@ -580,6 +532,9 @@ label.f:first-child{margin-top:0}
     <div><label class="f">所要（分）</label><input type="number" id="fMin" step="5" min="5"></div>
   </div>
   <div id="mealHint"></div>
+  <details class="more" id="fMore" style="margin-top:14px">
+    <summary>くわしく決める（最低ライン・最高ライン・if-then）</summary>
+    <div style="height:10px"></div>
   <label class="f">最低ライン（これができたら勝ち・2分で始まる形に）</label>
   <input type="text" id="fLo" placeholder="例：ジムに入って1種目だけやる">
   <label class="f">最高ライン（余力があればここまで）</label>
@@ -587,6 +542,7 @@ label.f:first-child{margin-top:0}
   <label class="f">if-then（崩れたときの逃げ道）</label>
   <input type="text" id="fIf" placeholder="例：もし残業したら、家で自重3種目に切り替える">
   <div id="macBox"></div>
+  </details>
   <div class="f2" style="margin-top:14px">
     <button class="btn" id="btnDelBox">削除</button>
     <button class="btn pri" id="btnSaveBox">保存</button>
@@ -652,14 +608,6 @@ label.f:first-child{margin-top:0}
   <label class="f">21日ボードの開始日</label>
   <input type="date" id="drySt">
   <button class="btn pri wide" id="btnSaveDry" style="margin-top:16px">保存</button>
-</div>
-
-<!-- 知識カード クイズシート -->
-<div class="sheet" id="sheetQuiz">
-  <div class="grab"></div>
-  <div style="font-size:10.5px;letter-spacing:2px;color:var(--gold);font-weight:700">知識カード</div>
-  <h3 id="qzTitle" style="margin-top:6px">-</h3>
-  <div id="qzBody"></div>
 </div>
 
 <!-- 食品マスタ編集シート -->
@@ -783,21 +731,6 @@ label.f:first-child{margin-top:0}
   </div>
 </div>
 
-<!-- 戦術を足すシート -->
-<div class="sheet" id="sheetTac">
-  <div class="grab"></div>
-  <h3>🧪 本から戦術を足す</h3>
-  <label class="f">戦術の番号（本で確かめたものだけ・なければ空）</label>
-  <input type="text" id="tcNo" inputmode="numeric" placeholder="例：34">
-  <label class="f">名前</label>
-  <input type="text" id="tcN" placeholder="例：メールは1日の終わりに見る">
-  <label class="f">ページ（任意）</label>
-  <input type="text" id="tcP" placeholder="例：p.200">
-  <label class="f">ステップ</label>
-  <div class="chips" id="tcSt"></div>
-  <button class="btn pri wide" id="btnTacSave" style="margin-top:16px">足す</button>
-</div>
-
 <!-- レーザー・モード -->
 <div class="laser" id="laser">
   <div class="lzin">
@@ -827,10 +760,6 @@ label.f:first-child{margin-top:0}
   </div>
 </div>
 
-<!-- 画面なしタイマー -->
-<div class="nosc" id="nosc"></div>
-
-
 <!-- Google直結の設定シート -->
 <div class="sheet" id="sheetGas">
   <div class="grab"></div>
@@ -841,24 +770,14 @@ label.f:first-child{margin-top:0}
   <label class="f">合言葉（スクリプトの TOKEN と同じ文字）</label>
   <input type="text" id="gsTok" autocapitalize="off" autocorrect="off" spellcheck="false">
   <div class="row" style="margin-top:14px"><span class="tiny">📅 タイムボックス → Googleカレンダー</span><span class="sp"></span><button class="chip" id="gsCal">オン</button></div>
-  <div class="row" style="margin-top:10px"><span class="tiny">✅ ハイライト・預けた疑問・流し台 → Googleタスク（リスト「ゼンヤ」）</span><span class="sp"></span><button class="chip" id="gsTask">オン</button></div>
+  <div class="row" style="margin-top:10px"><span class="tiny">✅ ハイライト・預けた疑問 → Googleタスク（リスト「ゼンヤ」）</span><span class="sp"></span><button class="chip" id="gsTask">オン</button></div>
   <div class="row" style="margin-top:10px"><span class="tiny">⚡ 出撃したら自動で送る（送った日は、◯×や編集も自動で追いかける）</span><span class="sp"></span><button class="chip" id="gsAuto">オン</button></div>
-  <div class="tiny" style="margin-top:10px">予定を入れるカレンダーは、作戦タブの「対象カレンダーID」（空ならメイン）。</div>
+  <div class="tiny" style="margin-top:10px">予定を入れるカレンダーは、作戦タブの「予定を入れるカレンダーのID」（空ならメイン）。</div>
   <div class="f2" style="margin-top:14px">
     <button class="btn" id="btnGasTest">接続テスト</button>
     <button class="btn pri" id="btnGasSave">保存</button>
   </div>
   <div class="tiny" id="gsMsg" style="margin-top:10px"></div>
-</div>
-
-<!-- 宝箱 -->
-<div class="tre" id="tre">
-  <div class="trebox">
-    <div class="em" id="treEm">🎁</div>
-    <div class="t1">宝箱が出た</div>
-    <div class="t2" id="treTx"></div>
-    <button class="btn pri" id="treClose">受け取る</button>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -878,67 +797,9 @@ const CATS={
 };
 const STATS={body:{n:'体',c:'var(--body)'},mind:{n:'知',c:'var(--mind)'},keep:{n:'継',c:'var(--keep)'},life:{n:'活',c:'var(--life)'},heart:{n:'心',c:'var(--heart)'}};
 const RANKS=[[1,'目覚めし者'],[5,'見習いの戦士'],[10,'習慣の使い手'],[15,'設計者'],[20,'不屈の航海者'],[30,'海へ向かう者']];
-const KNOW=[
- ['積み上げは強弱の2パターン作っておく。「いかに自分に優しくできるか」「自分を褒める要素を増やせるか」が継続の鍵。','04_output/ゲーミフィケーション.md（人生をゲーム化する8要素）'],
- ['if-thenプランニング：「もしXが起きたらYをする」と先に決めておくだけで行動が変わる。単独で効果量0.99。','D-Lab メンタルブログ066 習慣化の帝王【if-thenプランニング】'],
- ['計画倒れの3大原因＝①モノサシがない ②あれもこれもできると思う ③挫折を計画していない。だから先にサボりを計画に入れる。','『倒れない計画術』DaiGo'],
- ['MACの原則：Measurable（測れるか）Actionable（今日動けるか）Competent（自分の価値観に合うか）。','『倒れない計画術』DaiGo'],
- ['実行意図は What & Time & Place まで決めて初めて起動する。「何を・いつ・どこで」。','D-Lab 超行動力'],
- ['完璧を目指さず、ゼロを防ぐ。5分でもやる。流れを切らさないことを最優先にする。','Permanent Notes／70歳になっても海で遊べるように'],
- ['その場で決めない、先に決める。疲れた自分に判断を任せない。','Permanent Notes／70歳になっても海で遊べるように'],
- ['崩れたら責めずに、すぐ戻る。大事なのは失敗しないことではなく、復帰が早いこと。1回の乱れで1週間を捨てない。','Permanent Notes／70歳になっても海で遊べるように'],
- ['予測の不可能性：報酬が確率で出るとき、人はいちばん動く。ただし報酬は事前に自分で決めておく。','D-Lab 人生をゲーム化しようぜ（ゲームテク26 ランダム報酬）'],
- ['前進と達成感：プログレスバーと達成シンボルは、進んでいる事実を目に見せるためにある。','D-Lab 人生をゲーム化しようぜ（ゲームテク6・8）'],
- ['罰は使わない。できなかった事実を静かに見せるだけでフィードバックとして十分に機能する。','04_output/ピタリ_ダイエットゲーム仕様書.md'],
- ['評価するのは、本人の管理下にある「行動」だけ。結果を褒めると、停滞期に自己否定が起きる。','04_output/ピタリ_ダイエットゲーム仕様書.md'],
- ['壮大な意味：今日の1ボックスが、ラスボス（70歳でも海で遊べる自分）にどう繋がるかを言えるか。','04_output/ゲーミフィケーション.md ⑧ストーリーと壮大な世界観'],
- ['数えられて・身体を動かして・その場で終わることは続く。判断／自制／言語化が要ることは続かない。だから勉強を筋トレと同じ形にする。','Permanent Notes／学びの設計（ずっと勉強していたい・41歳からの29年）'],
- ['集めるのをやめて、書いて話す。溜まったのは勉強ではなく、勉強の材料だった。','Permanent Notes／学びの設計'],
- ['出口を発信ではなく子どもに置く。教えられる期間は、あと10年もない。','Permanent Notes／学びの設計'],
-];
-const CARDS=[
- {id:1,need:{k:'week',n:1},t:'食べても減るカロリー',
-  q:'同じ100kcalを摂るなら、体脂肪になりにくいのは？',a:['白米 100kcal','鶏むね肉 100kcal'],ok:1,
-  body:'タンパク質は消化・吸収そのものに約30%のエネルギーを使う（食事誘発性熱産生／DIT）。糖質は約6%、脂質は約4%。同じ100kcalでも、体に残る量が違う。'},
- {id:2,need:{k:'week',n:2},t:'停滞は体の正常反応',
-  q:'2週間きっちり記録した。なのに体重が動かない。これは？',a:['失敗している','体が正しく働いている'],ok:1,
-  body:'摂取が減ると、体は恒常性（ホメオスタシス）で代謝を節約モードに切り替え、生命を守ろうとする。停滞は体が正常に機能している証拠であって、行動が間違っている証拠ではない。あなたの管理下にあるのは記録という行動だけ。'},
- {id:3,need:{k:'week',n:3},t:'見えたものは、変わる',
-  q:'「記録するだけ」で体重が減ることがある。なぜ？',a:['記録する行為に消費カロリーがあるから','見えるようになると行動が変わるから'],ok:1,
-  body:'セルフモニタリング効果。無意識だった選択が意識に上がるだけで、人は自然に選び方を変える。だから最初の21日は「生活を変えない」でよかった。'},
- {id:4,need:{k:'dry',n:3},t:'枠外から入ってくる200kcal',
-  q:'アルコール1gのカロリーは？',a:['4kcal','7kcal'],ok:1,
-  body:'7kcal/g は脂質(9)に次ぐ高さ。しかも栄養にならない「エンプティカロリー」で、PFCの枠の外側から入ってくる。ビール500mlで約200kcal。今日の枠を静かに侵食する。'},
- {id:5,need:{k:'dry',n:7},t:'トレした日ほど、飲まない',
-  q:'筋トレ後に飲酒すると、体の中で何が起きる？',a:['回復が早まる','筋タンパク合成が落ちる'],ok:1,
-  body:'運動後の飲酒は筋タンパク合成を2〜4割ほど抑制するという報告がある。プロテインを一緒に摂っても完全には防げない。トレした日の飲酒は、その日のトレの一部を捨てているのと同じ。'},
- {id:6,need:{k:'dry',n:14},t:'肝臓の優先順位',
-  q:'飲んでいる間、脂肪はどうなる？',a:['通常どおり燃える','燃焼が後回しになる'],ok:1,
-  body:'肝臓はアルコールを毒物として最優先で分解する。その間、脂肪酸の酸化（脂肪燃焼）は後回しにされる。飲んだ分のカロリーだけでなく、その夜の代謝の優先順位ごと入れ替わる。'},
- {id:7,need:{k:'dry',n:21},t:'寝つきと、眠りの質は別',
-  q:'寝酒は睡眠にどう働く？',a:['深く眠れる','後半の睡眠が崩れる'],ok:1,
-  body:'寝つきは早くなるが、アルコールが分解される後半でREM睡眠が減り、中途覚醒が増える。睡眠は筋の回復と食欲ホルモンの調整を担うので、翌日の食欲まで変わってくる。'},
- {id:8,need:{k:'party',n:1},t:'決めない日をつくる',
-  q:'毎日「今日は飲まないぞ」と決意するのと、曜日で先に決めておくのは？',a:['決意のほうが強い','先に決めておくほうが強い'],ok:1,
-  body:'意志力は消耗する資源で、毎回の判断がそれを削る。飲む日を先にカレンダーで決めてしまえば、当日は「決める」必要がない。これが事前コミットメント。飲み会を登録するのは、逃げではなく設計。'}
-];
 const VERDICT={dry:{lb:'休肝日',say:'決めるのは、あなたではなくカレンダーです。',ic:'💧'},
  free:{lb:'解禁日',say:'先に決めた日です。罪悪感なしでどうぞ。',ic:'🍺'},
  party:{lb:'解禁日（飲み会）',say:'登録済みの日です。今日は数えません。',ic:'🎉'}};
-const TITLES=[
- {id:'wake', ic:'🌅',n:'目覚めた者',d:'はじめてクエストを達成した',f:s=>s.k.done>=1},
- {id:'eve',  ic:'🌙',n:'先読みの戦士',d:'前夜に作戦を立てた日 7日',f:s=>s.k.eve>=7},
- {id:'eve30',ic:'🔮',n:'夜の指揮官',d:'前夜に作戦を立てた日 30日',f:s=>s.k.eve>=30},
- {id:'back', ic:'🔥',n:'不屈',d:'崩れた翌日に立て直した 3回',f:s=>s.k.recover>=3},
- {id:'iron', ic:'💪',n:'鉄の器',d:'鍛錬クエスト 30回',f:s=>s.k.cat.train>=30},
- {id:'sage', ic:'📖',n:'賢者の卵',d:'学びクエスト 30回',f:s=>s.k.cat.learn>=30},
- {id:'zero', ic:'🛡',n:'ゼロ撲滅',d:'ゼロの日なしで14日連続',f:s=>s.k.noZeroMax>=14},
- {id:'sec',  ic:'🧬',n:'セカンドネイチャー',d:'通算66日、1つ以上を実行',f:s=>s.k.activeDays>=66},
- {id:'sea',  ic:'🌊',n:'海への航路',d:'Lv10 に到達',f:s=>s.k.lv>=10},
- {id:'b21',  ic:'📋',n:'21日を積んだ者',d:'21日ボードを記録で埋めた',f:s=>logged21()>=21},
- {id:'dry21',ic:'💧',n:'水の守り手',d:'休肝日を通算21回守った',f:s=>keptDryTotal()>=21},
- {id:'bk3',  ic:'📕',n:'本を読み切る者',d:'装備した本を3冊読み終えた',f:s=>((S.gear&&S.gear.done)||[]).length>=3}
-];
 const FOODS_DEFAULT=[
  {n:'昼食プロテイン（チョコ）',p:25,f:0,c:6,kcal:120},
  {n:'昼弁当（胸肉＋ゆで卵）',p:45,f:15,c:1,kcal:355},
@@ -988,7 +849,6 @@ function defState(){return{
        mid:{n:'体脂肪率13%に到達する',cri:'体脂肪率13%',due:''}},
  exp:0, stats:{body:0,mind:0,keep:0,life:0,heart:0},
  days:{}, templates:JSON.parse(JSON.stringify(TPL_DEFAULT)), titles:[],
- rewards:['コーヒーを1杯、丁寧に淹れる','15分だけ昼寝する','由良の海の写真を見返す','好きな動画を1本だけ観る'],
  settings:{wake:'05:30',sleep:'22:30',fixed:540,calWork:false,calSrc:''},
  targets:{kcal:1779,p:145,f:43,c:202,pMode:'fixed',pPerKg:2.0},
  meals:{}, foodSeed:FOOD_SEED, foods:FOODS_DEFAULT.map(f=>Object.assign({id:uid()},f)),
@@ -1150,97 +1010,90 @@ function gearDone(){
 function renderHead(){const L=levelInfo();
  document.getElementById('lvNum').textContent=L.lv;
  document.getElementById('hdTitle').textContent=L.rank;
- document.getElementById('hdXp').textContent=L.rest+' / '+L.need+' EXP';
+ document.getElementById('hdXp').textContent=L.rest+' / '+L.need+' EXP ›';
  document.getElementById('xpFill').style.width=Math.min(100,L.rest/L.need*100)+'%';
  renderGear();}
 
 /* ============ 今日 ============ */
+let tlOpen=false;
+/* ◯／◎／見送り。最高ラインを決めていないクエストは「できた」だけ */
+function actBtns(b){
+ if(b.cat==='work')return '';
+ const two=!b.hi&&b.st!=='hi';
+ return '<div class="acts">'
+  +'<button class="'+(b.st==='lo'?'on-lo':'')+'" onclick="mark(\''+b.id+'\',\'lo\')">'+(two?'◯ できた':'◯ 最低')+'</button>'
+  +(two?'':'<button class="'+(b.st==='hi'?'on-hi':'')+'" onclick="mark(\''+b.id+'\',\'hi\')">◎ 最高</button>')
+  +'<button class="'+(b.st==='skip'?'on-sk':'')+'" onclick="mark(\''+b.id+'\',\'skip\')">見送り</button></div>';}
 function renderToday(){
- const k=dkey(), d=S.days[k], nm=nowMin();
+ const k=dkey(), d=S.days[k], nm=nowMin(), E=id=>document.getElementById(id);
  renderHl();
  renderCond();
- const head=document.getElementById('todayHead');
- head.innerHTML='<div class="row" style="margin-bottom:10px"><div><div style="font-size:19px;font-weight:700">'
+ E('todayHead').innerHTML='<div class="row" style="margin-bottom:10px"><div><div style="font-size:19px;font-weight:700">'
   +labelD(k)+'</div><div class="tiny">'+esc(S.boss.mid.n)+' へ向かう1日</div></div></div>';
 
  if(!d||!d.plan.length){
-  document.getElementById('zeroLine').innerHTML='';
-  document.getElementById('nowWrap').innerHTML='';
-  document.getElementById('todayTl').innerHTML='';
-  document.getElementById('todayFoot').innerHTML='';
-  document.getElementById('tlHead').style.display='none';
-  document.getElementById('recoverWrap').innerHTML='';
-  document.getElementById('todayEmpty').innerHTML=
-   '<div class="card" style="text-align:center;padding:26px 16px">'
-   +'<div style="font-size:34px">🌙</div><div style="font-weight:700;margin-top:6px">今日の作戦がない</div>'
-   +'<div class="tiny" style="margin:8px 0 16px">本来は前の晩に組んでおく。<br>いまからでも遅くない、3つだけ置こう。</div>'
+  ['nowWrap','tlToggle','todayTl','recoverWrap'].forEach(i=>E(i).innerHTML='');
+  E('todayEmpty').innerHTML=
+   '<div class="card" style="text-align:center;padding:22px 16px">'
+   +'<div style="font-size:30px">🌙</div><div style="font-weight:700;margin-top:6px">今日の作戦がない</div>'
+   +'<div class="tiny" style="margin:8px 0 14px">いまからでも遅くない。テンプレを1つ呼び出すだけでいい。</div>'
    +'<button class="btn pri" onclick="goPlan(\''+k+'\')">今日の作戦を組む</button></div>';
   return;}
- document.getElementById('todayEmpty').innerHTML='';
- document.getElementById('tlHead').style.display='';
+ E('todayEmpty').innerHTML='';
 
  const q=d.plan.filter(b=>b.cat!=='work');
  const done=q.filter(b=>b.st==='lo'||b.st==='hi').length;
- const zl=document.getElementById('zeroLine');
- zl.className='';
- zl.innerHTML='<div class="zero'+(done?'':' bad')+'"><div class="em">'+(done?'🛡':'⚠️')+'</div><div>'
-  +'<div class="tt">'+(done?'今日はゼロじゃない（'+done+'/'+q.length+'）':'まだゼロ。最低ラインを1つでいい')+'</div>'
-  +'<div class="tiny">完璧を目指さず、ゼロを防ぐ。</div></div></div>';
-
  sortBoxes(d.plan);
  let cur=null;
  d.plan.forEach(b=>{const s=hm(b.s);if(nm>=s&&nm<s+b.m&&b.st==='todo')cur=b;});
  if(!cur)cur=d.plan.find(b=>b.st==='todo'&&hm(b.s)+b.m>nm)||null;
 
- const nw=document.getElementById('nowWrap');
+ /* いまのクエスト1つ（ここで◯を押せる） */
  if(cur){
   const s=hm(cur.s),e=s+cur.m,run=nm>=s&&nm<e;
   const left=run?e-nm:s-nm, pct=run?(nm-s)/cur.m:0;
   const R=22,C=2*Math.PI*R;
-  nw.innerHTML='<div class="nowcard">'
+  E('nowWrap').innerHTML='<div class="nowcard">'
    +'<svg class="ring" viewBox="0 0 52 52"><circle cx="26" cy="26" r="'+R+'" fill="none" stroke="#2a3040" stroke-width="4"/>'
    +'<circle cx="26" cy="26" r="'+R+'" fill="none" stroke="'+CATS[cur.cat].c+'" stroke-width="4" stroke-linecap="round" '
    +'stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-pct))+'" transform="rotate(-90 26 26)"/></svg>'
    +'<div class="nowlabel">'+(run?'NOW':'つぎ')+'</div>'
-   +'<div class="nowtitle">'+CATS[cur.cat].i+' '+esc(cur.t)+'</div>'
+   +'<div class="nowtitle">'+CATS[cur.cat].i+' '+(cur.hl?'✦ ':'')+esc(cur.t)+'</div>'
    +'<div class="nowtime">'+cur.s+'–'+mh(e)+'　'+(run?'のこり '+left+'分':(left>0?'あと '+left+'分ではじまる':'開始時刻をすぎている'))+'</div>'
    +'<div class="lines">'
    +(cur.lo?'<div class="line lo"><b>最低</b><span>'+esc(cur.lo)+'</span></div>':'')
    +((cur.hi&&!d.minMode)?'<div class="line hi"><b>最高</b><span>'+esc(cur.hi)+'</span></div>':'')
    +(cur.ifthen?'<div class="line it"><b>if-then</b><span>'+esc(cur.ifthen)+'</span></div>':'')
-   +'</div></div>';
+   +'</div>'+actBtns(cur)+'</div>';
  } else {
-  nw.innerHTML='<div class="nowcard"><div class="nowlabel">本日の行程は完了</div>'
-   +'<div class="nowtitle">おつかれさま</div><div class="nowtime">記録タブで振り返りを1行だけ残そう</div></div>';
+  E('nowWrap').innerHTML='<div class="nowcard"><div class="nowlabel">本日の行程は完了</div>'
+   +'<div class="nowtitle">おつかれさま</div>'
+   +'<button class="btn sm wide" style="margin-top:12px" onclick="goPlan(\''+addD(k,1)+'\')">🌙 明日の作戦を組む</button></div>';
  }
 
- document.getElementById('todayTl').innerHTML='<div class="tl">'+d.plan.map((b,i)=>{
-  const s=hm(b.s),e=s+b.m;const isNow=cur&&cur.id===b.id;
+ /* 1日の行程は、押したときだけ開く */
+ E('tlToggle').innerHTML='<button class="btn sm wide" onclick="tlOpen=!tlOpen;renderToday()">📋 本日の行程'
+  +(tlOpen?'をとじる':'を全部見る')+'（達成 '+done+'/'+q.length+'）</button>';
+ E('todayTl').innerHTML=!tlOpen?'':'<div class="tl">'+d.plan.map(b=>{
+  const isNow=cur&&cur.id===b.id;
   const cls=['box',isNow?'now':'',b.st==='lo'||b.st==='hi'?'done':'',b.st==='skip'?'skip':''].join(' ');
-  const showActs=b.cat!=='work';
   return '<div class="'+cls+'"><div class="t">'+b.s+'</div><div class="dot"></div>'
    +'<div class="bx" style="border-left-color:'+CATS[b.cat].c+'">'
    +'<div class="h"><span>'+CATS[b.cat].i+'</span><span class="nm">'+(b.hl?'✦ ':'')+esc(b.t)+'</span><span class="du">'+b.m+'分</span></div>'
    +(b.cat==='meal'?(function(){const t=mealTotal(k),T=effT();
       return '<div class="sub" style="color:#e8c07a">'+Math.round(t.kcal)+' / '+T.kcal+' kcal ・ P'+r1(t.p)+'/'+T.p+'</div>';})()
      :(b.lo?'<div class="sub">最低：'+esc(b.lo)+'</div>':''))
-   +(showActs?'<div class="acts">'
-     +'<button class="'+(b.st==='lo'?'on-lo':'')+'" onclick="mark(\''+b.id+'\',\'lo\')">◯ 最低</button>'
-     +'<button class="'+(b.st==='hi'?'on-hi':'')+'" onclick="mark(\''+b.id+'\',\'hi\')">◎ 最高</button>'
-     +'<button class="'+(b.st==='skip'?'on-sk':'')+'" onclick="mark(\''+b.id+'\',\'skip\')">見送り</button>'
-     +'</div>':'')
-   +'</div></div>';}).join('')+'</div>';
- document.getElementById('todayFoot').innerHTML=
-  '<button class="btn sm wide" style="margin-top:4px" onclick="goPlan(\''+k+'\')">✏️ 今日の作戦を編集する</button>';
+   +actBtns(b)
+   +'</div></div>';}).join('')+'</div>'
+  +'<button class="btn sm wide" style="margin:4px 0 12px" onclick="goPlan(\''+k+'\')">✏️ 今日の作戦を編集する</button>';
 
- const yk=addD(k,-1), ys=dayStats(yk);
- const rc=document.getElementById('recoverWrap');
- if(ys&&ys.done===0&&done===0){
-  rc.innerHTML='<div class="card" style="border-color:#5a4526;background:#1e1a12">'
+ const ys=dayStats(addD(k,-1));
+ E('recoverWrap').innerHTML=(ys&&ys.done===0&&done===0)
+  ?'<div class="card" style="border-color:#5a4526;background:#1e1a12">'
    +'<div style="font-weight:700;font-size:14px">🔥 立て直しの合図</div>'
    +'<div class="tiny" style="margin:6px 0 10px">昨日はゼロだった。責めるところじゃない。復帰の速さだけが指標。<br>2分で終わる1個を、いま置く。</div>'
-   +'<button class="btn sm wide" onclick="quickRecover()">＋ 2分クエストを置く</button></div>';
- } else rc.innerHTML='';
+   +'<button class="btn sm wide" onclick="quickRecover()">＋ 2分クエストを置く</button></div>'
+  :'';
 }
 function mark(id,st){
  const k=dkey(),d=S.days[k];if(!d)return;
@@ -1252,11 +1105,7 @@ function mark(id,st){
  b.st=st;
  if(st==='lo'||st==='hi'){const g=st==='hi'?16:10;b.xp=g;addXp(g,b.cat);
   if(b.cat==='train'&&before!=='lo'&&before!=='hi')setTimeout(chargeHook,0);
-  const q=d.plan.filter(x=>x.cat!=='work'&&(x.st==='lo'||x.st==='hi'));
-  if(!d.treasure&&Math.random()<0.22&&S.rewards.length){
-   d.treasure=S.rewards[Math.floor(Math.random()*S.rewards.length)];
-   showTreasure(d.treasure);}
-  else toast(st==='hi'?'◎ 最高ライン ＋16 EXP':'◯ 最低ライン ＋10 EXP');
+  toast(st==='hi'?'◎ 最高ライン ＋16 EXP':(b.hi?'◯ 最低ライン ＋10 EXP':'◯ できた ＋10 EXP'));
  }
  syncCatBoost(d);
  save();renderAll();gasAuto(k);
@@ -1273,10 +1122,6 @@ function quickRecover(){
  d.plan.push({id:uid(),s:mh(nowMin()+5),m:5,t:'立て直しの一歩',cat:'habit',lo:'2分で終わることを1つやる',hi:'',ifthen:'',st:'todo'});
  save();renderAll();toast('置いた。まずこれだけ。');
 }
-function showTreasure(tx){
- document.getElementById('treTx').textContent=tx;
- document.getElementById('tre').classList.add('on');}
-
 /* ============ 作戦 ============ */
 function goPlan(k){curPlanKey=k;switchView('plan');}
 function planCap(){
@@ -1301,10 +1146,6 @@ function renderPlan(){
  const warns=[];
  if(r>1)warns.push(['⚠️','入りきらない。これは意志ではなく算数の問題。どれかを明日に送るか、最低ラインだけにする。',false]);
  else if(r>.85)warns.push(['🟡','ギリギリ。予定は必ず遅れる。1つ減らすと完遂率が上がる。',false]);
- if(!d.plan.some(b=>b.cat==='cheat'))warns.push(['🎁','サボり枠がない。休みを計画に入れないと、計画のほうが壊れる。',false]);
- const noLo=d.plan.filter(b=>b.cat!=='work'&&b.cat!=='cheat'&&!b.lo).length;
- if(noLo)warns.push(['📏','最低ラインが未記入のクエストが'+noLo+'件。「これができたら勝ち」を先に決める。',false]);
- if(!warns.length&&d.plan.length)warns.push(['✅','いい作戦。あとは明日の自分に渡すだけ。',true]);
  document.getElementById('capWarn').innerHTML=warns.map(w=>'<div class="warnbox'+(w[2]?' ok':'')+'"><span>'+w[0]+'</span><span>'+w[1]+'</span></div>').join('');
 
  document.getElementById('planTl').innerHTML=d.plan.length?('<div class="tl">'+d.plan.map((b,i)=>
@@ -1365,39 +1206,11 @@ function renderChar(){
   +'<div class="tiny" style="margin-top:8px">'+G.date+' 本番まで '+daysTo(G.date)+'日　／　申込まで '+daysTo(G.apply)+'日</div>';
 
  const keys=Object.keys(STATS), vals=keys.map(k=>S.stats[k]||0), mx=Math.max(50,...vals);
- const cx=80,cy=82,R=54;
- const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
- let g='';
- [0.25,0.5,0.75,1].forEach(f=>{g+='<polygon points="'+keys.map((_,i)=>pt(i,R*f).join(',')).join(' ')+'" fill="none" stroke="#2a3040" stroke-width="1"/>';});
- g+='<polygon points="'+keys.map((k,i)=>pt(i,Math.max(6,(S.stats[k]||0)/mx*R)).join(',')).join(' ')
-   +'" fill="rgba(217,164,65,.28)" stroke="#d9a441" stroke-width="1.8"/>';
- keys.forEach((k,i)=>{const[x,y]=pt(i,R+13);g+='<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="11" fill="#9aa2b5">'+STATS[k].n+'</text>';});
- document.getElementById('radar').innerHTML=g;
  document.getElementById('statList').innerHTML=keys.map(k=>{
   const v=S.stats[k]||0;
   return '<div class="sitem"><div class="row"><span>'+STATS[k].n+'</span><span class="sp"></span><span class="tiny">'+v+'</span></div>'
    +'<div class="sb"><i style="width:'+(v/mx*100)+'%;background:'+STATS[k].c+'"></i></div></div>';}).join('');
 
- const K=kpis();
- document.getElementById('titleList').innerHTML=TITLES.map(t=>{
-  const on=t.f({k:K});
-  if(on&&!S.titles.includes(t.id)){S.titles.push(t.id);save();}
-  return '<div class="tt2'+(on?'':' lock')+'"><div class="ic">'+(on?t.ic:'🔒')+'</div><div>'
-   +'<div class="nm">'+t.n+'</div><div class="tiny">'+t.d+'</div></div></div>';}).join('');
-
- renderTactics();
- document.getElementById('rewardsBox').value=S.rewards.join('\n');
- const need={week:'21日ボードの記録',dry:'休肝日を守った回数',party:'飲み会の事前登録'};
- document.getElementById('knowList').innerHTML=
-  '<div class="tiny" style="margin-bottom:9px">🃏 知識カード '+B().cards.length+' / '+CARDS.length+'（条件を満たすとクイズで手に入る）</div>'
-  +CARDS.map(c=>{const got=hasCard(c.id);
-   return got
-    ?'<div class="know"><div class="q"><b>'+esc(c.t)+'</b><br>'+esc(c.body)+'</div>'
-      +'<div class="s">— ピタリ 知識カード '+c.id+'</div></div>'
-    :'<div class="know" style="border-left-color:#2a3040;opacity:.55"><div class="q">🔒 ????'
-      +'</div><div class="s">'+need[c.need.k]+' '+cardProgress(c.need)+' / '+c.need.n+'</div></div>';}).join('')
-  +'<div style="height:10px"></div>'
-  +KNOW.map(k=>'<div class="know"><div class="q">'+esc(k[0])+'</div><div class="s">— '+esc(k[1])+'</div></div>').join('');
 }
 
 /* ============ 記録 ============ */
@@ -1452,8 +1265,7 @@ function buildMd(){
  t+='| 通算実行日数 | '+K.activeDays+' |\n| 前夜に作戦を立てた日 | '+K.eve+' |\n| 立て直した回数 | '+K.recover+' |\n| ゼロなし最長連続 | '+K.noZeroMax+' |\n';
  t+=Object.keys(CATS).filter(c=>c!=='bansho'||K.cat[c]).map(c=>'| '+CATS[c].i+' '+CATS[c].n+' 達成 | '+(K.cat[c]||0)+' |').join('\n')+'\n\n';
  const hm0=hlMonth(dkey());
- t+='## ✦ ハイライト（とっぱらう）\n\n- 今月：◯ '+hm0.o+'日 ／ × '+hm0.x+'日 ／ レーザー '+hm0.lz+'分 ／ 画面なし '+hm0.ns+'回\n';
- t+='- 試している戦術：'+(MT().tac.filter(x=>x.on).map(x=>(x.no?'戦術'+x.no+' ':'')+x.n+'（👍'+(x.good||0)+'）').join('、')||'なし')+'\n\n';
+ t+='## ✦ ハイライト（とっぱらう）\n\n- 今月：◯ '+hm0.o+'日 ／ × '+hm0.x+'日 ／ レーザー '+hm0.lz+'分\n';
  t+='| 日付 | ハイライト | ◯× | レーザー | 預けた疑問 |\n|---|---|---|---|---|\n';
  Object.keys(S.days).sort().slice(-14).forEach(k=>{const dd=S.days[k];if(!dd.hl&&!dd.laser&&!dd.rq)return;
   const ok=dd.hl?dd.hl.ok:undefined;
@@ -1483,7 +1295,7 @@ function buildMd(){
  t+='- 21日ボード：'+logged21()+' / 21日（開始 '+bb.startDate+'）\n';
  t+='- 休肝日を守った回数：'+keptDryTotal()+' ／ 連続 '+dryStreak()+'日\n';
  t+='- 解禁曜日：'+bb.freeDows.map(i=>WD[i]).join('・')+' ／ 事前登録した飲み会 '+partyCount()+'件\n';
- t+='- 知識カード：'+bb.cards.length+' / '+CARDS.length+'枚\n\n';
+ t+='\n';
  const wk=Object.keys(bb.days).sort().filter(k=>typeof bb.days[k].w==='number').slice(-14);
  if(wk.length){t+='| 日付 | 体重 | 体脂肪率 | 飲酒 |\n|---|---|---|---|\n';
   wk.forEach(k=>{const r=bb.days[k];
@@ -1528,15 +1340,6 @@ function monthDry(base){const d0=dObj(base),y=d0.getFullYear(),m=d0.getMonth();
   const r=B().days[k];if(!r||!r.logged)continue;
   total++;if(r.drink==='kept')kept++;}
  return{total,kept};}
-function cardProgress(need){
- if(need.k==='week')return Math.floor(logged21()/7);
- if(need.k==='dry')return keptDryTotal();
- if(need.k==='party')return partyCount();
- return 0;}
-function hasCard(id){return B().cards.includes(id);}
-function pendingCard(){return CARDS.find(c=>!hasCard(c.id)&&cardProgress(c.need)>=c.need.n);}
-function checkCards(){const c=pendingCard();if(c)openQuiz(c);}
-
 function renderDryToday(){
  const k=curMealKey||dkey(),ty=dayType(k),v=VERDICT[ty],r=bDay(k),n=dayNo21(k);
  const done=r&&r.logged;
@@ -1625,28 +1428,7 @@ function saveRecord(){
  if(r.drink!=='kept'&&r.dryXp){r.dryXp=false;addXp(-10,'habit');}
  save();closeSheet();renderAll();
  toast(r.drink==='kept'?'記録した。今日はきれいに守れている 💧'
-  :r.drink==='drank'?'記録した。明日はまた休肝日':'記録した'+(first?' ＋5 EXP':''));
- setTimeout(checkCards,600);}
-
-function openQuiz(c){
- window._quiz=c;
- document.getElementById('qzTitle').textContent=c.t;
- document.getElementById('qzBody').innerHTML='<div style="font-size:14px;line-height:1.6">'+esc(c.q)+'</div>'
-  +'<div style="margin-top:12px">'+c.a.map((x,i)=>
-   '<button class="qbtn" onclick="answerQuiz('+i+')">'+esc(x)+'</button>').join('')+'</div>';
- openSheet('sheetQuiz');}
-function answerQuiz(i){
- const c=window._quiz;if(!c)return;
- const right=i===c.ok;
- document.getElementById('qzBody').innerHTML=
-  '<div class="qbtn '+(right?'ok':'ng')+'">'+(right?'⭕️ 正解':'❌ こちらでした：'+esc(c.a[c.ok]))+'</div>'
-  +'<div style="font-size:13.5px;line-height:1.75;margin-top:12px">'+esc(c.body)+'</div>'
-  +'<button class="btn pri wide" style="margin-top:16px" onclick="closeQuiz()">カードを手に入れる ＋10EXP</button>';}
-function closeQuiz(){
- const c=window._quiz;
- if(c&&!hasCard(c.id)){B().cards.push(c.id);addXp(10,'learn');}
- window._quiz=null;save();closeSheet();renderAll();toast('知識カードを手に入れた ＋10 EXP');
- setTimeout(checkCards,600);}
+  :r.drink==='drank'?'記録した。明日はまた休肝日':'記録した'+(first?' ＋5 EXP':''));}
 
 let dcBase=null;
 function renderDryCal(){
@@ -1672,32 +1454,7 @@ function toggleParty(k){
  if(b.parties[k]){delete b.parties[k];toast(labelD(k)+' の飲み会を取り消した');}
  else{if(b.freeDows.includes(dObj(k).getDay())){toast('もともと解禁曜日');return;}
   b.parties[k]=true;toast(labelD(k)+' を飲み会として登録した');}
- save();renderDryCal();renderAll();setTimeout(checkCards,400);}
-
-function importPitari(){
- const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json';
- inp.onchange=()=>{const f=inp.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=()=>{try{applyPitari(JSON.parse(rd.result));}catch(e){toast('読み込めなかった');}};
-  rd.readAsText(f);};
- inp.click();}
-function applyPitari(d){
- if(!d||!d.startDate)throw new Error('bad');
- const b=B();
- b.startDate=d.startDate;
- if(Array.isArray(d.freeDows))b.freeDows=d.freeDows;
- if(d.parties)b.parties=Object.assign({},d.parties);
- if(Array.isArray(d.cards))b.cards=d.cards.slice();
- let n=0;
- Object.entries(d.days||{}).forEach(([k,r])=>{
-  const t=bDay(k,true);
-  t.logged=!!r.logged;
-  if(typeof r.weight==='number')t.w=r.weight;
-  if(r.drink)t.drink=r.drink;
-  if(r.drink==='kept')t.dryXp=true;
-  n++;});
- save();renderAll();
- alert('ピタリから取り込みました。\n記録 '+n+'日分 ／ カード '+b.cards.length+'枚 ／ 開始日 '+b.startDate);}
+ save();renderDryCal();renderAll();}
 
 /* ============ コンディション（HP/MP） ============ */
 const BOOSTS=[
@@ -1971,33 +1728,13 @@ async function sendIcs(){
   const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);toast(bs.length+'件を .ics に書き出した');
  }catch(e){copyTx(txt,'共有できないのでテキストをコピーした');}}
-function gcalUrl(b){const st=hm(b.s);
- let u='https://calendar.google.com/calendar/render?action=TEMPLATE'
-  +'&text='+encodeURIComponent(CATS[b.cat].i+' '+b.t)
-  +'&dates='+utcStamp(curPlanKey,st)+'/'+utcStamp(curPlanKey,st+b.m)
-  +'&details='+encodeURIComponent(boxDesc(b));
- if(S.settings.calSrc)u+='&src='+encodeURIComponent(S.settings.calSrc.trim());
- return u;}
-function planText(){
- const d=getDay(curPlanKey,true);sortBoxes(d.plan);
- let t=curPlanKey+'（'+WD[dObj(curPlanKey).getDay()]+'）の作戦\n';
- t+='✦ハイライト：'+hlOf(curPlanKey).t+'（'+hlOf(curPlanKey).min+'分）\n';
- d.plan.forEach(b=>{const st=hm(b.s);
-  t+='\n'+b.s+'-'+mh(st+b.m)+' '+CATS[b.cat].i+' '+b.t+'（'+b.m+'分）';
-  const ds=boxDesc(b).replace(/\n/g,' ／ ');if(ds)t+='\n  '+ds;});
- if(d.pre)t+='\n\n事前検死：'+d.pre+(d.preThen?'\n→ '+d.preThen:'');
- return t;}
 function renderCal(){
- const bs=calBoxes();
- document.getElementById('gcalChips').innerHTML=bs.length
-  ?bs.map(b=>'<a class="chip" target="_blank" rel="noopener" href="'+esc(gcalUrl(b))+'">'+CATS[b.cat].i+' '+esc(b.t)+'</a>').join('')
-  :'<span class="tiny">ボックスがない</span>';
  document.getElementById('calSrc').value=S.settings.calSrc||'';
  const w=document.getElementById('calWork');
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetQuiz','sheetFood','sheetGear','sheetHl','sheetCharge','sheetTac','sheetGas'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetFood','sheetGear','sheetHl','sheetCharge','sheetGas'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -2019,11 +1756,12 @@ function openBox(i){
   document.getElementById('fCats').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===el));
   renderMac();});
  document.getElementById('btnDelBox').style.display=i===null?'none':'';
+ document.getElementById('fMore').open=!!(b.lo||b.hi||b.ifthen);
  renderMac();openSheet('sheetBox');}
 function renderMealHint(){
  const el=document.getElementById('mealHint');if(!el)return;
  el.innerHTML=(window._cat==='meal')
-  ?'<div class="warnbox ok" style="margin-top:12px"><span>🍽</span><span>このクエストは<b>食事タブの「締める」</b>で自動判定される。最低＝記録した／最高＝目標kcal以内かつP9割。</span></div>'
+  ?'<div class="warnbox ok" style="margin-top:12px"><span>🍽</span><span>このクエストは<b>からだタブの「締める」</b>で自動判定される。最低＝記録した／最高＝目標kcal以内かつP9割。</span></div>'
   :'';}
 function renderMac(){
  renderMealHint();
@@ -2047,32 +1785,11 @@ function daysTo(d){return Math.round((dObj(d)-dObj(dkey()))/86400000);}
 /* ============ とっぱらう（Make Time）：ハイライト・レーザー・チャージ・チューニング ============ */
 const LENS={urg:{n:'緊急性',i:'🔥'},sat:{n:'満足感',i:'🏆'},joy:{n:'喜び',i:'😊'}};
 const HL_MINS=[15,20,30,60,90];
-const MT_STEP={h:['✦','ハイライト'],l:['🎯','レーザー'],e:['⚡','チャージ'],r:['🔁','チューニング']};
-/* 番号は読書メモで本と照合できたものだけ入れる（未確認は空） */
-const TAC_DEFAULT=[
- {no:'08',n:'ハイライトを予定に入れる',p:'p.368',st:'h',on:true},
- {no:'',n:'翌日のハイライトを前の晩に決める',p:'p.86〜87',st:'h',on:true},
- {no:'',n:'タイムタイマーで残り時間を見せる',p:'p.238',st:'l',on:true},
- {no:'55',n:'ふとした疑問はその場で調べず書きとめる',p:'p.244〜245',st:'l',on:true},
- {no:'24',n:'散漫クリプトナイトを遮断する（スマホを別室へ）',p:'p.368',st:'l',on:false},
- {no:'20',n:'ホーム画面を「からっぽ」にする',p:'p.164〜165',st:'l',on:false},
- {no:'53',n:'ツールに凝らない',p:'p.239',st:'l',on:false},
- {no:'62',n:'歩きまわる（毎日数分）',p:'p.369',st:'e',on:false},
- {no:'',n:'7分間のキツめの運動',p:'p.284〜285',st:'e',on:false},
- {no:'',n:'カフェインナップ（コーヒーのあと15分仮眠）',p:'p.310',st:'e',on:false},
- {no:'73',n:'コーヒー1杯を緑茶2〜3杯に置き換える',p:'p.311',st:'e',on:false},
- {no:'',n:'夜の振り返りを3日間やってみる',p:'p.369',st:'r',on:true}
-];
 function MT(){
  if(!S.mt)S.mt={};
  const m=S.mt;
  if(!m.hl)m.hl={t:'',lens:'sat',min:0};   // t空＝合格プランの量を日付で自動／min0＝自動
- if(!m.burner)m.burner={
-  front:{n:'宅建2027 合格',steps:['一問一答20問（通勤10・昼10）','火・木の朝に穴埋め1枚','土曜の朝に×だけ解き直し']},
-  back:{n:'体脂肪率13%へ',steps:['筋トレを記録する']},sink:[]};
- if(typeof m.caf!=='number')m.caf=14;
  if(m.snd===undefined)m.snd=true;
- if(!m.tac)m.tac=TAC_DEFAULT.map(t=>Object.assign({id:uid(),since:t.on?dkey():'',good:0},t));
  return m;}
 /* 判断ゼロ：宅建_合格プラン_2027 の量を日付と曜日で自動セットする */
 function autoHl(k){
@@ -2092,23 +1809,14 @@ function hlOf(k){
 function hlOk(k){const d=S.days[k];return d&&d.hl?d.hl.ok:undefined;}
 function hhmm(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
 function hlMonth(base){
- const m=base.slice(0,7);let o=0,x=0,lz=0,ns=0;
+ const m=base.slice(0,7);let o=0,x=0,lz=0;
  Object.keys(S.days).forEach(k=>{if(k.slice(0,7)!==m)return;const d=S.days[k];
   if(d.hl&&d.hl.ok===true)o++;else if(d.hl&&d.hl.ok===false)x++;
-  (d.laser||[]).forEach(l=>lz+=l.act||0);ns+=d.nosc||0;});
- return{o,x,lz,ns};}
+  (d.laser||[]).forEach(l=>lz+=l.act||0);});
+ return{o,x,lz};}
 function tally(n){const p=['','一','丅','下','止'];return '正'.repeat(Math.floor(n/5))+p[n%5];}
-function fmtH(v){return v>=60?Math.floor(v/60)+'時間'+(v%60?v%60+'分':''):v+'分';}
 
 /* ---- 今日：ハイライトカード ---- */
-function cafChip(){
- const m=MT(),lim=m.caf*60,nm=nowMin(),lb=String(m.caf).padStart(2,'0')+':00';
- return '<button class="chip" onclick="setCaf()">'+(nm<lim?'☕ カフェインは'+lb+'まで（あと'+fmtH(lim-nm)+'）'
-  :'☕ '+lb+'をすぎた。ここからはノンカフェイン')+'</button>';}
-function setCaf(){
- const v=prompt('カフェインの門限（何時まで）',MT().caf);if(v===null)return;
- const n=parseInt(v,10);if(!(n>=0&&n<=23)){toast('0〜23で入れて');return;}
- MT().caf=n;save();renderAll();toast('☕ 門限を'+n+':00にした');}
 function renderHl(){
  const el=document.getElementById('hlWrap');if(!el)return;
  const k=dkey(),h=hlOf(k),d=S.days[k],L=LENS[h.lens]||LENS.sat,ok=hlOk(k),m=MT(),run=m.run;
@@ -2127,7 +1835,6 @@ function renderHl(){
    +'<button class="'+(ok===true?'on-ok':'')+'" onclick="tuneHl(true)">◯</button>'
    +'<button class="'+(ok===false?'on-ng':'')+'" onclick="tuneHl(false)">×</button>'
    +'<span class="tiny">今月 ◯'+mon.o+' ×'+mon.x+'</span></div>'
-  +'<div class="hlsub">'+cafChip()+'<button class="chip" onclick="openNosc()">🍽 画面なしタイマー</button></div>'
   +(run&&run.rq.length?'<div class="rqlist tiny">🅿️ ふとした疑問 '+run.rq.length+'件を預かり中（レーザーが終わったら見せる）</div>':'')
   +(!run&&rq.length?'<div class="rqlist"><div class="tiny" style="margin-bottom:3px">🅿️ 預けておいた疑問（調べたら済にする）</div>'
    +rq.map((q,i)=>'<div class="rq'+(q.done?' done':'')+'"><span>'+esc(q.t)+'</span><span class="sp"></span>'
@@ -2146,7 +1853,7 @@ function tuneHl(v){
  save();renderAll();paintLzEnd();gasAuto(k);
  toast(v?'◯ ハイライト達成 ＋15 EXP':'× 記録した ＋3 EXP（記録したこと自体が前進）');}
 
-/* ---- 作戦：ハイライトとバーナーリスト ---- */
+/* ---- 作戦：ハイライト ---- */
 function renderHlPlan(){
  const el=document.getElementById('hlPlan');if(!el)return;
  const k=curPlanKey,h=hlOf(k),L=LENS[h.lens]||LENS.sat,d=S.days[k];
@@ -2156,38 +1863,7 @@ function renderHlPlan(){
   +'<span class="lens">'+L.i+' '+L.n+'</span><span class="lens">'+h.min+'分</span></div>'
   +'<div class="hlt">'+esc(h.t)+'</div>'
   +'<div class="tiny">'+(h.by==='auto'?'いつもの（デジャブ）。変えなければこのまま入る':'この日だけ決めた')
-   +(box?'　📅 '+box.s+' からタイムボックスに入れてある':'　タップで変える／予定に入れる')+'</div></div>';
- renderBurner();}
-function renderBurner(){
- const el=document.getElementById('burner');if(!el)return;
- const b=MT().burner;
- const steps=side=>b[side].steps.map((s,i)=>'<div class="bstep"><span onclick="stepToHl(\''+side+'\','+i+')">'+esc(s)+'</span>'
-  +'<button onclick="delStep(\''+side+'\','+i+')">×</button></div>').join('');
- const add=(side,ph)=>'<div class="badd"><input type="text" id="bIn_'+side+'" placeholder="'+ph+'"><button onclick="addStep(\''+side+'\')">＋</button></div>';
- el.innerHTML='<div class="burner">'
-  +'<div class="bz front"><div class="bk">🔥 手前のコンロ（メイン）</div><div class="bn" onclick="renBurner(\'front\')">'+esc(b.front.n)+'</div>'
-   +steps('front')+add('front','一歩を足す')+'</div>'
-  +'<div class="bz"><div class="bk">♨️ 奥のコンロ（サブ）</div><div class="bn" onclick="renBurner(\'back\')">'+esc(b.back.n)+'</div>'
-   +steps('back')+add('back','一歩を足す')+'</div>'
-  +'<div class="bz"><div class="bk">🧽 流し台（雑務）</div>'
-   +(b.sink.length?b.sink.map((s,i)=>'<div class="bstep"><span>'+esc(s)+'</span><button onclick="delStep(\'sink\','+i+')" title="片づけた">✓</button></div>').join('')
-    :'<div class="tiny" style="margin:4px 0">小さな用事はここに流す。ハイライトにはしない。</div>')
-   +add('sink','用事を足す')+'</div>'
-  +'</div><div class="tiny">一歩をタップすると、この日（'+labelD(curPlanKey)+'）のハイライトになる＝大きな目標を、着手できる一歩にこっぱみじんにする。名前はタップで変えられる。</div>';}
-function bList(side){const b=MT().burner;return side==='sink'?b.sink:b[side].steps;}
-function addStep(side){
- const i=document.getElementById('bIn_'+side),v=(i.value||'').trim();if(!v)return;
- bList(side).push(v);save();renderBurner();if(side==='sink')gasAuto(curPlanKey);}
-function delStep(side,i){bList(side).splice(i,1);save();renderBurner();if(side==='sink'){toast('流した');gasAuto(curPlanKey);}}
-function renBurner(side){
- const b=MT().burner[side],v=prompt(side==='front'?'手前のコンロ（いちばん大事なプロジェクト）':'奥のコンロ（2番目のプロジェクト）',b.n);
- if(v===null||!v.trim())return;b.n=v.trim();save();renderBurner();}
-function stepToHl(side,i){
- const k=curPlanKey,t=bList(side)[i];if(!t)return;
- const d=getDay(k,true),h=hlOf(k);
- d.hl=Object.assign({},d.hl||{},{t:t,lens:h.lens,min:h.min});
- save();renderPlan();toast('✦ '+labelD(k)+' のハイライトにした');}
-
+   +(box?'　📅 '+box.s+' からタイムボックスに入れてある':'　タップで変える／予定に入れる')+'</div></div>';}
 /* ---- ハイライト設定シート ---- */
 function openHl(k){
  window._hlK=k;const h=hlOf(k),d=S.days[k];
@@ -2196,7 +1872,7 @@ function openHl(k){
  window._hlLens=h.lens||'sat';window._hlMin=h.min;window._hlDeja=false;
  const box=d&&d.plan?d.plan.find(b=>b.hl):null;
  document.getElementById('hlAt').value=box?box.s:'';
- const b=MT().burner,sug=[autoHl(k).t].concat(b.front.steps,b.back.steps).filter((x,i,a)=>x&&a.indexOf(x)===i);
+ const sug=[autoHl(k).t];
  document.getElementById('hlSteps').innerHTML=sug.map(x=>'<button class="chip" data-t="'+esc(x)+'">'+esc(x)+'</button>').join('');
  document.getElementById('hlSteps').querySelectorAll('button').forEach(e=>e.onclick=()=>{document.getElementById('hlT').value=e.dataset.t;});
  paintHlSheet();openSheet('sheetHl');}
@@ -2419,71 +2095,7 @@ function chargeHook(){
  const h=hlOf(k);
  document.getElementById('chgTx').textContent='✦ '+h.t;
  document.getElementById('btnChgGo').textContent='▶ レーザー開始（'+h.min+'分）';
- setTimeout(()=>{if(!document.getElementById('tre').classList.contains('on'))openSheet('sheetCharge');
-  else{const t=document.getElementById('treClose'),o=t.onclick;t.onclick=()=>{t.onclick=o;o&&o();openSheet('sheetCharge');};}},450);}
-
-/* ---- 画面なしタイマー ---- */
-let NST=null,NSP=null;
-function openNosc(){const m=MT(),el=document.getElementById('nosc');
- if(m.nosc){el.classList.add('on');paintNosc();return;}
- el.innerHTML='<div style="font-size:40px">🍽</div><div class="nst">画面なしタイマー</div>'
-  +'<div class="tiny" style="color:#666;max-width:280px">食事や休憩のあいだは画面を消す。時間が来たら音で知らせる。スマホは伏せて置いておく。</div>'
-  +'<div class="chips" style="justify-content:center;margin-top:18px">'
-  +[15,20,30,45,60].map(x=>'<button class="chip" onclick="startNosc('+x+')">'+x+'分</button>').join('')+'</div>'
-  +'<button class="btn sm" style="margin-top:22px;color:#777;border-color:#333;background:#0a0a0a" onclick="closeNosc()">やめる</button>';
- el.classList.add('on');}
-function startNosc(min){const m=MT();actx();
- m.nosc={min:min,end:Date.now()+min*60000,k:dkey()};save();paintNosc();}
-function paintNosc(){
- const m=MT(),el=document.getElementById('nosc');if(!m.nosc)return;
- el.innerHTML='<div class="nsdim" id="nsRem"></div><div style="flex:1"></div>'
-  +'<div class="nsdim" id="nsHold" style="padding:30px">長押し（1秒）でもどる</div>';
- el.onpointerdown=()=>{clearTimeout(NSP);NSP=setTimeout(()=>{endNosc(false);},1000);};
- el.onpointerup=el.onpointercancel=el.onpointerleave=()=>clearTimeout(NSP);
- clearInterval(NST);NST=setInterval(nsTick,1000);nsTick();}
-function nsTick(){const m=MT();if(!m.nosc){clearInterval(NST);return;}
- const rem=m.nosc.end-Date.now();
- const e=document.getElementById('nsRem');if(e)e.textContent='🍽 画面なし　あと'+Math.max(1,Math.ceil(rem/60000))+'分';
- if(rem<=0)endNosc(true);}
-function endNosc(full){const m=MT(),n=m.nosc;clearInterval(NST);clearTimeout(NSP);
- const el=document.getElementById('nosc');el.onpointerdown=el.onpointerup=el.onpointercancel=el.onpointerleave=null;
- if(!n){el.classList.remove('on');return;}
- m.nosc=null;
- if(full){const d=getDay(n.k,true);d.nosc=(d.nosc||0)+1;addXp(5,'life');save();chime(2);
-  el.innerHTML='<div style="font-size:44px">🌿</div><div class="nst">おかえり</div>'
-   +'<div class="tiny" style="color:#777">'+n.min+'分、画面なしで過ごした　＋5 EXP</div>'
-   +'<button class="btn sm" style="margin-top:22px" onclick="closeNosc()">とじる</button>';}
- else{save();el.classList.remove('on');toast('もどった');}
- renderAll();}
-function closeNosc(){document.getElementById('nosc').classList.remove('on');}
-
-/* ---- 自分：試している戦術（選ぶ・試す・繰り返す） ---- */
-function renderTactics(){
- const el=document.getElementById('tactics');if(!el)return;
- const m=MT(),on=m.tac.filter(t=>t.on);
- const sorted=on.concat(m.tac.filter(t=>!t.on));
- el.innerHTML='<div class="tiny" style="margin-bottom:9px">選ぶ・試す・繰り返す。本のクイックスタートは「ハイライト・レーザー・チャージから1つずつ選んで、3日続けて試す」（p.368〜369）。効いた日は👍を押すだけ。文章は書かなくていい。</div>'
-  +sorted.map(t=>{const n=t.on&&t.since?Math.max(0,Math.round((dObj(dkey())-dObj(t.since))/86400000))+1:0;
-   return '<div class="tac'+(t.on?' on':'')+'">'
-    +'<button class="tsw" onclick="togTac(\''+t.id+'\')">'+(t.on?'試す中':'試す')+'</button>'
-    +'<div class="sp" style="min-width:0"><div class="tn">'+MT_STEP[t.st][0]+' '+esc(t.n)+'</div>'
-    +'<div class="tiny">'+(t.no?'戦術'+esc(t.no):'番号は未確認')+(t.p?'・'+esc(t.p):'')+(n?'・試して'+n+'日目':'')+'</div></div>'
-    +(t.on?'<button class="tgood" onclick="goodTac(\''+t.id+'\')">👍 '+(t.good||0)+'</button>':'')
-    +(t.user?'<button class="tdel" onclick="delTac(\''+t.id+'\')">×</button>':'')
-    +'</div>';}).join('')
-  +'<button class="btn sm wide" onclick="openTac()">＋ 本から戦術を足す</button>';}
-function togTac(id){const t=MT().tac.find(x=>x.id===id);if(!t)return;
- t.on=!t.on;if(t.on)t.since=dkey();save();renderTactics();toast(t.on?'🧪 試しはじめた':'やめた（いつでも戻せる）');}
-function goodTac(id){const t=MT().tac.find(x=>x.id===id);if(!t)return;
- t.good=(t.good||0)+1;save();renderTactics();toast('👍 効いた '+t.good);}
-function delTac(id){if(!confirm('この戦術を消す？'))return;MT().tac=MT().tac.filter(x=>x.id!==id);save();renderTactics();}
-function openTac(){['tcNo','tcN','tcP'].forEach(i=>document.getElementById(i).value='');window._tcSt='h';paintTac();openSheet('sheetTac');}
-function paintTac(){document.getElementById('tcSt').innerHTML=Object.keys(MT_STEP).map(x=>
- '<button class="chip'+(window._tcSt===x?' on':'')+'" onclick="window._tcSt=\''+x+'\';paintTac()">'+MT_STEP[x][0]+' '+MT_STEP[x][1]+'</button>').join('');}
-function saveTac(){const n=document.getElementById('tcN').value.trim();if(!n){toast('名前を入れて');return;}
- MT().tac.push({id:uid(),no:document.getElementById('tcNo').value.trim(),n:n,p:document.getElementById('tcP').value.trim(),
-  st:window._tcSt||'h',on:true,since:dkey(),good:0,user:true});
- save();closeSheet();renderTactics();toast('🧪 足して、試しはじめた');}
+ setTimeout(()=>openSheet('sheetCharge'),450);}
 
 /* ---- 記録：今月のハイライト ---- */
 function renderHlLog(){
@@ -2493,7 +2105,7 @@ function renderHlLog(){
   +'<span class="sp"></span><div style="text-align:right"><div class="tiny">達成率</div>'
   +'<div style="font-size:22px;font-weight:700;color:var(--gold2)">'+(n?Math.round(mon.o/n*1000)/10+'%':'—')+'</div></div></div>'
   +'<div class="mgrid" style="margin-top:10px">'
-  +[[mon.o+'日','◯ できた'],[mon.x+'日','× できなかった'],[mon.lz+'分','🎯 レーザーで集中'],[mon.ns+'回','🍽 画面なしで過ごした']]
+  +[[mon.o+'日','◯ できた'],[mon.x+'日','× できなかった'],[mon.lz+'分','🎯 レーザーで集中']]
    .map(x=>'<div class="metric"><div class="n">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('')+'</div>'
   +'<div class="tiny" style="margin-top:9px">×は失敗ではなく記録。押した日は上の4週グリッドに✦がつく（◯の日だけ）。</div>';}
 
@@ -2503,7 +2115,6 @@ function GS(){if(!S.settings.gas)S.settings.gas={url:'',token:'',cal:true,tasks:
 function gasReady(){const g=GS();return !!(g.url&&g.token);}
 function locStr(k,mins){const d=dObj(k);d.setMinutes(mins);
  return dkey(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
-function sinkKey(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return 's'+(h>>>0).toString(36);}
 const ST_MARK={lo:'◯ ',hi:'◎ ',skip:'（見送り）'};
 function gasPayload(k){
  const g=GS(),d=getDay(k,true),o={date:k,cal:(S.settings.calSrc||'').trim()};
@@ -2512,10 +2123,9 @@ function gasPayload(k){
    return{id:b.id,title:(ST_MARK[b.st]||'')+CATS[b.cat].i+' '+(b.hl?'✦ ':'')+b.t,
     start:locStr(k,st),end:locStr(k,st+b.m),desc:ds+(ds?'\n\n':'')+'— ゼンヤ（'+k+' の作戦）'};});}
  if(g.tasks){const h=hlOf(k),L=LENS[h.lens]||LENS.sat;
-  o.taskGroups=['d:'+k,'sink'];
+  o.taskGroups=['d:'+k];
   o.tasks=[{g:'d:'+k,id:'hl',title:'✦ '+h.t,notes:'ハイライト（'+L.n+'・'+h.min+'分）— ゼンヤ',due:k,done:hlOk(k)===true}]
-   .concat((d.rq||[]).map((q,i)=>({g:'d:'+k,id:'rq'+i,title:'🅿️ '+q.t,notes:'レーザー中に預けた疑問 — ゼンヤ',due:k,done:!!q.done})))
-   .concat(MT().burner.sink.map(t=>({g:'sink',id:sinkKey(t),title:'🧽 '+t,notes:'流し台（雑務）— ゼンヤ'})));}
+   .concat((d.rq||[]).map((q,i)=>({g:'d:'+k,id:'rq'+i,title:'🅿️ '+q.t,notes:'レーザー中に預けた疑問 — ゼンヤ',due:k,done:!!q.done})));}
  return o;}
 async function gasPost(o,url,token){
  const g=GS();
@@ -2536,26 +2146,26 @@ async function gasSend(k,quiet){
   if(!quiet)toast('🔗 送った：予定 '+(r.ev?r.ev.add+r.ev.upd:0)+'件・タスク '+(r.tk?r.tk.add+r.tk.upd:0)+'件');
  }catch(e){d.gasErr=String(e&&e.message||e);save();toast('🔗 送れなかった：'+d.gasErr);}
  finally{gasBusy=false;if(document.getElementById('v-plan').classList.contains('on'))renderGas();}}
-/* 一度送った日は、◯×・編集・流し台の変化を少し待ってから自動で追いかける */
+/* 一度送った日は、◯×・編集の変化を少し待ってから自動で追いかける */
 function gasAuto(k){
  if(!gasReady()||!GS().auto)return;
  const d=S.days[k];if(!d||!d.gas)return;
  clearTimeout(window._gasT);window._gasT=setTimeout(()=>gasSend(k,true),4000);}
 function renderGas(){
  const el=document.getElementById('gasBox');if(!el)return;
+ document.getElementById('icsBox').style.display=gasReady()?'none':'';   // 直結したら .ics は出さない
  if(!gasReady()){
   el.innerHTML='<button class="btn wide sm" onclick="openGas()">🔗 Googleカレンダー・タスクに直結する（最初に1回だけ設定）</button>'
-   +'<div class="tiny" style="margin:8px 0 14px">設定すると、1タップ（または出撃と同時）で、予定はカレンダーへ、ハイライト・疑問・流し台はGoogleタスクへ入る。何回送っても重複しない。</div>';
+   +'<div class="tiny" style="margin:8px 0 14px">設定すると、1タップ（または出撃と同時）で、予定はカレンダーへ、ハイライト・疑問はGoogleタスクへ入る。何回送っても重複しない。</div>';
   return;}
  const g=GS(),d=S.days[curPlanKey]||{};
  el.innerHTML='<button class="btn pri wide" onclick="gasSend(curPlanKey)">🔗 この日をGoogleに送る</button>'
-  +'<div class="tiny" style="margin:7px 0 0">'+[g.cal?'📅 予定 → カレンダー':'',g.tasks?'✅ ハイライト・疑問・流し台 → タスク「ゼンヤ」':''].filter(Boolean).join('　')
+  +'<div class="tiny" style="margin:7px 0 0">'+[g.cal?'📅 予定 → カレンダー':'',g.tasks?'✅ ハイライト・疑問 → タスク「ゼンヤ」':''].filter(Boolean).join('　')
   +(g.auto?'<br>⚡ 出撃と同時に自動で送る':'')+'</div>'
   +(d.gas?'<div class="tiny" style="color:#8fe0a8;margin-top:4px">✓ '+esc(d.gas.at.slice(5))+' に送信（予定 '
     +(d.gas.ev?d.gas.ev.add+d.gas.ev.upd:0)+'・タスク '+(d.gas.tk?d.gas.tk.add+d.gas.tk.upd:0)+'）。送り直しても上書きになる</div>':'')
   +(d.gasErr?'<div class="tiny" style="color:#e0a04a;margin-top:4px">⚠️ 前回は送れなかった：'+esc(d.gasErr)+'</div>':'')
-  +'<button class="chip" style="margin:9px 0 14px" onclick="openGas()">⚙️ 直結の設定</button>'
-  +'<div class="tiny" style="border-top:1px dashed var(--line);padding-top:10px;margin-bottom:8px">ほかの送り方（設定なしで使える）</div>';}
+  +'<div><button class="chip" style="margin:9px 0 4px" onclick="openGas()">⚙️ 直結の設定</button></div>';}
 function openGas(){const g=GS();
  document.getElementById('gsUrl').value=g.url||'';document.getElementById('gsTok').value=g.token||'';
  window._gs={cal:g.cal!==false,tasks:g.tasks!==false,auto:g.auto!==false};
@@ -2575,7 +2185,9 @@ async function testGas(){
  catch(e){m.textContent='⚠️ '+(e.message||e);}}
 
 /* ============ view ============ */
+let lastView='today';
 function switchView(v){
+ if(v!=='char')lastView=v;
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
  document.querySelectorAll('nav button').forEach(e=>e.classList.toggle('on',e.dataset.v===v));
  window.scrollTo(0,0);renderAll();}
@@ -2585,13 +2197,13 @@ function renderAll(){
  if(on('v-today'))renderToday();
  if(on('v-plan'))renderPlan();
  if(on('v-meal'))renderMeal();
- if(on('v-char'))renderChar();
- if(on('v-log'))renderLog();}
+ if(on('v-char')){renderChar();renderLog();}}
 
 /* ============ events ============ */
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 document.getElementById('mask').onclick=closeSheet;
-document.getElementById('treClose').onclick=()=>document.getElementById('tre').classList.remove('on');
+document.querySelector('.hd').onclick=()=>switchView(document.getElementById('v-char').classList.contains('on')?lastView:'char');
+document.getElementById('btnMeBack').onclick=()=>switchView(lastView);
 document.getElementById('btnAdd').onclick=()=>openBox(null);
 document.getElementById('planPrev').onclick=()=>{curPlanKey=addD(curPlanKey,-1);renderPlan();};
 document.getElementById('planNext').onclick=()=>{curPlanKey=addD(curPlanKey,1);renderPlan();};
@@ -2648,9 +2260,6 @@ document.getElementById('btnLock').onclick=()=>{
  d.preThen=document.getElementById('preThen').value;save();});
 document.getElementById('btnRev').onclick=()=>{
  const d=getDay(dkey(),true);d.rev=document.getElementById('revNote').value;save();toast('保存した');};
-document.getElementById('btnRewards').onclick=()=>{
- S.rewards=document.getElementById('rewardsBox').value.split('\n').map(s=>s.trim()).filter(Boolean);
- save();toast('ごほうび箱を更新した');};
 document.getElementById('mealPrev').onclick=()=>{curMealKey=addD(curMealKey||dkey(),-1);renderMeal();};
 document.getElementById('mealNext').onclick=()=>{curMealKey=addD(curMealKey||dkey(),1);renderMeal();};
 document.getElementById('btnAddMeal').onclick=()=>{
@@ -2675,7 +2284,6 @@ document.getElementById('btnHlAuto').onclick=hlBackAuto;
 document.getElementById('hlDeja').onclick=()=>{window._hlDeja=!window._hlDeja;paintHlSheet();};
 document.getElementById('btnChgGo').onclick=startLaser;
 document.getElementById('btnChgLater').onclick=closeSheet;
-document.getElementById('btnTacSave').onclick=saveTac;
 document.getElementById('btnGasSave').onclick=saveGas;
 document.getElementById('btnGasTest').onclick=testGas;
 [['gsCal','cal'],['gsTask','tasks'],['gsAuto','auto']].forEach(x=>document.getElementById(x[0]).onclick=()=>{window._gs[x[1]]=!window._gs[x[1]];paintGas();});
@@ -2691,7 +2299,6 @@ document.getElementById('btnGearDone').onclick=gearDone;
 document.getElementById('btnSaveRecord').onclick=saveRecord;
 document.getElementById('btnSaveFood').onclick=saveFood;
 document.getElementById('btnDelFood').onclick=()=>delFood(window._editFood);
-document.getElementById('btnImportPitari').onclick=importPitari;
 document.getElementById('dcPrev').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()-1);dcBase=dkey(d);renderDryCal();};
 document.getElementById('dcNext').onclick=()=>{const d=dObj(dcBase||dkey());d.setMonth(d.getMonth()+1);dcBase=dkey(d);renderDryCal();};
 document.getElementById('btnDrySet').onclick=()=>{
@@ -2739,7 +2346,6 @@ document.getElementById('btnSaveTarget').onclick=()=>{
  save();closeSheet();renderMeal();
  toast(S.targets.pMode==='auto'?'目標を更新した（Pは体重から自動）':'目標を更新した');};
 document.getElementById('btnIcs').onclick=sendIcs;
-document.getElementById('btnPlanTx').onclick=()=>copyTx(planText(),'作戦をコピーした');
 document.getElementById('calWork').onclick=()=>{S.settings.calWork=!S.settings.calWork;save();renderCal();};
 document.getElementById('calSrc').onblur=()=>{S.settings.calSrc=document.getElementById('calSrc').value.trim();save();renderCal();};
 document.getElementById('btnExport').onclick=()=>copyTx(buildMd(),'コピーした。Obsidianに貼るだけ');
@@ -2763,10 +2369,8 @@ setInterval(()=>{if(document.getElementById('v-today').classList.contains('on'))
 loadFileSound();
 if(MT().run)openLaserUI();
 setInterval(()=>{const r=MT().run;if(r&&!r.paused&&lzEl(r)>=r.min*60000)finishLaser();},5000);
-if(MT().nosc){document.getElementById('nosc').classList.add('on');paintNosc();}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){
- if(MT().run&&document.getElementById('laser').classList.contains('on')){wakeOn();lzTick();}
- if(MT().nosc)nsTick();}});
+ if(MT().run&&document.getElementById('laser').classList.contains('on')){wakeOn();lzTick();}}});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
