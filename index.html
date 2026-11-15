@@ -322,6 +322,11 @@ details.more[open]>summary::before{content:'－ '}
 .hd{cursor:pointer}
 .statgrid{grid-template-columns:1fr}
 #tlToggle{margin-bottom:12px}
+.endpage{position:fixed;inset:0;z-index:104;display:none;background:#07080c;text-align:center;overflow:auto;
+  padding:calc(var(--sat) + 30px) 24px calc(var(--sab) + 30px)}
+.endpage.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.endpage .big{font-size:26px;font-weight:700;margin:10px 0 6px}
+.endpage .box{width:100%;max-width:340px;margin:22px 0;padding:14px;border-radius:14px;background:#12141c;border:1px solid #2a3040;text-align:left}
 </style>
 </head>
 <body>
@@ -779,6 +784,9 @@ details.more[open]>summary::before{content:'－ '}
   </div>
   <div class="tiny" id="gsMsg" style="margin-top:10px"></div>
 </div>
+
+<!-- 今日はここまで（出撃したあとの終わりのページ） -->
+<div class="endpage" id="endPage"></div>
 
 <div class="toast" id="toast"></div>
 <script>
@@ -1784,7 +1792,7 @@ function daysTo(d){return Math.round((dObj(d)-dObj(dkey()))/86400000);}
 
 /* ============ とっぱらう（Make Time）：ハイライト・レーザー・チャージ・チューニング ============ */
 const LENS={urg:{n:'緊急性',i:'🔥'},sat:{n:'満足感',i:'🏆'},joy:{n:'喜び',i:'😊'}};
-const HL_MINS=[15,20,30,60,90];
+const HL_MINS=[10,15,20,30,60,90];
 function MT(){
  if(!S.mt)S.mt={};
  const m=S.mt;
@@ -2184,6 +2192,20 @@ async function testGas(){
   m.textContent=r.ok?('✅ つながった　カレンダー：'+r.cal+'　タスク：'+(r.taskErr?'⚠️ '+r.taskErr:'リスト「'+r.list+'」')):'⚠️ '+(r.err||'失敗');}
  catch(e){m.textContent='⚠️ '+(e.message||e);}}
 
+/* ============ 今日はここまで：前の晩に出撃したら、アプリの1日を終わらせる ============ */
+function showEnd(k,got){
+ const h=hlOf(k),d=S.days[k],first=d&&d.plan.length?d.plan[0]:null;
+ document.getElementById('endPage').innerHTML='<div style="font-size:54px">🌙</div>'
+  +'<div class="big">今日はここまで</div>'
+  +'<div class="tiny" style="font-size:13px">'+labelD(k)+' の作戦は確定した'+(got?'　＋20 EXP':'')+'</div>'
+  +'<div class="box"><div class="hlk">✦ '+(k===addD(dkey(),1)?'明日':'その日')+'のハイライト</div>'
+   +'<div style="font-size:16px;font-weight:700;margin-top:6px;line-height:1.5">'+esc(h.t)+'</div>'
+   +(first?'<div class="tiny" style="margin-top:8px">朝いちばん：'+first.s+'　'+CATS[first.cat].i+' '+esc(first.t)+'</div>':'')+'</div>'
+  +'<div style="font-size:17px;font-weight:700;line-height:1.7">スマホを箱に入れる。<br>あとは眠るだけ。</div>'
+  +'<button class="btn sm" style="margin-top:30px;color:var(--tx3)" onclick="closeEnd()">とじる</button>';
+ document.getElementById('endPage').classList.add('on');}
+function closeEnd(){document.getElementById('endPage').classList.remove('on');}
+
 /* ============ view ============ */
 let lastView='today';
 function switchView(v){
@@ -2251,9 +2273,11 @@ document.getElementById('btnLock').onclick=()=>{
  d.pre=document.getElementById('preMortem').value;
  d.preThen=document.getElementById('preThen').value;
  d.locked=true;const now=new Date();d.madeAt=now.toISOString();
- if(dkey(now)<k&&!d.bonus){d.bonus=true;addXp(20,'habit');toast('前夜の作戦 ＋20 EXP');}
- else toast('出撃準備 完了');
+ const eve=dkey(now)<k,got=eve&&!d.bonus;
+ if(got){d.bonus=true;addXp(20,'habit');}
+ if(!eve)toast('出撃準備 完了');
  save();renderPlan();renderHead();
+ if(eve)showEnd(k,got);
  if(gasReady()&&GS().auto)setTimeout(()=>gasSend(k,true),300);};
 ['preMortem','preThen'].forEach(id=>document.getElementById(id).onblur=()=>{
  const d=getDay(curPlanKey,true);d.pre=document.getElementById('preMortem').value;
