@@ -2373,11 +2373,16 @@ document.getElementById('btnIcs').onclick=sendIcs;
 document.getElementById('calWork').onclick=()=>{S.settings.calWork=!S.settings.calWork;save();renderCal();};
 document.getElementById('calSrc').onblur=()=>{S.settings.calSrc=document.getElementById('calSrc').value.trim();save();renderCal();};
 document.getElementById('btnExport').onclick=()=>copyTx(buildMd(),'コピーした。Obsidianに貼るだけ');
-document.getElementById('btnObsidian').onclick=()=>{
- const u='obsidian://new?vault='+encodeURIComponent('うるトトの思考')
-  +'&file='+encodeURIComponent('04_output/zenya/冒険ログ.md')
-  +'&overwrite=true&content='+encodeURIComponent(buildMd());
- location.href=u;};
+document.getElementById('btnObsidian').onclick=async()=>{
+ const md=buildMd();
+ let copied=false;
+ try{await navigator.clipboard.writeText(md);copied=true;}catch(e){}
+ const base='obsidian://new?vault='+encodeURIComponent('うるトトの思考')
+  +'&file='+encodeURIComponent('04_output/ゼンヤ_冒険ログ.md')+'&overwrite=true';
+ // 長い本文をURLに載せると開けないことがあるので、コピーできたらクリップボード経由で渡す
+ location.href=base+(copied?'&clipboard=true':'&content='+encodeURIComponent(md));
+ setTimeout(()=>{if(document.visibilityState==='visible')
+  toast(copied?'Obsidianが開かないときは、貼り付けで（コピー済み）':'Obsidianが開かなかった');},2500);};
 document.getElementById('btnBackup').onclick=()=>copyTx(JSON.stringify(S),'バックアップをコピーした');
 document.getElementById('btnRestore').onclick=()=>{
  const t=prompt('バックアップJSONを貼り付け');if(!t)return;
