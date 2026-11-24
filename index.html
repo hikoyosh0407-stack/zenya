@@ -296,6 +296,14 @@ label.f:first-child{margin-top:0}
 .tune button.on-ok{background:#1d3a26;border-color:#5fbf7f;color:#8fe0a8}
 .tune button.on-ng{background:#2a2430;border-color:#8a7fa0;color:#c9bfe0}
 .tune .tiny{margin-left:auto}
+.memoIn{display:flex;gap:8px;align-items:center}
+.memoIn input{flex:1;min-width:0}
+.memoL{margin-top:8px}
+.memoR{display:flex;gap:8px;align-items:baseline;padding:6px 2px;border-top:1px dashed var(--line);font-size:13px;line-height:1.5;cursor:pointer}
+.memoR .at{font-size:11px;color:var(--tx3);flex:none}
+.memoR .tx{flex:1;min-width:0;word-break:break-all}
+.memoR .dp{font-size:11px;color:var(--gold2);flex:none}
+.memoQ{margin:6px 0 0 18px;padding:0;font-size:12.5px;color:var(--tx2);line-height:1.8}
 .rqlist{margin-top:10px;padding-top:9px;border-top:1px dashed #4a3c20}
 .rq{display:flex;gap:8px;align-items:center;font-size:13px;padding:4px 0}
 .rq.done span{text-decoration:line-through;color:var(--tx3)}
@@ -345,6 +353,13 @@ details.more[open]>summary::before{content:'－ '}
 <!-- ========== 今日 ========== -->
 <section class="view on" id="v-today">
   <div id="todayHead"></div>
+  <div class="card" style="padding:10px 12px">
+    <div class="memoIn">
+      <input type="text" id="memoIn" enterkeyhint="done" placeholder="📝 ふと浮かんだことを置く">
+      <button class="btn sm pri" id="btnMemo">置く</button>
+    </div>
+    <div id="memoList"></div>
+  </div>
   <div id="hlWrap"></div>
   <div id="recoverWrap"></div>
   <div id="nowWrap"></div>
@@ -499,8 +514,9 @@ details.more[open]>summary::before{content:'－ '}
     <div class="mgrid" id="dryMetrics" style="margin-top:11px"></div>
   </div>
 
-  <h2 class="sec">今日の振り返り</h2>
+  <h2 class="sec" id="secRev">今日の振り返り</h2>
   <div class="card">
+    <div id="revMemos"></div>
     <textarea id="revNote" placeholder="効いた設計・崩れた原因・明日への一手を1〜3行で"></textarea>
     <button class="btn sm wide" id="btnRev" style="margin-top:8px">保存</button>
   </div>
@@ -700,6 +716,26 @@ details.more[open]>summary::before{content:'－ '}
 
 
 <!-- ハイライト設定シート -->
+<div class="sheet" id="sheetMemo">
+  <div class="grab"></div>
+  <h3>📝 メモを深掘りする</h3>
+  <div class="tiny" id="smAt"></div>
+  <label class="f">メモ</label>
+  <textarea id="smT" style="min-height:52px"></textarea>
+  <label class="f">深掘り（引っかかるものだけでいい）</label>
+  <ol class="memoQ">
+    <li>なぜ、これが引っかかった？</li>
+    <li>何とつながる？（本・仕事・家族・目標）</li>
+    <li>だから、次にどうする？</li>
+  </ol>
+  <textarea id="smDeep" style="min-height:110px;margin-top:6px" placeholder="思いついた順に書けばいい"></textarea>
+  <div class="row" style="margin-top:14px;gap:8px">
+    <button class="btn sm" id="smDel" style="color:var(--tx3)">消す</button><span class="sp"></span>
+    <button class="btn sm" onclick="closeSheet()">とじる</button>
+    <button class="btn sm pri" id="smSave">保存</button>
+  </div>
+</div>
+
 <div class="sheet" id="sheetHl">
   <div class="grab"></div>
   <h3 id="hlSheetTitle">✦ ハイライト</h3>
@@ -1036,6 +1072,7 @@ function renderToday(){
  const k=dkey(), d=S.days[k], nm=nowMin(), E=id=>document.getElementById(id);
  renderHl();
  renderCond();
+ paintMemos();
  E('todayHead').innerHTML='<div class="row" style="margin-bottom:10px"><div><div style="font-size:19px;font-weight:700">'
   +labelD(k)+'</div><div class="tiny">'+esc(S.boss.mid.n)+' へ向かう1日</div></div></div>';
 
@@ -1255,6 +1292,7 @@ function renderLog(){
  renderHlLog();
  const d=S.days[today];
  document.getElementById('revNote').value=d?(d.rev||''):'';
+ paintMemos();
 }
 
 function avgCond(keys,kind){
@@ -1312,6 +1350,12 @@ function buildMd(){
   t+='\n';}
  const bn=BN();
  t+='\n## 宅建\n\n- 本番まで '+daysTo(bn.goal.date)+'日（'+bn.goal.date+'）／ 申込まで '+daysTo(bn.goal.apply)+'日\n';
+ const mk=Object.keys(S.days).sort().slice(-14).filter(k=>memosOf(k).length);
+ if(mk.length){t+='\n## 📝 メモ（直近14日）\n\n';
+  mk.reverse().forEach(k=>{t+='### '+k+'\n';
+   memosOf(k).forEach(m=>{t+='- '+m.at+' '+m.t.replace(/\n/g,' ')+'\n';
+    if(m.deep)t+='    - ✎ '+m.deep.replace(/\n/g,'\n      ')+'\n';});
+   t+='\n';});}
  t+='\n## 直近の振り返り\n\n';
  Object.keys(S.days).sort().slice(-14).reverse().forEach(k=>{const d=S.days[k];
   if(d&&d.rev)t+='### '+k+'\n'+d.rev+'\n\n';
@@ -1742,7 +1786,7 @@ function renderCal(){
  w.textContent=S.settings.calWork?'オン':'オフ';w.classList.toggle('on',!!S.settings.calWork);}
 
 /* ============ シート ============ */
-const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetFood','sheetGear','sheetHl','sheetCharge','sheetGas'];
+const SHEETS=['sheetBox','sheetCap','sheetBoss','sheetMeal','sheetTarget','sheetRecord','sheetDry','sheetFood','sheetGear','sheetHl','sheetCharge','sheetGas','sheetMemo'];
 function openSheet(id){
  SHEETS.forEach(i=>{const e=document.getElementById(i);if(e&&i!==id)e.classList.remove('on');});
  curSheet=id;document.getElementById('mask').classList.add('on');
@@ -2205,6 +2249,43 @@ function showEnd(k,got){
   +'<button class="btn sm" style="margin-top:30px;color:var(--tx3)" onclick="closeEnd()">とじる</button>';
  document.getElementById('endPage').classList.add('on');}
 function closeEnd(){document.getElementById('endPage').classList.remove('on');}
+
+/* ============ メモ：開いたらすぐ置く → 夜の振り返りで深掘り ============ */
+function memosOf(k){const d=S.days[k];return(d&&d.memo)||[];}
+function memoRow(m,i){return '<div class="memoR" onclick="openMemo('+i+')"><span class="at">'+esc(m.at)+'</span>'
+ +'<span class="tx">'+esc(m.t)+'</span>'+(m.deep?'<span class="dp">✎深掘り済</span>':'')+'</div>';}
+function paintMemos(){
+ const ms=memosOf(dkey()),E=id=>document.getElementById(id);
+ const rows=ms.map((m,i)=>[m,i]).reverse();
+ const tl=E('memoList');
+ if(tl)tl.innerHTML=!ms.length?'':'<div class="memoL">'+rows.slice(0,3).map(x=>memoRow(x[0],x[1])).join('')
+  +'<div class="row" style="margin-top:6px"><span class="tiny">今日のメモ '+ms.length+'件'+(ms.length>3?'（新しい3件）':'')+'</span><span class="sp"></span>'
+  +'<button class="btn sm" onclick="goRev()">🌙 振り返りで見る</button></div></div>';
+ const rv=E('revMemos');
+ if(rv){const n=ms.filter(m=>m.deep).length;
+  rv.innerHTML=!ms.length?'':'<div class="tiny" style="margin-bottom:4px">📝 今日のメモ '+ms.length+'件（深掘り '+n+'件）— 引っかかるものだけ、押して深掘りする</div>'
+   +'<div style="margin-bottom:10px">'+ms.map((m,i)=>memoRow(m,i)).join('')+'</div>';}}
+function addMemo(){
+ const i=document.getElementById('memoIn'),v=i.value.trim();if(!v)return;
+ const d=getDay(dkey(),true);(d.memo=d.memo||[]).push({t:v,at:hhmm(),deep:''});
+ i.value='';save();paintMemos();toast('📝 置いた');}
+function openMemo(i){
+ const m=memosOf(dkey())[i];if(!m)return;window._mi=i;
+ document.getElementById('smAt').textContent=labelD(dkey())+' '+m.at;
+ document.getElementById('smT').value=m.t;document.getElementById('smDeep').value=m.deep||'';
+ openSheet('sheetMemo');}
+function goRev(){switchView('char');setTimeout(()=>{const e=document.getElementById('secRev');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},60);}
+document.getElementById('btnMemo').onclick=()=>{addMemo();document.getElementById('memoIn').focus();};
+document.getElementById('memoIn').addEventListener('keydown',e=>{
+ if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();addMemo();}});
+document.getElementById('smSave').onclick=()=>{
+ const d=getDay(dkey(),true),m=d.memo&&d.memo[window._mi];if(!m)return closeSheet();
+ m.t=document.getElementById('smT').value.trim()||m.t;m.deep=document.getElementById('smDeep').value.trim();
+ save();closeSheet();paintMemos();toast(m.deep?'✎ 深掘りを残した':'保存した');};
+document.getElementById('smDel').onclick=()=>{
+ const d=S.days[dkey()];if(!d||!d.memo||!d.memo[window._mi])return closeSheet();
+ if(!confirm('このメモを消す？'))return;
+ d.memo.splice(window._mi,1);save();closeSheet();paintMemos();toast('消した');};
 
 /* ============ view ============ */
 let lastView='today';
